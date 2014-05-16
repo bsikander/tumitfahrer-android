@@ -1,6 +1,7 @@
 package de.tum.mitfahr.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -19,6 +20,7 @@ import de.tum.mitfahr.TUMitfahrApplication;
 public class LoginFragment extends Fragment {
 
     private RegisterClickListener mListener;
+    private Context mContext;
 
     @InjectView(R.id.emailEditText)
     EditText emailText;
@@ -47,6 +49,7 @@ public class LoginFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = getActivity();
     }
 
     @Override
@@ -69,7 +72,11 @@ public class LoginFragment extends Fragment {
 
     @OnClick(R.id.loginButton)
     public void onLoginPressed(Button button) {
-
+        String email = emailText.getText().toString();
+        String password = passwordText.getText().toString();
+        if(email != ""){
+            TUMitfahrApplication.getApplication(mContext).getProfileService().login(email,password);
+        }
     }
 
     @OnClick(R.id.registerButton)

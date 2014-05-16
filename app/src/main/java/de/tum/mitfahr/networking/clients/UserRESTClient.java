@@ -21,7 +21,7 @@ public class UserRESTClient extends AbstractRESTClient {
 
     public void geUser(String username){
         UserAPIService userAPIService = mRestAdapter.create(UserAPIService.class);
-        userAPIService.getUser(BackendUtil.getCredentials(), "me", new Callback<JSONObject>() {
+        userAPIService.getUser(BackendUtil.getAPIKey(), "me", new Callback<JSONObject>() {
             @Override
             public void success(JSONObject jsonObject, Response response) {
 

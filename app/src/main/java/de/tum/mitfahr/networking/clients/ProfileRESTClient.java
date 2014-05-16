@@ -1,5 +1,7 @@
 package de.tum.mitfahr.networking.clients;
 
+import android.util.Log;
+
 import com.squareup.otto.Bus;
 
 import org.json.JSONObject;
@@ -7,7 +9,12 @@ import org.json.JSONObject;
 import de.tum.mitfahr.networking.BackendUtil;
 import de.tum.mitfahr.networking.api.SessionAPIService;
 import de.tum.mitfahr.networking.api.UserAPIService;
-import de.tum.mitfahr.networking.models.requests.UserRegisterRequestData;
+import de.tum.mitfahr.networking.events.LoginResultEvent;
+import de.tum.mitfahr.networking.events.RegisterResultEvent;
+import de.tum.mitfahr.networking.events.RequestFailedEvent;
+import de.tum.mitfahr.networking.models.requests.RegisterRequest;
+import de.tum.mitfahr.networking.models.response.LoginResponse;
+import de.tum.mitfahr.networking.models.response.RegisterResponse;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -27,15 +34,16 @@ public class ProfileRESTClient extends AbstractRESTClient {
                                     final String lastName,
                                     final String department,
                                     final boolean isStudent) {
-        UserRegisterRequestData requestData = new UserRegisterRequestData(email, firstName, lastName, department, isStudent);
+        RegisterRequest requestData = new RegisterRequest(email, firstName, lastName, department, isStudent);
         UserAPIService userAPIService = mRestAdapter.create(UserAPIService.class);
-        userAPIService.registerUser(BackendUtil.getCredentials(), requestData, registerCallback);
+        userAPIService.registerUser(requestData, registerCallback);
     }
 
-    private Callback<JSONObject> registerCallback = new Callback<JSONObject>() {
+    private Callback<RegisterResponse> registerCallback = new Callback<RegisterResponse>() {
         @Override
-        public void success(JSONObject jsonObject, Response response) {
+        public void success(RegisterResponse registerResponse, Response response) {
             // Post an event based on success on the BUS! :)
+            mBus.post(new RegisterResultEvent(registerResponse));
         }
 
         @Override
@@ -46,18 +54,21 @@ public class ProfileRESTClient extends AbstractRESTClient {
 
     public void login(final String email, final String password) {
         SessionAPIService sessionAPIService = mRestAdapter.create(SessionAPIService.class);
-        sessionAPIService.loginUser(BackendUtil.getHeader(email, password), loginCallback);
+        sessionAPIService.loginUser(BackendUtil.getLoginHeader(email, password), loginCallback);
     }
 
-    private Callback<JSONObject> loginCallback = new Callback<JSONObject>() {
+    private Callback<LoginResponse> loginCallback = new Callback<LoginResponse>() {
+
         @Override
-        public void success(JSONObject jsonObject, Response response) {
+        public void success(LoginResponse loginResponse, Response response) {
             // Post an event based on success on the BUS! :)
+            // mBus.post(new LoginResultEvent(loginResponse));
+            Log.d("Login Response: ", loginResponse.toString());
         }
 
         @Override
         public void failure(RetrofitError retrofitError) {
-            // Post an error! :)
+            mBus.post(new RequestFailedEvent());
         }
     };
 }

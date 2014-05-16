@@ -10,6 +10,10 @@ import com.squareup.otto.Subscribe;
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.networking.clients.ProfileRESTClient;
+import de.tum.mitfahr.networking.events.LoginResultEvent;
+import de.tum.mitfahr.networking.events.RegisterResultEvent;
+import de.tum.mitfahr.networking.models.response.LoginResponse;
+import de.tum.mitfahr.networking.models.response.RegisterResponse;
 
 /**
  * Created by abhijith on 09/05/14.
@@ -45,6 +49,21 @@ public class ProfileService {
     public boolean isLoggedIn() {
         // TODO : check login using the shared preferences! :)
         return false;
+    }
+
+    @Subscribe
+    public void onLoginResult(LoginResultEvent result) {
+        LoginResponse response = result.getResponse();
+    }
+
+    @Subscribe
+    public void onRegisterResult(RegisterResultEvent result) {
+        RegisterResponse response = result.getResponse();
+        if (response.status.equals("created")) {
+
+        } else {
+
+        }
     }
 
 }

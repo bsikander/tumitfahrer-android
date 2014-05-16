@@ -2,11 +2,13 @@ package de.tum.mitfahr.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,10 +19,13 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import de.tum.mitfahr.R;
+import de.tum.mitfahr.TUMitfahrApplication;
 
 public class RegisterFragment extends Fragment {
 
     private RegistrationFinishedListener mListener;
+    private Context mContext;
+    private String mDepartment = "departmentNo(0)";
 
     @InjectView(R.id.emailEditText)
     EditText emailText;
@@ -46,6 +51,7 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = getActivity();
     }
 
     @Override
@@ -62,6 +68,17 @@ public class RegisterFragment extends Fragment {
         mDepartmentAdapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.department_array, android.R.layout.simple_spinner_item);
         departmentSpinner.setAdapter(mDepartmentAdapter);
+        departmentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mDepartment = "departmentNo(" + position + ")";
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     @OnClick(R.id.registerButton)
@@ -69,16 +86,20 @@ public class RegisterFragment extends Fragment {
 
         if (emailText.getText().toString() != ""
                 && firstNameText.getText().toString() != ""
-                && lastNameText.getText().toString() != ""){
+                && lastNameText.getText().toString() != "") {
+            String email = emailText.getText().toString();
+            String firstName = firstNameText.getText().toString();
+            String lastName = lastNameText.getText().toString();
+            String department = "departmentNo(" + departmentSpinner.getSelectedItemPosition() + ")";
 
-
+            TUMitfahrApplication.getApplication(mContext).getProfileService().register(email, firstName, lastName, department);
 
         }
 
-            if (mListener != null) {
-                if (emailText.getText().toString() != "")
-                    mListener.onRegistrationFinished(emailText.getText().toString());
-            }
+        if (mListener != null) {
+            if (emailText.getText().toString() != "")
+                mListener.onRegistrationFinished(emailText.getText().toString());
+        }
     }
 
     @Override

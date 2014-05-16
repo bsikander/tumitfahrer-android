@@ -2,7 +2,8 @@ package de.tum.mitfahr.networking.api;
 
 import org.json.JSONObject;
 
-import de.tum.mitfahr.networking.models.requests.UserRegisterRequestData;
+import de.tum.mitfahr.networking.models.requests.RegisterRequest;
+import de.tum.mitfahr.networking.models.response.RegisterResponse;
 import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.Header;
@@ -16,12 +17,11 @@ public interface UserAPIService {
 
     @POST("/users")
     public void registerUser(
-            @Header("Authorization") String auth,
-            @Body UserRegisterRequestData user,
-            Callback<JSONObject> callback
+            @Body RegisterRequest user,
+            Callback<RegisterResponse> callback
     );
 
-    @POST("/users/{hasjhdjas}")
+    @POST("/users/{}")
     public void getUser(
             @Header("Authorization") String auth,
             @Body String user,
