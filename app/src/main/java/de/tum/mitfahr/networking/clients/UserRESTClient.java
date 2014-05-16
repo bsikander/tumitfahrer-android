@@ -15,13 +15,13 @@ import retrofit.client.Response;
  */
 public class UserRESTClient extends AbstractRESTClient {
 
-    protected UserRESTClient(String mBaseBackendURL, Bus mBus) {
-        super(mBaseBackendURL, mBus);
+    protected UserRESTClient(String mBaseBackendURL) {
+        super(mBaseBackendURL);
     }
 
-    public void geUser(String username){
+    public void geUser(String username) {
         UserAPIService userAPIService = mRestAdapter.create(UserAPIService.class);
-        userAPIService.getUser(BackendUtil.getAPIKey(), "me", new Callback<JSONObject>() {
+        userAPIService.getUser(BackendUtil.getAPIKey(), username, new Callback<JSONObject>() {
             @Override
             public void success(JSONObject jsonObject, Response response) {
 
@@ -33,7 +33,8 @@ public class UserRESTClient extends AbstractRESTClient {
             }
         });
     }
-    public void updateUser(){
+
+    public void updateUser() {
 
     }
 

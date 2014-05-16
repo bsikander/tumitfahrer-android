@@ -25,8 +25,8 @@ import retrofit.client.Response;
 public class ProfileRESTClient extends AbstractRESTClient {
 
 
-    public ProfileRESTClient(String mBaseBackendURL, Bus mBus) {
-        super(mBaseBackendURL, mBus);
+    public ProfileRESTClient(String mBaseBackendURL) {
+        super(mBaseBackendURL);
     }
 
     public void registerUserAccount(final String email,
@@ -61,9 +61,7 @@ public class ProfileRESTClient extends AbstractRESTClient {
 
         @Override
         public void success(LoginResponse loginResponse, Response response) {
-            // Post an event based on success on the BUS! :)
-            // mBus.post(new LoginResultEvent(loginResponse));
-            Log.d("Login Response: ", loginResponse.toString());
+            mBus.post(new LoginResultEvent(loginResponse));
         }
 
         @Override

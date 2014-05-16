@@ -2,6 +2,7 @@ package de.tum.mitfahr.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -10,12 +11,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.LoginFailedEvent;
+import de.tum.mitfahr.events.LoginSuccessfulEvent;
 
 public class LoginFragment extends Fragment {
 
@@ -74,8 +81,8 @@ public class LoginFragment extends Fragment {
     public void onLoginPressed(Button button) {
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
-        if(email != ""){
-            TUMitfahrApplication.getApplication(mContext).getProfileService().login(email,password);
+        if (email != "") {
+            TUMitfahrApplication.getApplication(mContext).getProfileService().login(email, password);
         }
     }
 
@@ -86,6 +93,17 @@ public class LoginFragment extends Fragment {
         }
     }
 
+    @Subscribe
+    public void onLoginSuccess(LoginSuccessfulEvent event) {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        startActivity(intent);
+    }
+
+    @Subscribe
+    public void onLoginFailed(LoginFailedEvent event) {
+        Toast.makeText(mContext, "Login failed! Please check credentials and try again.", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -93,7 +111,7 @@ public class LoginFragment extends Fragment {
             mListener = (RegisterClickListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement RegisterClickListener");
         }
     }
 
@@ -103,18 +121,19 @@ public class LoginFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
     public interface RegisterClickListener {
-        // TODO: Update argument type and name
         public void onRegisterClicked();
     }
 

@@ -33,6 +33,54 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public String getCar() {
+        return car;
+    }
+
+    public boolean isStudent() {
+        return isStudent;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public int getRatingAverage() {
+        return ratingAverage;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
     @Override
     public String toString() {
         return "User{" +

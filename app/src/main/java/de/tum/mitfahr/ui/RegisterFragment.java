@@ -14,12 +14,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.Toast;
+
+import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.RegisterFailedEvent;
+import de.tum.mitfahr.events.RegisterSuccessfulEvent;
 
 public class RegisterFragment extends Fragment {
 
@@ -95,11 +101,19 @@ public class RegisterFragment extends Fragment {
             TUMitfahrApplication.getApplication(mContext).getProfileService().register(email, firstName, lastName, department);
 
         }
+    }
 
+    @Subscribe
+    public void onRegisterSuccess(RegisterSuccessfulEvent event){
         if (mListener != null) {
             if (emailText.getText().toString() != "")
                 mListener.onRegistrationFinished(emailText.getText().toString());
         }
+    }
+
+    @Subscribe
+    public void onRegisterFailed(RegisterFailedEvent event){
+        Toast.makeText(mContext, "Registration failed! Please check credentials and try again.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -109,7 +123,7 @@ public class RegisterFragment extends Fragment {
             mListener = (RegistrationFinishedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement RegistrationFinishedListener");
         }
     }
 
@@ -119,15 +133,18 @@ public class RegisterFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * See the Android Training lesson
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * Communicating with Other Fragments for more information.
-     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
     public interface RegistrationFinishedListener {
         // TODO: Update argument type and name
         public void onRegistrationFinished(String email);

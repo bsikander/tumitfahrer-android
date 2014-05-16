@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import de.tum.mitfahr.R;
+import de.tum.mitfahr.TUMitfahrApplication;
 
 
 public class MainActivity extends Activity
@@ -33,7 +34,7 @@ public class MainActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!isSignedIn()) {
+        if (!TUMitfahrApplication.getApplication(this).getProfileService().isLoggedIn()) {
             Intent intent = new Intent(this, LoginRegisterActivity.class);
             startActivity(intent);
             finish();
@@ -48,16 +49,6 @@ public class MainActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-    }
-
-    private boolean isSignedIn() {
-        SharedPreferences prefs = getSharedPreferences("login", 0);
-        String email = prefs.getString("email", null);
-        String password = prefs.getString("password", null);
-        if (email != null && password != null) {
-            return true;
-        }
-        return false;
     }
 
     @Override

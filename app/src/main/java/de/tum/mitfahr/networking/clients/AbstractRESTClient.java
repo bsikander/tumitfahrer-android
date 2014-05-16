@@ -7,6 +7,7 @@ import com.squareup.otto.Bus;
 
 import java.io.IOException;
 
+import de.tum.mitfahr.BusProvider;
 import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -22,9 +23,9 @@ public abstract class AbstractRESTClient implements ErrorHandler {
     String mBaseBackendURL;
     Bus mBus;
 
-    protected AbstractRESTClient(String mBaseBackendURL, Bus mBus) {
+    protected AbstractRESTClient(String mBaseBackendURL) {
         this.mBaseBackendURL = mBaseBackendURL;
-        this.mBus = mBus;
+        this.mBus = BusProvider.getInstance();
         mBus.register(this);
         configureRestAdapter();
     }
