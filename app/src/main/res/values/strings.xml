@@ -3,13 +3,12 @@
 
     <string name="app_name">TUMitfahr-Android</string>
     <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
+    <string name="title_offer_ride">Offer Ride</string>
     <string name="title_section3">Section 3</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
-
     <string name="title_activity_login">LoginActivity</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -20,7 +19,12 @@
     <string name="last_name">Last name</string>
     <string name="faculty">Faculty number</string>
     <string name="title_activity_login_register">LoginRegisterActivity</string>
-
+    <string name="departure">Departure</string>
+    <string name="destination">Destination</string>
+    <string name="meeting_point">Meeting point</string>
+    <string name="free_seats">Free seats</string>
+    <string name="datetime">Pick Date and Time</string>
+    <string name="offer_ride">Offer Ride</string>
 
     <!-- Department array -->
     <string-array name="department_array">
@@ -38,5 +42,7 @@
         <item>TUM School of Education</item>
         <item>TUM School of Management</item>
     </string-array>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

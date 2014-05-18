@@ -66,7 +66,7 @@ public class MainActivity extends Activity
                 mTitle = getString(R.string.title_section1);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section2);
+                mTitle = getString(R.string.title_offer_ride);
                 break;
             case 3:
                 mTitle = getString(R.string.title_section3);
@@ -135,7 +135,17 @@ public class MainActivity extends Activity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_register, container, false);
+            int sectionNumber = this.getArguments().getInt(ARG_SECTION_NUMBER);
+            View rootView = null;
+            switch(sectionNumber) {
+                case 1:
+                    rootView = inflater.inflate(R.layout.fragment_register, container, false);
+                    break;
+                case 2:
+                    rootView = inflater.inflate(R.layout.fragment_offer_ride, container, false);
+                    break;
+            }
+
             return rootView;
         }
 
