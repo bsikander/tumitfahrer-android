@@ -4,6 +4,7 @@ package de.tum.mitfahr.ui;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Context;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,8 +20,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import de.tum.mitfahr.R;
 
@@ -52,6 +54,13 @@ public class NavigationDrawerFragment extends Fragment {
      */
     private ActionBarDrawerToggle mDrawerToggle;
 
+    private enum DrawerType {
+        TYPE1,
+        TYPE2,
+        TYPE3,
+        TYPE4
+    }
+
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
@@ -82,15 +91,16 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated (Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Indicate that this fragment would like to influence the set of actions in the action bar.
         setHasOptionsMenu(true);
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         mDrawerListView = (ListView) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -99,17 +109,107 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                }));
+
+        String navTitles[] = getResources().getStringArray(R.array.navigation_drawer_array);
+        DrawerAdapter adapter = new DrawerAdapter(getActivity());
+        adapter.add(new DrawerItem(navTitles[0], R.drawable.ic_launcher, DrawerType.TYPE1));// Timeline
+        adapter.add(new DrawerItem(navTitles[1], R.drawable.ic_launcher, DrawerType.TYPE2));// Campus
+        adapter.add(new DrawerItem(navTitles[2], R.drawable.ic_launcher, DrawerType.TYPE2));// Activity
+        adapter.add(new DrawerItem(navTitles[3], R.drawable.ic_launcher, DrawerType.TYPE3));// Create
+        adapter.add(new DrawerItem(navTitles[4], R.drawable.ic_launcher, DrawerType.TYPE3));// Search
+        adapter.add(new DrawerItem(navTitles[5], R.drawable.ic_launcher, DrawerType.TYPE4));// MyRides
+        adapter.add(new DrawerItem(navTitles[6], R.drawable.ic_launcher, DrawerType.TYPE4));// Settings
+
+        mDrawerListView.setAdapter(adapter);
+//        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+//                getActionBar().getThemedContext(),
+//                android.R.layout.simple_list_item_activated_1,
+//                android.R.id.text1, getResources().getStringArray(R.array.navigation_drawer_array)));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
+    }
+
+    private class DrawerAdapter extends ArrayAdapter<DrawerItem> {
+
+        public DrawerAdapter(Context context) {
+            super(context, 0);
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            DrawerItem item = getItem(position);
+            switch (item.mType) {
+                case TYPE1:
+                    return 0;
+                case TYPE2:
+                    return 1;
+                case TYPE3:
+                    return 2;
+                case TYPE4:
+                    return 3;
+            }
+            return 0;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 4;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            DrawerItem item = getItem(position);
+            ViewHolder holder;
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_drawer, parent, false);
+                holder = new ViewHolder();
+                holder.attach(convertView);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            switch (item.mType) {
+                case TYPE1:
+                    convertView.setBackgroundResource(R.drawable.list_selector_type1);
+                    break;
+                case TYPE2:
+                    convertView.setBackgroundResource(R.drawable.list_selector_type2);
+                    break;
+                case TYPE3:
+                    convertView.setBackgroundResource(R.drawable.list_selector_type3);
+                    break;
+                case TYPE4:
+                    convertView.setBackgroundResource(R.drawable.list_selector_type4);
+                    break;
+            }
+
+            holder.icon.setImageResource(item.mIconResource);
+            holder.title.setText(item.mTitle);
+            return convertView;
+        }
+
+        private class ViewHolder {
+            public TextView title;
+            public ImageView icon;
+
+            public void attach(View v) {
+                icon = (ImageView) v.findViewById(R.id.menu_icon);
+                title = (TextView) v.findViewById(R.id.menu_title);
+            }
+        }
+    }
+
+    private class DrawerItem {
+        String mTitle;
+        int mIconResource;
+        DrawerType mType;
+
+        private DrawerItem(String mTitle, int mIconResource, DrawerType mType) {
+            this.mTitle = mTitle;
+            this.mIconResource = mIconResource;
+            this.mType = mType;
+        }
     }
 
     public boolean isDrawerOpen() {
@@ -248,12 +348,6 @@ public class NavigationDrawerFragment extends Fragment {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-
-        if (item.getItemId() == R.id.action_example) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 

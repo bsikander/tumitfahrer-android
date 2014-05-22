@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">TUMitfahr-Android</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="app_name">TUMitfahr</string>
+
+    <!-- Navigation Drawer Strings -->
+    <string-array name="navigation_drawer_array">
+        <item>Timeline</item>
+        <item>Campus</item>
+        <item>Activity</item>
+        <item>Create</item>
+        <item>Search</item>
+        <item>MyRides</item>
+        <item>Settings</item>
+    </string-array>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
