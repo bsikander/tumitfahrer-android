@@ -61,6 +61,8 @@ public class RideDetailsFragment extends Fragment {
         if (getArguments() != null) {
             mRide = (Ride) getArguments().getSerializable(RIDE);
         }
+
+        setRetainInstance(true);
     }
 
     @Override

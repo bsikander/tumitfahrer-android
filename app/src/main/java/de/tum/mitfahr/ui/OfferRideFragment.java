@@ -109,6 +109,7 @@ public class OfferRideFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
+        setRetainInstance(true);
     }
 
     @Override

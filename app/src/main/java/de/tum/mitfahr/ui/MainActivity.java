@@ -38,9 +38,9 @@ public class MainActivity extends Activity
             DatePickerFragment.OnFragmentInteractionListener,
             RideDetailsFragment.OnFragmentInteractionListener {
 
-
+    private static final String OFFER_RIDE_FRAGMENT = "offer_ride_fragment";
     private NavigationDrawerFragment mNavigationDrawerFragment;
-    private OfferRideFragment offerRideFragment;
+    private OfferRideFragment mOfferRideFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -66,6 +66,11 @@ public class MainActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        if(getFragmentManager().findFragmentByTag(OFFER_RIDE_FRAGMENT) != null) {
+            mOfferRideFragment = (OfferRideFragment) getFragmentManager().findFragmentByTag(OFFER_RIDE_FRAGMENT);
+        }
+
     }
 
     @Override
@@ -80,9 +85,9 @@ public class MainActivity extends Activity
 
                 break;
             case 1:
-                offerRideFragment = new OfferRideFragment();
+                mOfferRideFragment = new OfferRideFragment();
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, offerRideFragment)
+                        .add(R.id.container, mOfferRideFragment,OFFER_RIDE_FRAGMENT)
                         .commit();
                 break;
         }
@@ -140,11 +145,15 @@ public class MainActivity extends Activity
     }
 
     public void setTime(int hourOfDay, int minute) {
-        offerRideFragment.setTime(hourOfDay, minute);
+        if (mOfferRideFragment != null) {
+            mOfferRideFragment.setTime(hourOfDay, minute);
+        }
     }
 
     public void setDate(int day, int month, int year) {
-        offerRideFragment.setDate(day, month, year);
+        if (mOfferRideFragment != null) {
+            mOfferRideFragment.setDate(day, month, year);
+        }
     }
 
     public void showRideDetails(Ride ride) {
