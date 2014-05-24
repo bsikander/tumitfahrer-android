@@ -23,8 +23,10 @@
     <string name="destination">Destination</string>
     <string name="meeting_point">Meeting point</string>
     <string name="free_seats">Free seats</string>
-    <string name="datetime">Pick Date and Time</string>
+    <string name="pick_time">Pick Time</string>
+    <string name="pick_date">Pick Date</string>
     <string name="offer_ride">Offer Ride</string>
+    <string name="ride_type">Choose the Ride type</string>
 
     <!-- Department array -->
     <string-array name="department_array">
@@ -41,6 +43,12 @@
         <item>Sport and Health Science</item>
         <item>TUM School of Education</item>
         <item>TUM School of Management</item>
+    </string-array>
+
+    <!-- Ride type array -->
+    <string-array name="ride_array">
+        <item>Campus Ride</item>
+        <item>Activity Ride</item>
     </string-array>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>

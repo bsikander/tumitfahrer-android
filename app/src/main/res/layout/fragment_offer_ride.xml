@@ -37,13 +37,23 @@
         android:inputType="number"
         android:hint="@string/free_seats" />
 
-    <EditText
-        android:id="@+id/dateTimeEditText"
+    <Button
+        android:id="@+id/pickTimeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pick_time" />
+
+    <Button
+        android:id="@+id/pickDateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pick_date" />
+
+    <Spinner
+        android:id="@+id/rideTypeSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="datetime"
-        android:hint="@string/datetime"/>
-
+        android:hint="@string/ride_type" />
 
     <Button
         android:id="@+id/offerRideButton"

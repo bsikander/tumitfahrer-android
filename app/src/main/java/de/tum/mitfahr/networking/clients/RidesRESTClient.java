@@ -28,8 +28,9 @@ public class RidesRESTClient extends AbstractRESTClient{
                                     final String freeSeats,
                                     final String dateTime,
                                     final String userAPIKey,
+                                    final int rideType,
                                     final int userId) {
-        OfferRideRequest requestData = new OfferRideRequest(departure, destination, meetingPoint, freeSeats, dateTime, userId);
+        OfferRideRequest requestData = new OfferRideRequest(departure, destination, meetingPoint, freeSeats, dateTime, rideType);
         RidesAPIService ridesAPIService = mRestAdapter.create(RidesAPIService.class);
         ridesAPIService.offerRide(userAPIKey, userId, requestData, offerRideCallback);
     }

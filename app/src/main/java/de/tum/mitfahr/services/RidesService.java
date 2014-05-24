@@ -37,10 +37,10 @@ public class RidesService {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public void offerRide(String departure, String destination, String meetingPoint, String freeSeats, String dateTime) {
+    public void offerRide(String departure, String destination, String meetingPoint, String freeSeats, String dateTime, int rideType) {
         int userId = mSharedPreferences.getInt("id", 0);
         String userAPIKey = mSharedPreferences.getString("api_key", null);
-        mRidesRESTClient.offerRide(departure, destination, meetingPoint, freeSeats, dateTime, userAPIKey, userId);
+        mRidesRESTClient.offerRide(departure, destination, meetingPoint, freeSeats, dateTime, userAPIKey, rideType, userId);
         //TODO : create otto event classes and stuff!
     }
 
@@ -50,7 +50,7 @@ public class RidesService {
         if (null == response.getRide()) {
             mBus.post(new OfferRideFailedEvent());
         } else {
-            mBus.post(new RideAddedEvent());
+            mBus.post(new RideAddedEvent(response.getRide()));
         }
     }
 }

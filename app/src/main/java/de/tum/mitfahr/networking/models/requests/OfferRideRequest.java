@@ -10,15 +10,15 @@ public class OfferRideRequest {
     String meetingPoint;
     String freeSeats;
     String departureTime;
-    int driverId;
+    int rideType;
 
     public OfferRideRequest(String departure, String destination, String meetingPoint,
-                            String freeSeats, String dateTime, int driverId) {
+                            String freeSeats, String dateTime, int rideType) {
         this.departurePlace = departure;
         this.destination = destination;
         this.meetingPoint = meetingPoint;
         this.freeSeats = freeSeats;
         this.departureTime = dateTime;
-        this.driverId = driverId;
+        this.rideType = rideType;
     }
 }

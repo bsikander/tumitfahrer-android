@@ -7,23 +7,40 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.squareup.otto.Subscribe;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.OfferRideFailedEvent;
+import de.tum.mitfahr.events.RideAddedEvent;
+import de.tum.mitfahr.networking.models.Ride;
 
 
 public class MainActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+            OfferRideFragment.OnFragmentInteractionListener,
+            TimePickerFragment.OnFragmentInteractionListener,
+            DatePickerFragment.OnFragmentInteractionListener,
+            RideDetailsFragment.OnFragmentInteractionListener {
 
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    private OfferRideFragment offerRideFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -55,9 +72,20 @@ public class MainActivity extends Activity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+//        fragmentManager.beginTransaction()
+//                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+//                .commit();
+        switch(position) {
+            case 0:
+
+                break;
+            case 1:
+                offerRideFragment = new OfferRideFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, offerRideFragment)
+                        .commit();
+                break;
+        }
     }
 
     public void onSectionAttached(int number) {
@@ -107,6 +135,24 @@ public class MainActivity extends Activity
         return super.onOptionsItemSelected(item);
     }
 
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    public void setTime(int hourOfDay, int minute) {
+        offerRideFragment.setTime(hourOfDay, minute);
+    }
+
+    public void setDate(int day, int month, int year) {
+        offerRideFragment.setDate(day, month, year);
+    }
+
+    public void showRideDetails(Ride ride) {
+        RideDetailsFragment rideDetailsFragment = RideDetailsFragment.newInstance(ride);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container, rideDetailsFragment)
+                .commit();
+    }
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -143,6 +189,7 @@ public class MainActivity extends Activity
                     break;
                 case 2:
                     rootView = inflater.inflate(R.layout.fragment_offer_ride, container, false);
+                    ButterKnife.inject(this, rootView);
                     break;
             }
 
@@ -155,6 +202,9 @@ public class MainActivity extends Activity
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
+
+
+
     }
 
 }
