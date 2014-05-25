@@ -21,8 +21,7 @@ import butterknife.OnClick;
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
-import de.tum.mitfahr.events.LoginFailedEvent;
-import de.tum.mitfahr.events.LoginSuccessfulEvent;
+import de.tum.mitfahr.events.LoginEvent;
 
 public class LoginFragment extends Fragment {
 
@@ -94,14 +93,17 @@ public class LoginFragment extends Fragment {
     }
 
     @Subscribe
-    public void onLoginSuccess(LoginSuccessfulEvent event) {
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        startActivity(intent);
+    public void onLoginSuccess(LoginEvent event) {
+        if (event.getType() == LoginEvent.Type.LOGIN_SUCCESSFUL) {
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
+        }
     }
 
     @Subscribe
-    public void onLoginFailed(LoginFailedEvent event) {
-        Toast.makeText(mContext, "Login failed! Please check credentials and try again.", Toast.LENGTH_SHORT).show();
+    public void onLoginFailed(LoginEvent event) {
+        if (event.getType() == LoginEvent.Type.LOGIN_FAILED)
+            Toast.makeText(mContext, "Login failed! Please check credentials and try again.", Toast.LENGTH_SHORT).show();
     }
 
     @Override

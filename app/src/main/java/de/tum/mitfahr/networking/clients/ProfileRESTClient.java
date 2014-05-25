@@ -6,11 +6,11 @@ import com.squareup.otto.Bus;
 
 import org.json.JSONObject;
 
+import de.tum.mitfahr.events.LoginEvent;
+import de.tum.mitfahr.events.RegisterEvent;
 import de.tum.mitfahr.networking.BackendUtil;
 import de.tum.mitfahr.networking.api.SessionAPIService;
 import de.tum.mitfahr.networking.api.UserAPIService;
-import de.tum.mitfahr.networking.events.LoginResultEvent;
-import de.tum.mitfahr.networking.events.RegisterResultEvent;
 import de.tum.mitfahr.networking.events.RequestFailedEvent;
 import de.tum.mitfahr.networking.models.requests.RegisterRequest;
 import de.tum.mitfahr.networking.models.response.LoginResponse;
@@ -43,7 +43,7 @@ public class ProfileRESTClient extends AbstractRESTClient {
         @Override
         public void success(RegisterResponse registerResponse, Response response) {
             // Post an event based on success on the BUS! :)
-            mBus.post(new RegisterResultEvent(registerResponse));
+            mBus.post(new RegisterEvent(RegisterEvent.Type.REGISTER_RESULT, registerResponse));
         }
 
         @Override
@@ -61,7 +61,7 @@ public class ProfileRESTClient extends AbstractRESTClient {
 
         @Override
         public void success(LoginResponse loginResponse, Response response) {
-            mBus.post(new LoginResultEvent(loginResponse));
+            mBus.post(new LoginEvent(LoginEvent.Type.LOGIN_RESULT, loginResponse));
         }
 
         @Override

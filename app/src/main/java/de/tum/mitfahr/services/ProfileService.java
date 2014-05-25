@@ -9,13 +9,9 @@ import com.squareup.otto.Subscribe;
 
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.TUMitfahrApplication;
-import de.tum.mitfahr.events.LoginFailedEvent;
-import de.tum.mitfahr.events.LoginSuccessfulEvent;
-import de.tum.mitfahr.events.RegisterFailedEvent;
-import de.tum.mitfahr.events.RegisterSuccessfulEvent;
+import de.tum.mitfahr.events.LoginEvent;
+import de.tum.mitfahr.events.RegisterEvent;
 import de.tum.mitfahr.networking.clients.ProfileRESTClient;
-import de.tum.mitfahr.networking.events.LoginResultEvent;
-import de.tum.mitfahr.networking.events.RegisterResultEvent;
 import de.tum.mitfahr.networking.models.User;
 import de.tum.mitfahr.networking.models.response.LoginResponse;
 import de.tum.mitfahr.networking.models.response.RegisterResponse;
@@ -58,23 +54,27 @@ public class ProfileService {
     }
 
     @Subscribe
-    public void onLoginResult(LoginResultEvent result) {
-        LoginResponse response = result.getResponse();
-        if (null == response.getUser()) {
-            mBus.post(new LoginFailedEvent());
-        } else {
-            addUserToSharedPreferences(response.getUser());
-            mBus.post(new LoginSuccessfulEvent());
+    public void onLoginResult(LoginEvent result) {
+        if (result.getType() == LoginEvent.Type.LOGIN_RESULT) {
+            LoginResponse response = result.getResponse();
+            if (null == response.getUser()) {
+                mBus.post(new LoginEvent(LoginEvent.Type.LOGIN_FAILED));
+            } else {
+                addUserToSharedPreferences(response.getUser());
+                mBus.post(new LoginEvent(LoginEvent.Type.LOGIN_SUCCESSFUL));
+            }
         }
     }
 
     @Subscribe
-    public void onRegisterResult(RegisterResultEvent result) {
-        RegisterResponse response = result.getResponse();
-        if (null != response.getStatus() && response.getStatus().equals("bad_request")) {
-            mBus.post(new RegisterFailedEvent());
-        } else {
-            mBus.post(new RegisterSuccessfulEvent());
+    public void onRegisterResult(RegisterEvent result) {
+        if (result.getType() == RegisterEvent.Type.REGISTER_RESULT) {
+            RegisterResponse response = result.getResponse();
+            if (null != response.getStatus() && response.getStatus().equals("bad_request")) {
+                mBus.post(new RegisterEvent(RegisterEvent.Type.REGISTER_FAILED));
+            } else {
+                mBus.post(new RegisterEvent(RegisterEvent.Type.REGISTER_SUCCESSFUL));
+            }
         }
     }
 

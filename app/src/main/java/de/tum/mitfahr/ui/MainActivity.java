@@ -26,8 +26,6 @@ import butterknife.OnClick;
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
-import de.tum.mitfahr.events.OfferRideFailedEvent;
-import de.tum.mitfahr.events.RideAddedEvent;
 import de.tum.mitfahr.networking.models.Ride;
 
 
