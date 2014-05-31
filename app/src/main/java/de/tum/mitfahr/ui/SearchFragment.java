@@ -3,7 +3,6 @@ package de.tum.mitfahr.ui;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -11,20 +10,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import butterknife.ButterKnife;
@@ -33,67 +27,61 @@ import butterknife.OnClick;
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
-import de.tum.mitfahr.events.OfferRideEvent;
+import de.tum.mitfahr.events.SearchEvent;
 import de.tum.mitfahr.networking.models.Ride;
 
-
-public class OfferRideFragment extends Fragment {
+/**
+ * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link SearchFragment.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link SearchFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ *
+ */
+public class SearchFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private Context mContext;
-
-    @InjectView(R.id.departureEditText)
-    EditText departureText;
-
-    @InjectView(R.id.destinationEditText)
-    EditText destinationText;
-
-    @InjectView(R.id.seatsEditText)
-    EditText seatsText;
-
-    @InjectView(R.id.meetingEditText)
-    EditText meetingText;
-
-    @InjectView(R.id.rideTypeSpinner)
-    Spinner rideTypeSpinner;
-
-    //@InjectView(R.id.dateTimeEditText)
-    //EditText dateTimeText;
-
-    @InjectView(R.id.offerRideButton)
-    Button offerRideButton;
+    // TODO: Rename and change types of parameters
+    /*private String mParam1;
+    private String mParam2;*/
 
     private OnFragmentInteractionListener mListener;
+    private Context mContext;
     private int mHourOfDeparture;
     private int mMinuteOfDeparture;
     private int mYearOfDeparture;
     private int mMonthOfDeparture;
     private int mDayOfDeparture;
-    private int mRideType = 0;
-    private ArrayAdapter<CharSequence> mRideTypeAdapter;
+
+    @InjectView(R.id.fromSearchEditText)
+    EditText fromText;
+
+    @InjectView(R.id.toSearchEditText)
+    EditText toText;
+
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * //@param param1 Parameter 1.
-     * //@param param2 Parameter 2.
-     * @return A new instance of fragment OfferRideFragment.
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment SearchFragment.
      */
     // TODO: Rename and change types and number of parameters
-    /*public static OfferRideFragment newInstance(String param1, String param2) {
-        OfferRideFragment fragment = new OfferRideFragment();
+    public static SearchFragment newInstance(String param1, String param2) {
+        SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
-    }*/
-
-    public OfferRideFragment() {
+    }
+    public SearchFragment() {
         // Required empty public constructor
     }
 
@@ -102,60 +90,41 @@ public class OfferRideFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
         setRetainInstance(true);
+        /*if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }*/
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_offer_ride, container, false);
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.inject(this, view);
         return view;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mRideTypeAdapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.ride_array, android.R.layout.simple_spinner_item);
-        rideTypeSpinner.setAdapter(mRideTypeAdapter);
-        rideTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mRideType = position;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-    }
-
-    @OnClick(R.id.offerRideButton)
-    public void onOfferRidePressed(Button button) {
-        String departure = departureText.getText().toString();
-        String destination = destinationText.getText().toString();
-        String meetingPoint = meetingText.getText().toString();
-        String freeSeats = seatsText.getText().toString();
+    @OnClick(R.id.searchButton)
+    public void onSearchPressed(Button button) {
+        String from = fromText.getText().toString();
+        String to = toText.getText().toString();
         String dateTime = getFormattedDate();
-        int rideType = rideTypeSpinner.getSelectedItemPosition();
-        if (departure != "" && destination != "" && meetingPoint != ""
-                && freeSeats != "" && dateTime != "") {
-            TUMitfahrApplication.getApplication(mContext).getRidesService()
-                    .offerRide(departure, destination, meetingPoint, freeSeats, dateTime, rideType);
+        if (from != "" && to != "") {
+            TUMitfahrApplication.getApplication(mContext).getSearchService()
+                    .search(from, to, dateTime);
         }
     }
 
-    @OnClick(R.id.pickTimeButton)
+    @OnClick(R.id.pickTimeSearchButton)
     public void showTimePickerDialog() {
-        DialogFragment newFragment = TimePickerFragment.newInstance("OfferRideFragment");
+        DialogFragment newFragment = TimePickerFragment.newInstance("SearchFragment");
         newFragment.show(getFragmentManager(), "timePicker");
     }
 
-    @OnClick(R.id.pickDateButton)
+    @OnClick(R.id.pickDateSearchButton)
     public void showDatePickerDialog() {
-        DialogFragment newFragment = DatePickerFragment.newInstance("OfferRideFragment");
+        DialogFragment newFragment = DatePickerFragment.newInstance("SearchFragment");
         newFragment.show(getFragmentManager(), "datePicker");
     }
 
@@ -189,19 +158,22 @@ public class OfferRideFragment extends Fragment {
     }
 
     @Subscribe
-    public void onRideAdded(OfferRideEvent event) {
+    public void onSearchResults(SearchEvent event) {
 
-        if(event.getType() == OfferRideEvent.Type.RIDE_ADDED) {
-            mListener.showRideDetails(event.getRide());
+        if(event.getType() == SearchEvent.Type.SEARCH_SUCCESSFUL) {
+            mListener.showSearchResults(event.getResponse().getRides(),
+                    fromText.getText().toString(), toText.getText().toString());
+        }
+        else {
+            Toast.makeText(mContext, "Search Failed.",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
-    @Subscribe
-    public void onOfferRideFailed(OfferRideEvent event) {
-
-        if(event.getType() == OfferRideEvent.Type.OFFER_RIDE_FAILED) {
-            Toast.makeText(mContext, "Offering Ride Failed! Please check credentials and try again.",
-                    Toast.LENGTH_SHORT).show();
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
         }
     }
 
@@ -239,7 +211,7 @@ public class OfferRideFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
+     * <p>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
@@ -247,7 +219,7 @@ public class OfferRideFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
-        public void showRideDetails(Ride ride);
+        public void showSearchResults(ArrayList<Ride> rides, String from, String to);
     }
 
 }

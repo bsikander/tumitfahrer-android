@@ -15,7 +15,7 @@ public class OfferRideEvent extends AbstractEvent {
         RESULT
     }
 
-    OfferRideResponse response;
+    OfferRideResponse mResponse;
     private Ride ride;
 
     public OfferRideEvent(Type type)
@@ -27,7 +27,7 @@ public class OfferRideEvent extends AbstractEvent {
     public OfferRideEvent(Type type, OfferRideResponse response) {
 
         super(type);
-        this.response = response;
+        this.mResponse = response;
     }
 
     // On ride added event
@@ -39,7 +39,7 @@ public class OfferRideEvent extends AbstractEvent {
     }
 
     public OfferRideResponse getResponse() {
-        return response;
+        return mResponse;
     }
 
     public Ride getRide() {

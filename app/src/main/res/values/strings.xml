@@ -27,6 +27,9 @@
     <string name="pick_date">Pick Date</string>
     <string name="offer_ride">Offer Ride</string>
     <string name="ride_type">Choose the Ride type</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="search">Search</string>
 
     <!-- Department array -->
     <string-array name="department_array">

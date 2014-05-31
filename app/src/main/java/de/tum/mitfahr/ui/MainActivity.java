@@ -21,11 +21,14 @@ import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.networking.adapters.SearchAdapter;
 import de.tum.mitfahr.networking.models.Ride;
 
 
@@ -34,11 +37,15 @@ public class MainActivity extends Activity
             OfferRideFragment.OnFragmentInteractionListener,
             TimePickerFragment.OnFragmentInteractionListener,
             DatePickerFragment.OnFragmentInteractionListener,
-            RideDetailsFragment.OnFragmentInteractionListener {
+            RideDetailsFragment.OnFragmentInteractionListener,
+            SearchFragment.OnFragmentInteractionListener,
+            SearchResultsFragment.OnFragmentInteractionListener {
 
     private static final String OFFER_RIDE_FRAGMENT = "offer_ride_fragment";
+    private static final String SEARCH_FRAGMENT = "search_fragment";
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private OfferRideFragment mOfferRideFragment;
+    private SearchFragment mSearchFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -68,6 +75,9 @@ public class MainActivity extends Activity
         if(getFragmentManager().findFragmentByTag(OFFER_RIDE_FRAGMENT) != null) {
             mOfferRideFragment = (OfferRideFragment) getFragmentManager().findFragmentByTag(OFFER_RIDE_FRAGMENT);
         }
+        if(getFragmentManager().findFragmentByTag(SEARCH_FRAGMENT) != null) {
+            mSearchFragment = (SearchFragment) getFragmentManager().findFragmentByTag(SEARCH_FRAGMENT);
+        }
 
     }
 
@@ -80,7 +90,10 @@ public class MainActivity extends Activity
 //                .commit();
         switch(position) {
             case 0:
-
+                mSearchFragment = new SearchFragment();
+                fragmentManager.beginTransaction()
+                        .add(R.id.container, mSearchFragment, SEARCH_FRAGMENT)
+                        .commit();
                 break;
             case 1:
                 mOfferRideFragment = new OfferRideFragment();
@@ -94,7 +107,7 @@ public class MainActivity extends Activity
     public void onSectionAttached(int number) {
         switch (number) {
             case 1:
-                mTitle = getString(R.string.title_section1);
+                mTitle = getString(R.string.search);
                 break;
             case 2:
                 mTitle = getString(R.string.title_offer_ride);
@@ -142,15 +155,23 @@ public class MainActivity extends Activity
 
     }
 
-    public void setTime(int hourOfDay, int minute) {
-        if (mOfferRideFragment != null) {
+    public void setTime(int hourOfDay, int minute, String callingFragment) {
+        if (callingFragment.equals("OfferRideFragment") && mOfferRideFragment != null) {
             mOfferRideFragment.setTime(hourOfDay, minute);
+        }
+
+        if (callingFragment.equals("SearchFragment") && mSearchFragment != null) {
+            mSearchFragment.setTime(hourOfDay, minute);
         }
     }
 
-    public void setDate(int day, int month, int year) {
-        if (mOfferRideFragment != null) {
+    public void setDate(int day, int month, int year, String callingFragment) {
+        if (callingFragment.equals("OfferRideFragment") && mOfferRideFragment != null) {
             mOfferRideFragment.setDate(day, month, year);
+        }
+
+        if (callingFragment.equals("SearchFragment") && mSearchFragment != null) {
+            mSearchFragment.setDate(day, month, year);
         }
     }
 
@@ -159,6 +180,17 @@ public class MainActivity extends Activity
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, rideDetailsFragment)
                 .commit();
+    }
+
+    public void showSearchResults(ArrayList<Ride> rides, String from, String to) {
+        SearchResultsFragment searchResultsFragment = SearchResultsFragment.newInstance(rides, from, to);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container, searchResultsFragment)
+                .commit();
+    }
+
+    public void onFragmentInteraction(String id) {
+
     }
     /**
      * A placeholder fragment containing a simple view.
