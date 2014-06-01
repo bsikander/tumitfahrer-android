@@ -164,7 +164,7 @@ public class SearchFragment extends Fragment {
             mListener.showSearchResults(event.getResponse().getRides(),
                     fromText.getText().toString(), toText.getText().toString());
         }
-        else {
+        else if (event.getType() == SearchEvent.Type.SEARCH_FAILED){
             Toast.makeText(mContext, "Search Failed.",
                     Toast.LENGTH_SHORT).show();
         }
