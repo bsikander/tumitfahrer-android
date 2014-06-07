@@ -160,10 +160,6 @@ public class MainActivity extends FragmentActivity
         }
     }
 
-    public void onSectionAttached(int number) {
-        Log.e("Attached Fragment Number:", String.valueOf(number));
-    }
-
     public void setTitle(CharSequence title) {
         getActionBar().setTitle(title);
     }

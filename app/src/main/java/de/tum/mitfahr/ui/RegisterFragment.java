@@ -103,16 +103,11 @@ public class RegisterFragment extends Fragment {
     }
 
     @Subscribe
-    public void onRegisterSuccess(RegisterEvent event){
+    public void onRegister(RegisterEvent event) {
         if (event.getType() == RegisterEvent.Type.REGISTER_SUCCESSFUL && mListener != null) {
             if (emailText.getText().toString() != "")
                 mListener.onRegistrationFinished(emailText.getText().toString());
-        }
-    }
-
-    @Subscribe
-    public void onRegisterFailed(RegisterEvent event){
-        if (event.getType() == RegisterEvent.Type.REGISTER_FAILED)
+        } else if (event.getType() == RegisterEvent.Type.REGISTER_FAILED)
             Toast.makeText(mContext, "Registration failed! Please check credentials and try again.", Toast.LENGTH_SHORT).show();
     }
 

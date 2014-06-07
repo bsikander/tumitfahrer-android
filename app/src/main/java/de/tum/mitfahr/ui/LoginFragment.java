@@ -92,17 +92,13 @@ public class LoginFragment extends Fragment {
     }
 
     @Subscribe
-    public void onLoginSuccess(LoginEvent event) {
+    public void onLogin(LoginEvent event) {
         if (event.getType() == LoginEvent.Type.LOGIN_SUCCESSFUL) {
             Intent intent = new Intent(getActivity(), MainActivity.class);
             startActivity(intent);
-        }
-    }
-
-    @Subscribe
-    public void onLoginFailed(LoginEvent event) {
-        if (event.getType() == LoginEvent.Type.LOGIN_FAILED)
+        } else if (event.getType() == LoginEvent.Type.LOGIN_FAILED)
             Toast.makeText(mContext, "Login failed! Please check credentials and try again.", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override

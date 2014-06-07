@@ -88,7 +88,7 @@ public class TimelineFragment extends AbstractNavigationFragment {
 
     public class TimelinePagerAdapter extends FragmentPagerAdapter {
 
-        private final String[] TITLES = {"Featured", "Around Me", "All"};
+        private final String[] TITLES = {"All", "Around Me", "My Activity"};
 
         public TimelinePagerAdapter(FragmentManager fm) {
             super(fm);
@@ -113,6 +113,5 @@ public class TimelineFragment extends AbstractNavigationFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
     }
 }
