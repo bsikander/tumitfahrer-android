@@ -28,6 +28,12 @@ public abstract class AbstractNavigationFragment extends Fragment {
     private int mCurrentColor = 0xFF666666;
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {

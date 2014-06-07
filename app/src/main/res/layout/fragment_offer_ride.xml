@@ -1,0 +1,64 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:layout_height="match_parent">
+
+    <!-- TODO: Update blank fragment layout -->
+    <EditText
+        android:id="@+id/departureEditText"
+        android:inputType="textAutoComplete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/departure" />
+
+    <EditText
+        android:id="@+id/destinationEditText"
+        android:inputType="textAutoComplete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/destination" />
+
+    <EditText
+        android:id="@+id/meetingEditText"
+        android:inputType="textAutoComplete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/meeting_point" />
+
+
+    <EditText
+        android:id="@+id/seatsEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:hint="@string/free_seats" />
+
+    <Button
+        android:id="@+id/pickTimeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pick_time" />
+
+    <Button
+        android:id="@+id/pickDateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pick_date" />
+
+    <Spinner
+        android:id="@+id/rideTypeSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/ride_type" />
+
+    <Button
+        android:id="@+id/offerRideButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/offer_ride" />
+
+</LinearLayout>

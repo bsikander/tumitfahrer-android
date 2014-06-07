@@ -87,7 +87,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+        //selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -121,10 +121,6 @@ public class NavigationDrawerFragment extends Fragment {
         adapter.add(new DrawerItem(navTitles[6], R.drawable.ic_launcher, DrawerType.TYPE4));// Settings
 
         mDrawerListView.setAdapter(adapter);
-//        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-//                getActionBar().getThemedContext(),
-//                android.R.layout.simple_list_item_activated_1,
-//                android.R.id.text1, getResources().getStringArray(R.array.navigation_drawer_array)));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -169,18 +165,19 @@ public class NavigationDrawerFragment extends Fragment {
                 holder = (ViewHolder) convertView.getTag();
             }
 
+
             switch (item.mType) {
                 case TYPE1:
-                    convertView.setBackgroundResource(R.drawable.list_selector_type1);
+                    convertView.setBackgroundResource(R.drawable.drawer_activated_background_type1);
                     break;
                 case TYPE2:
-                    convertView.setBackgroundResource(R.drawable.list_selector_type2);
+                    convertView.setBackgroundResource(R.drawable.drawer_activated_background_type2);
                     break;
                 case TYPE3:
-                    convertView.setBackgroundResource(R.drawable.list_selector_type3);
+                    convertView.setBackgroundResource(R.drawable.drawer_activated_background_type3);
                     break;
                 case TYPE4:
-                    convertView.setBackgroundResource(R.drawable.list_selector_type4);
+                    convertView.setBackgroundResource(R.drawable.drawer_activated_background_type4);
                     break;
             }
 
