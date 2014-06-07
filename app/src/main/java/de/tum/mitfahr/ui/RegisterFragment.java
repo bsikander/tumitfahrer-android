@@ -24,8 +24,7 @@ import butterknife.OnClick;
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
-import de.tum.mitfahr.events.RegisterFailedEvent;
-import de.tum.mitfahr.events.RegisterSuccessfulEvent;
+import de.tum.mitfahr.events.RegisterEvent;
 
 public class RegisterFragment extends Fragment {
 
@@ -104,16 +103,17 @@ public class RegisterFragment extends Fragment {
     }
 
     @Subscribe
-    public void onRegisterSuccess(RegisterSuccessfulEvent event){
-        if (mListener != null) {
+    public void onRegisterSuccess(RegisterEvent event){
+        if (event.getType() == RegisterEvent.Type.REGISTER_SUCCESSFUL && mListener != null) {
             if (emailText.getText().toString() != "")
                 mListener.onRegistrationFinished(emailText.getText().toString());
         }
     }
 
     @Subscribe
-    public void onRegisterFailed(RegisterFailedEvent event){
-        Toast.makeText(mContext, "Registration failed! Please check credentials and try again.", Toast.LENGTH_SHORT).show();
+    public void onRegisterFailed(RegisterEvent event){
+        if (event.getType() == RegisterEvent.Type.REGISTER_FAILED)
+            Toast.makeText(mContext, "Registration failed! Please check credentials and try again.", Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -9,15 +9,8 @@ import com.squareup.otto.Subscribe;
 
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.TUMitfahrApplication;
-import de.tum.mitfahr.events.LoginFailedEvent;
-import de.tum.mitfahr.events.LoginSuccessfulEvent;
-import de.tum.mitfahr.events.OfferRideFailedEvent;
-import de.tum.mitfahr.events.RideAddedEvent;
-import de.tum.mitfahr.networking.clients.ProfileRESTClient;
+import de.tum.mitfahr.events.OfferRideEvent;
 import de.tum.mitfahr.networking.clients.RidesRESTClient;
-import de.tum.mitfahr.networking.events.LoginResultEvent;
-import de.tum.mitfahr.networking.events.OfferRideResultEvent;
-import de.tum.mitfahr.networking.models.response.LoginResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
 
 /**
@@ -45,12 +38,14 @@ public class RidesService {
     }
 
     @Subscribe
-    public void onOfferRidesResult(OfferRideResultEvent result) {
-        OfferRideResponse response = result.getResponse();
-        if (null == response.getRide()) {
-            mBus.post(new OfferRideFailedEvent());
-        } else {
-            mBus.post(new RideAddedEvent(response.getRide()));
+    public void onOfferRidesResult(OfferRideEvent result) {
+        if(result.getType() == OfferRideEvent.Type.RESULT) {
+            OfferRideResponse response = result.getResponse();
+            if (null == response.getRide()) {
+                mBus.post(new OfferRideEvent(OfferRideEvent.Type.OFFER_RIDE_FAILED));
+            } else {
+                mBus.post(new OfferRideEvent(OfferRideEvent.Type.RIDE_ADDED, response.getRide()));
+            }
         }
     }
 }

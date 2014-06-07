@@ -33,8 +33,7 @@ import butterknife.OnClick;
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
-import de.tum.mitfahr.events.OfferRideFailedEvent;
-import de.tum.mitfahr.events.RideAddedEvent;
+import de.tum.mitfahr.events.OfferRideEvent;
 import de.tum.mitfahr.networking.models.Ride;
 
 /**
@@ -196,14 +195,20 @@ public class OfferRideFragment extends Fragment {
     }
 
     @Subscribe
-    public void onRideAdded(RideAddedEvent event) {
-        mListener.showRideDetails(event.getRide());
+    public void onRideAdded(OfferRideEvent event) {
+
+        if(event.getType() == OfferRideEvent.Type.RIDE_ADDED) {
+            mListener.showRideDetails(event.getRide());
+        }
     }
 
     @Subscribe
-    public void onOfferRideFailed(OfferRideFailedEvent event) {
-        Toast.makeText(mContext, "Offering Ride Failed! Please check credentials and try again.",
-                Toast.LENGTH_SHORT).show();
+    public void onOfferRideFailed(OfferRideEvent event) {
+
+        if(event.getType() == OfferRideEvent.Type.OFFER_RIDE_FAILED) {
+            Toast.makeText(mContext, "Offering Ride Failed! Please check credentials and try again.",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

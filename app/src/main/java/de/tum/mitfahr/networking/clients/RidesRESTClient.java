@@ -1,13 +1,9 @@
 package de.tum.mitfahr.networking.clients;
 
-import de.tum.mitfahr.networking.BackendUtil;
+import de.tum.mitfahr.events.OfferRideEvent;
 import de.tum.mitfahr.networking.api.RidesAPIService;
-import de.tum.mitfahr.networking.api.SessionAPIService;
-import de.tum.mitfahr.networking.events.LoginResultEvent;
-import de.tum.mitfahr.networking.events.OfferRideResultEvent;
 import de.tum.mitfahr.networking.events.RequestFailedEvent;
 import de.tum.mitfahr.networking.models.requests.OfferRideRequest;
-import de.tum.mitfahr.networking.models.response.LoginResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -39,7 +35,7 @@ public class RidesRESTClient extends AbstractRESTClient{
 
         @Override
         public void success(OfferRideResponse offerRideResponse, Response response) {
-            mBus.post(new OfferRideResultEvent(offerRideResponse));
+            mBus.post(new OfferRideEvent(OfferRideEvent.Type.RESULT, offerRideResponse));
         }
 
         @Override
