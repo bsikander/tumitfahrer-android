@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="de.tum.mitfahr" >
+    package="de.tum.mitfahr">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:name="de.tum.mitfahr.TUMitfahrApplication"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name="de.tum.mitfahr.ui.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,8 +24,7 @@
             android:name="de.tum.mitfahr.ui.LoginRegisterActivity"
             android:theme="@style/NoActionBarTheme"
             android:noHistory="true"
-            android:label="@string/title_activity_login_register" >
-        </activity>
+            android:label="@string/title_activity_login_register"></activity>
     </application>
 
 </manifest>

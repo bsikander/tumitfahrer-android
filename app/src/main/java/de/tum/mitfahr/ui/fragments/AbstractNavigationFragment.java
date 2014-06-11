@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.ui.MainActivity;
 import de.tum.mitfahr.util.ActionBarColorChangeListener;
@@ -79,6 +80,18 @@ public abstract class AbstractNavigationFragment extends Fragment {
 
         mCurrentColor = newColor;
         ((MainActivity) getActivity()).onActionBarColorChanged(newColor);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
     }
 
     private Drawable.Callback drawableCallback = new Drawable.Callback() {

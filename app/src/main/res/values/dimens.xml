@@ -9,4 +9,8 @@
 
     <dimen name="default_padding">16dp</dimen>
 
+    <dimen name="sticky_height">120dp</dimen>
+    <dimen name="top_height">150dp</dimen>
+    <dimen name="page_margin">16dp</dimen>
+
 </resources>

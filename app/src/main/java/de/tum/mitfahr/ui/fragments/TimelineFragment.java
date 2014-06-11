@@ -43,7 +43,6 @@ public class TimelineFragment extends AbstractNavigationFragment {
     ViewPager pager;
 
     private TimelinePagerAdapter adapter;
-    private ActionBarColorChangeListener mListener;
 
     public TimelineFragment() {
     }
@@ -56,14 +55,14 @@ public class TimelineFragment extends AbstractNavigationFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_timeline, container, false);
-        ButterKnife.inject(this, view);
+        View rootView = inflater.inflate(R.layout.fragment_timeline, container, false);
+        ButterKnife.inject(this, rootView);
         adapter = new TimelinePagerAdapter(getChildFragmentManager());
         pager.setAdapter(adapter);
         tabs.setViewPager(pager);
         changeActionBarColor(getResources().getColor(R.color.blue1));
         showTabs();
-        return view;
+        return rootView;
     }
 
     @Override

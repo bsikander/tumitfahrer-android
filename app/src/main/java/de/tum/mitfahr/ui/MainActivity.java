@@ -1,17 +1,15 @@
 package de.tum.mitfahr.ui;
 
 import android.app.ActionBar;
-import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
+
+import java.util.ArrayList;
 
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;

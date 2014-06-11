@@ -1,7 +1,47 @@
-<?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
     android:layout_height="match_parent">
 
+    <!-- TODO: Update blank fragment layout -->
+    <EditText
+        android:id="@+id/fromSearchEditText"
+        android:inputType="textAutoComplete"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="8dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/from" />
+
+    <EditText
+        android:id="@+id/toSearchEditText"
+        android:inputType="textAutoComplete"
+        android:layout_marginBottom="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/to" />
+
+    <Button
+        android:id="@+id/pickTimeSearchButton"
+        android:layout_marginBottom="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pick_time" />
+
+    <Button
+        android:id="@+id/pickDateSearchButton"
+        android:layout_marginBottom="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pick_date" />
+
+    <Button
+        android:id="@+id/searchButton"
+        android:layout_marginBottom="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/search" />
 </LinearLayout>

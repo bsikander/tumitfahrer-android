@@ -36,14 +36,7 @@ import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.OfferRideEvent;
 import de.tum.mitfahr.networking.models.Ride;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OfferRideFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link OfferRideFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class OfferRideFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -141,7 +134,6 @@ public class OfferRideFragment extends Fragment {
 
     @OnClick(R.id.offerRideButton)
     public void onOfferRidePressed(Button button) {
-        Log.w("********", "Btn Pressed");
         String departure = departureText.getText().toString();
         String destination = destinationText.getText().toString();
         String meetingPoint = meetingText.getText().toString();
@@ -157,13 +149,13 @@ public class OfferRideFragment extends Fragment {
 
     @OnClick(R.id.pickTimeButton)
     public void showTimePickerDialog() {
-        DialogFragment newFragment = new TimePickerFragment();
+        DialogFragment newFragment = TimePickerFragment.newInstance("OfferRideFragment");
         newFragment.show(getFragmentManager(), "timePicker");
     }
 
     @OnClick(R.id.pickDateButton)
     public void showDatePickerDialog() {
-        DialogFragment newFragment = new DatePickerFragment();
+        DialogFragment newFragment = DatePickerFragment.newInstance("OfferRideFragment");
         newFragment.show(getFragmentManager(), "datePicker");
     }
 
@@ -196,7 +188,6 @@ public class OfferRideFragment extends Fragment {
 
     @Subscribe
     public void onRideAdded(OfferRideEvent event) {
-
         if(event.getType() == OfferRideEvent.Type.RIDE_ADDED) {
             mListener.showRideDetails(event.getRide());
         }
