@@ -9,8 +9,12 @@ import com.squareup.otto.Subscribe;
 
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.DeleteRideEvent;
+import de.tum.mitfahr.events.MyRidesEvent;
 import de.tum.mitfahr.events.OfferRideEvent;
 import de.tum.mitfahr.networking.clients.RidesRESTClient;
+import de.tum.mitfahr.networking.models.response.DeleteRideResponse;
+import de.tum.mitfahr.networking.models.response.MyRidesResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
 
 /**
@@ -47,5 +51,33 @@ public class RidesService {
                 mBus.post(new OfferRideEvent(OfferRideEvent.Type.RIDE_ADDED, response.getRide()));
             }
         }
+    }
+
+    public void getMyRides() {
+        int userId = mSharedPreferences.getInt("id", 0);
+        mRidesRESTClient.getMyRides(userId);
+    }
+
+    @Subscribe
+    public void onGetMyRidesResult(MyRidesEvent result) {
+        if(result.getType() == OfferRideEvent.Type.RESULT) {
+            MyRidesResponse response = result.getResponse();
+            if (null == response.getRides()) {
+                mBus.post(new MyRidesEvent(MyRidesEvent.Type.GET_FAILED, response));
+            } else {
+                mBus.post(new MyRidesEvent(MyRidesEvent.Type.GET_FAILED, response));
+            }
+        }
+    }
+
+    public void deleteRide(int rideId) {
+        int userId = mSharedPreferences.getInt("id", 0);
+        String userAPIKey = mSharedPreferences.getString("api_key", null);
+        mRidesRESTClient.deleteRide(userAPIKey, userId, rideId);
+    }
+
+    @Subscribe
+    public void onDeleteResult(DeleteRideEvent result) {
+        //TODO post events
     }
 }

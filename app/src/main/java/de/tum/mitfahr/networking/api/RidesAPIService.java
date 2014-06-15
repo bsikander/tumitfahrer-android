@@ -1,9 +1,13 @@
 package de.tum.mitfahr.networking.api;
 
 import de.tum.mitfahr.networking.models.requests.OfferRideRequest;
+import de.tum.mitfahr.networking.models.response.DeleteRideResponse;
+import de.tum.mitfahr.networking.models.response.MyRidesResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
 import retrofit.Callback;
 import retrofit.http.Body;
+import retrofit.http.DELETE;
+import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.Path;
@@ -19,5 +23,19 @@ public interface RidesAPIService {
             @Path("id") int userId,
             @Body OfferRideRequest ride,
             Callback<OfferRideResponse> callback
+    );
+
+    @GET("/users/{id}/rides")
+    public void getMyRides(
+            @Path("id") int userId,
+            Callback<MyRidesResponse> callback
+    );
+
+    @DELETE("/users/{userId}/rides/{rideId}")
+    public void deleteRide(
+            @Header("apiKey") String apiKey,
+            @Path("userId") int userId,
+            @Path("rideId") int rideId,
+            Callback<DeleteRideResponse> callback
     );
 }
