@@ -1,7 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:layout_height="200dp">
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:scaleType="centerCrop"
+            android:id="@+id/profile_big_blurred"
+            android:paddingTop="?android:attr/actionBarSize"
+            android:layout_height="fill_parent" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content">
+
+            <de.tum.mitfahr.widget.CircularImageView
+                android:layout_width="75dp"
+                android:layout_gravity="center"
+                android:layout_margin="12dp"
+                android:layout_height="75dp"
+                android:src="@drawable/profile_placeholder"
+                app:border_color="@color/white"
+                app:border_width="3dp"
+                app:shadow="true"
+                android:id="@+id/profile_image" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:text="Olivia Wilde"
+                android:id="@+id/profile_name_text"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceLargeInverse"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:id="@+id/profile_faculty_text"
+                android:text="TUM Informatics"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
+    </FrameLayout>
 
 </LinearLayout>

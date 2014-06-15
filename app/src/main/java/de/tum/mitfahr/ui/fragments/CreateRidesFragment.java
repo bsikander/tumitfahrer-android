@@ -1,11 +1,7 @@
 package de.tum.mitfahr.ui.fragments;
 
 import android.app.Activity;
-import android.app.DialogFragment;
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,10 +30,6 @@ import butterknife.OnClick;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.OfferRideEvent;
-import de.tum.mitfahr.networking.models.Ride;
-import de.tum.mitfahr.ui.DatePickerFragment;
-import de.tum.mitfahr.ui.MainActivity;
-import de.tum.mitfahr.ui.TimePickerFragment;
 
 /**
  * Created by abhijith on 22/05/14.

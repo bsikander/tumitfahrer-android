@@ -6,6 +6,8 @@
     <color name="blue4">#FF53A7d5</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#FF202020</color>
+    <color name="white_faded">#AAFFFFFF</color>
+    <color name="transparent">#00000000</color>
     <color name="window_background">#FFE5E5E5</color>
 
 </resources>

@@ -1,7 +1,6 @@
 package de.tum.mitfahr.ui.fragments;
 
 import android.app.Activity;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,8 +15,6 @@ import com.astuetz.PagerSlidingTabStrip;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.tum.mitfahr.R;
-import de.tum.mitfahr.ui.MainActivity;
-import de.tum.mitfahr.util.ActionBarColorChangeListener;
 
 /**
  * Created by abhijith on 22/05/14.

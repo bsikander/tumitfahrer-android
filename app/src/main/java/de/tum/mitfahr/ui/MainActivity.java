@@ -19,6 +19,7 @@ import de.tum.mitfahr.ui.fragments.ActivityRidesFragment;
 import de.tum.mitfahr.ui.fragments.CampusRidesFragment;
 import de.tum.mitfahr.ui.fragments.CreateRidesFragment;
 import de.tum.mitfahr.ui.fragments.MyRidesFragment;
+import de.tum.mitfahr.ui.fragments.ProfileFragment;
 import de.tum.mitfahr.ui.fragments.SearchFragment;
 import de.tum.mitfahr.ui.fragments.SettingsFragment;
 import de.tum.mitfahr.ui.fragments.TimelineFragment;
@@ -63,7 +64,7 @@ public class MainActivity extends FragmentActivity
 
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
-            onNavigationDrawerItemSelected(0);
+            onNavigationDrawerItemSelected(1);
         } else {
             mTitle = savedInstanceState.getCharSequence("title");
             restoreActionBar();
@@ -104,52 +105,62 @@ public class MainActivity extends FragmentActivity
         if (position == mCurrentPosition)
             return;
         mCurrentPosition = position;
-        mTitle = mNavigationTitleArray[position];
+        if (position == 0)
+            mTitle = "";
+        else
+            mTitle = mNavigationTitleArray[position - 1];
         restoreActionBar();
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position) {
             case 0:
+                mCurrentFragment = ProfileFragment.newInstance(position + 1);
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, mCurrentFragment, TAG_TIMELINE_FRAGMENT)
+                        .commit();
+                break;
+
+            case 1:
                 mCurrentFragment = TimelineFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, mCurrentFragment, TAG_TIMELINE_FRAGMENT)
                         .commit();
                 break;
-            case 1:
+            case 2:
                 mCurrentFragment = CampusRidesFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, mCurrentFragment, TAG_CAMPUS_RIDES_FRAGMENT)
                         .commit();
                 break;
 
-            case 2:
+            case 3:
                 mCurrentFragment = ActivityRidesFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, mCurrentFragment, TAG_ACTIVITY_RIDES_FRAGMENT)
                         .commit();
                 break;
 
-            case 3:
+            case 4:
                 mCurrentFragment = CreateRidesFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, mCurrentFragment, TAG_CREATE_RIDE_FRAGMENT)
                         .commit();
                 break;
 
-            case 4:
+            case 5:
                 mCurrentFragment = SearchFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, mCurrentFragment, TAG_SEARCH_FRAGMENT)
                         .commit();
                 break;
 
-            case 5:
+            case 6:
                 mCurrentFragment = MyRidesFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, mCurrentFragment, TAG_MY_RIDES_FRAGMENT)
                         .commit();
                 break;
 
-            case 6:
+            case 7:
                 mCurrentFragment = SettingsFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, mCurrentFragment, TAG_SETTINGS_FRAGMENT)

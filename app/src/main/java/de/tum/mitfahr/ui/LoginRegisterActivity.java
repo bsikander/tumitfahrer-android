@@ -19,6 +19,7 @@ public class LoginRegisterActivity extends Activity implements LoginFragment.Reg
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setBackgroundDrawableResource(R.drawable.login_bg);
         setContentView(R.layout.activity_login_register);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()

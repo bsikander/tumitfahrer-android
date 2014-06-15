@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -64,6 +65,7 @@ public class NavigationDrawerFragment extends Fragment {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
+    private View mProfileHeaderView;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
@@ -87,7 +89,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         // Select either the default item (0) or the last selected item.
-        //selectItem(mCurrentSelectedPosition);
+        selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -103,6 +105,8 @@ public class NavigationDrawerFragment extends Fragment {
                              Bundle savedInstanceState) {
         mDrawerListView = (ListView) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
+        mProfileHeaderView = (View) inflater.inflate(R.layout.header_item_profile_drawer, null);
+        mDrawerListView.addHeaderView(mProfileHeaderView);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -112,13 +116,13 @@ public class NavigationDrawerFragment extends Fragment {
 
         String navTitles[] = getResources().getStringArray(R.array.navigation_drawer_array);
         DrawerAdapter adapter = new DrawerAdapter(getActivity());
-        adapter.add(new DrawerItem(navTitles[0], R.drawable.ic_launcher, DrawerType.TYPE1));// Timeline
-        adapter.add(new DrawerItem(navTitles[1], R.drawable.ic_launcher, DrawerType.TYPE2));// Campus
-        adapter.add(new DrawerItem(navTitles[2], R.drawable.ic_launcher, DrawerType.TYPE2));// Activity
-        adapter.add(new DrawerItem(navTitles[3], R.drawable.ic_launcher, DrawerType.TYPE3));// Create
-        adapter.add(new DrawerItem(navTitles[4], R.drawable.ic_launcher, DrawerType.TYPE3));// Search
-        adapter.add(new DrawerItem(navTitles[5], R.drawable.ic_launcher, DrawerType.TYPE4));// MyRides
-        adapter.add(new DrawerItem(navTitles[6], R.drawable.ic_launcher, DrawerType.TYPE4));// Settings
+        adapter.add(new DrawerItem(navTitles[0], R.drawable.placeholder, DrawerType.TYPE1));// Timeline
+        adapter.add(new DrawerItem(navTitles[1], R.drawable.placeholder, DrawerType.TYPE2));// Campus
+        adapter.add(new DrawerItem(navTitles[2], R.drawable.placeholder, DrawerType.TYPE2));// Activity
+        adapter.add(new DrawerItem(navTitles[3], R.drawable.placeholder, DrawerType.TYPE3));// Create
+        adapter.add(new DrawerItem(navTitles[4], R.drawable.placeholder, DrawerType.TYPE3));// Search
+        adapter.add(new DrawerItem(navTitles[5], R.drawable.placeholder, DrawerType.TYPE4));// MyRides
+        adapter.add(new DrawerItem(navTitles[6], R.drawable.placeholder, DrawerType.TYPE4));// Settings
 
         mDrawerListView.setAdapter(adapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
@@ -181,17 +185,15 @@ public class NavigationDrawerFragment extends Fragment {
                     break;
             }
 
-            holder.icon.setImageResource(item.mIconResource);
             holder.title.setText(item.mTitle);
+            holder.title.setCompoundDrawablesWithIntrinsicBounds(item.mIconResource, 0, 0, 0);
             return convertView;
         }
 
         private class ViewHolder {
             public TextView title;
-            public ImageView icon;
 
             public void attach(View v) {
-                icon = (ImageView) v.findViewById(R.id.menu_icon);
                 title = (TextView) v.findViewById(R.id.menu_title);
             }
         }

@@ -9,30 +9,50 @@
 
     <EditText
         android:id="@+id/emailEditText"
+        style="@style/BorderedTextBox"
+        android:drawableLeft="@drawable/placeholder"
+        android:drawablePadding="16dp"
         android:inputType="textEmailAddress"
+        android:layout_marginTop="16dp"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/email" />
 
     <EditText
+        style="@style/BorderedTextBox"
+        android:layout_marginTop="16dp"
+
+        android:drawableLeft="@drawable/placeholder"
+        android:drawablePadding="16dp"
         android:id="@+id/firstNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/first_name" />
 
     <EditText
+        style="@style/BorderedTextBox"
+        android:layout_marginTop="16dp"
+
+        android:drawableLeft="@drawable/placeholder"
+        android:drawablePadding="16dp"
         android:id="@+id/lastNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/last_name" />
 
     <Spinner
+        style="@style/BorderedSpinner"
+        android:layout_marginTop="16dp"
         android:id="@+id/departmentSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/faculty" />
+        android:hint="@string/faculty"
+        android:spinnerMode="dropdown" />
 
     <Button
+        style="@style/FlatButton"
+        android:layout_marginTop="16dp"
         android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

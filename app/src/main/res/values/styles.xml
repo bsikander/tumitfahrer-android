@@ -6,10 +6,10 @@
         <item name="android:windowBackground">@color/window_background</item>
         <item name="android:actionBarStyle">@style/MyActionBar</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowActionBarOverlay">true</item>
 
         <item name="android:listViewStyle">@style/MyListView</item>
         <item name="android:listViewWhiteStyle">@style/MyListView.White</item>
-        <item name="android:spinnerItemStyle">@style/MySpinnerItem</item>
         <item name="android:activatedBackgroundIndicator">
             @drawable/tumitfahr_activated_background_holo_light
         </item>
@@ -48,5 +48,26 @@
         <item name="android:gravity">center</item>
         <item name="android:textAppearance">?android:textAppearanceLarge</item>
     </style>
+
+    <style name="BorderedTextBox">
+        <item name="android:background">@drawable/edittext_bordered_white</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColorHint">@color/white_faded</item>
+    </style>
+
+    <style name="BorderedSpinner">
+        <item name="android:background">@drawable/spinner_bordered_white</item>
+        <item name="android:padding">12dp</item>
+    </style>
+
+
+    <style name="FlatButton">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/button_flat_blue1</item>
+
+    </style>
+
 
 </resources>

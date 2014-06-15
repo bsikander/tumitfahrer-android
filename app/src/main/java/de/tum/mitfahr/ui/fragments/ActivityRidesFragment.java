@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.tum.mitfahr.R;
-import de.tum.mitfahr.ui.MainActivity;
 
 /**
  * Created by abhijith on 22/05/14.

@@ -9,12 +9,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import de.tum.mitfahr.BusProvider;
-import de.tum.mitfahr.R;
 import de.tum.mitfahr.ui.MainActivity;
 import de.tum.mitfahr.util.ActionBarColorChangeListener;
 
@@ -61,7 +57,7 @@ public abstract class AbstractNavigationFragment extends Fragment {
         } else {
 
             TransitionDrawable td = new TransitionDrawable(new Drawable[]{oldBackground, newDrawable});
-
+            td.setCrossFadeEnabled(true);
             // workaround for broken ActionBarContainer drawable handling on
             // pre-API 17 builds
             // https://github.com/android/platform_frameworks_base/commit/a7cc06d82e45918c37429a59b14545c6a57db4e4

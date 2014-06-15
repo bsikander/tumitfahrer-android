@@ -6,18 +6,13 @@
     android:background="@drawable/tumitfahr_activated_background_holo_light"
     android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/menu_icon"
-            android:layout_width="48dp"
-            android:layout_height="64dp"
-            android:padding="@dimen/default_padding"
-            android:src="@drawable/ic_launcher" />
-
         <TextView
             android:id="@+id/menu_title"
+            android:drawableLeft="@drawable/placeholder"
             android:layout_width="match_parent"
+            android:layout_marginLeft="20dp"
+            android:drawablePadding="16dp"
             android:layout_height="64dp"
-            android:layout_toRightOf="@+id/menu_icon"
             android:gravity="center_vertical"
             android:paddingRight="@dimen/default_padding"
             android:textSize="18sp"

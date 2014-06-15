@@ -3,7 +3,6 @@ package de.tum.mitfahr.ui;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
@@ -71,8 +69,9 @@ public class RegisterFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mDepartmentAdapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.department_array, android.R.layout.simple_spinner_item);
+                R.array.department_array, R.layout.spinner_item_white);
         departmentSpinner.setAdapter(mDepartmentAdapter);
+        mDepartmentAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         departmentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

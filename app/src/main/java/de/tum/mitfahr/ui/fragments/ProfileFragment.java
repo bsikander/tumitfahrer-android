@@ -1,25 +1,34 @@
 package de.tum.mitfahr.ui.fragments;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import de.tum.mitfahr.R;
-import de.tum.mitfahr.ui.MainActivity;
+import de.tum.mitfahr.widget.CircularImageView;
 
 /**
  * Created by abhijith on 22/05/14.
  */
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends AbstractNavigationFragment {
 
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    private static final String ARG_SECTION_NUMBER = "section_number";
+    @InjectView(R.id.profile_big_blurred)
+    ImageView blurredProfileImage;
+
+    @InjectView(R.id.profile_image)
+    CircularImageView profileImage;
+
+    @InjectView(R.id.profile_faculty_text)
+    TextView facultyText;
+
+    @InjectView(R.id.profile_name_text)
+    TextView profileNameText;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -40,6 +49,9 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+        ButterKnife.inject(this, rootView);
+        blurredProfileImage.setImageResource(R.drawable.profile_placeholder);
+        changeActionBarColor(getResources().getColor(R.color.transparent));
         return rootView;
     }
 
