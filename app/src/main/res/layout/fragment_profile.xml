@@ -40,6 +40,10 @@
                 android:text="Olivia Wilde"
                 android:id="@+id/profile_name_text"
                 android:gravity="center"
+                android:shadowColor="@color/text_shadow"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
                 android:textAppearance="?android:attr/textAppearanceLargeInverse"
                 android:layout_height="wrap_content" />
 
@@ -48,6 +52,10 @@
                 android:id="@+id/profile_faculty_text"
                 android:text="TUM Informatics"
                 android:gravity="center"
+                android:shadowColor="@color/text_shadow"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
                 android:layout_height="wrap_content" />
         </LinearLayout>

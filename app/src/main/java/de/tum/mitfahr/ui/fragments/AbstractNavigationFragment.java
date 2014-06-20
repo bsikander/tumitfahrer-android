@@ -42,6 +42,12 @@ public abstract class AbstractNavigationFragment extends Fragment {
         mCurrentColor = ((MainActivity) activity).getCurrentActionBarColor();
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
     public void changeActionBarColor(int newColor) {
 
         Drawable newDrawable = new ColorDrawable(newColor);

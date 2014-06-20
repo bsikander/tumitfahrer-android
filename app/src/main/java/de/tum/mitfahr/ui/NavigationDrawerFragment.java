@@ -1,18 +1,18 @@
 package de.tum.mitfahr.ui;
 
 
-import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -66,8 +65,9 @@ public class NavigationDrawerFragment extends Fragment {
     private ListView mDrawerListView;
     private View mFragmentContainerView;
     private View mProfileHeaderView;
+    private DrawerAdapter mAdapter;
 
-    private int mCurrentSelectedPosition = 0;
+    private int mCurrentSelectedPosition = 1;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
@@ -87,16 +87,13 @@ public class NavigationDrawerFragment extends Fragment {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
         }
-
-        // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        // Indicate that this fragment would like to influence the set of actions in the action bar.
         setHasOptionsMenu(true);
+        selectItem(mCurrentSelectedPosition);
     }
 
 
@@ -115,45 +112,50 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         String navTitles[] = getResources().getStringArray(R.array.navigation_drawer_array);
-        DrawerAdapter adapter = new DrawerAdapter(getActivity());
-        adapter.add(new DrawerItem(navTitles[0], R.drawable.placeholder, DrawerType.TYPE1));// Timeline
-        adapter.add(new DrawerItem(navTitles[1], R.drawable.placeholder, DrawerType.TYPE2));// Campus
-        adapter.add(new DrawerItem(navTitles[2], R.drawable.placeholder, DrawerType.TYPE2));// Activity
-        adapter.add(new DrawerItem(navTitles[3], R.drawable.placeholder, DrawerType.TYPE3));// Create
-        adapter.add(new DrawerItem(navTitles[4], R.drawable.placeholder, DrawerType.TYPE3));// Search
-        adapter.add(new DrawerItem(navTitles[5], R.drawable.placeholder, DrawerType.TYPE4));// MyRides
-        adapter.add(new DrawerItem(navTitles[6], R.drawable.placeholder, DrawerType.TYPE4));// Settings
+        mAdapter = new DrawerAdapter(getActivity());
+        mAdapter.add(new DrawerItem(navTitles[0], R.drawable.placeholder, DrawerType.TYPE1));// Timeline
+        mAdapter.add(new DrawerItem(navTitles[1], R.drawable.placeholder, DrawerType.TYPE2));// Campus
+        mAdapter.add(new DrawerItem(navTitles[2], R.drawable.placeholder, DrawerType.TYPE2));// Activity
+        mAdapter.add(new DrawerItem(navTitles[3], R.drawable.placeholder, DrawerType.TYPE3));// Create
+        mAdapter.add(new DrawerItem(navTitles[4], R.drawable.placeholder, DrawerType.TYPE3));// Search
+        mAdapter.add(new DrawerItem(navTitles[5], R.drawable.placeholder, DrawerType.TYPE4));// MyRides
+        mAdapter.add(new DrawerItem(navTitles[6], R.drawable.placeholder, DrawerType.TYPE4));// Settings
 
-        mDrawerListView.setAdapter(adapter);
+        mDrawerListView.setAdapter(mAdapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
 
+
+    private void selectItem(int position) {
+        mCurrentSelectedPosition = position;
+        mAdapter.setSelectedItem(position-1);
+        if (mDrawerListView != null) {
+            mDrawerListView.setItemChecked(position, true);
+        }
+        if (mDrawerLayout != null) {
+            mDrawerLayout.closeDrawer(mFragmentContainerView);
+        }
+        if (mCallbacks != null) {
+            if (position == 0) {
+                mCallbacks.onNavigationDrawerItemSelected(position, " ");
+            } else {
+                mCallbacks.onNavigationDrawerItemSelected(position, mAdapter.getItem(position - 1).mTitle);
+            }
+        }
+    }
+
     private class DrawerAdapter extends ArrayAdapter<DrawerItem> {
+
+        private int selectedItem;
 
         public DrawerAdapter(Context context) {
             super(context, 0);
         }
 
-        @Override
-        public int getItemViewType(int position) {
-            DrawerItem item = getItem(position);
-            switch (item.mType) {
-                case TYPE1:
-                    return 0;
-                case TYPE2:
-                    return 1;
-                case TYPE3:
-                    return 2;
-                case TYPE4:
-                    return 3;
-            }
-            return 0;
-        }
-
-        @Override
-        public int getViewTypeCount() {
-            return 4;
+        public void setSelectedItem(int selectedItem) {
+            this.selectedItem = selectedItem;
+            notifyDataSetChanged();
         }
 
         @Override
@@ -168,8 +170,6 @@ public class NavigationDrawerFragment extends Fragment {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-
-
             switch (item.mType) {
                 case TYPE1:
                     convertView.setBackgroundResource(R.drawable.drawer_activated_background_type1);
@@ -184,8 +184,8 @@ public class NavigationDrawerFragment extends Fragment {
                     convertView.setBackgroundResource(R.drawable.drawer_activated_background_type4);
                     break;
             }
-
             holder.title.setText(item.mTitle);
+            holder.title.setTypeface(null, position == selectedItem ? Typeface.BOLD : Typeface.NORMAL);
             holder.title.setCompoundDrawablesWithIntrinsicBounds(item.mIconResource, 0, 0, 0);
             return convertView;
         }
@@ -289,19 +289,6 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void selectItem(int position) {
-        mCurrentSelectedPosition = position;
-        if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(position, true);
-        }
-        if (mDrawerLayout != null) {
-            mDrawerLayout.closeDrawer(mFragmentContainerView);
-        }
-        if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
-        }
-    }
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -372,6 +359,6 @@ public class NavigationDrawerFragment extends Fragment {
         /**
          * Called when an item in the navigation drawer is selected.
          */
-        void onNavigationDrawerItemSelected(int position);
+        void onNavigationDrawerItemSelected(int position, String title);
     }
 }

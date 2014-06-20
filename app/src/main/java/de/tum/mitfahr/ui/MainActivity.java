@@ -1,18 +1,21 @@
 package de.tum.mitfahr.ui;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.content.Intent;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v4.widget.DrawerLayout;
 
-import java.util.ArrayList;
+import com.squareup.otto.Subscribe;
 
+import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.DisplaySearchEvent;
+import de.tum.mitfahr.events.SearchClickedEvent;
 import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.ui.fragments.AbstractNavigationFragment;
 import de.tum.mitfahr.ui.fragments.ActivityRidesFragment;
@@ -21,6 +24,7 @@ import de.tum.mitfahr.ui.fragments.CreateRidesFragment;
 import de.tum.mitfahr.ui.fragments.MyRidesFragment;
 import de.tum.mitfahr.ui.fragments.ProfileFragment;
 import de.tum.mitfahr.ui.fragments.SearchFragment;
+import de.tum.mitfahr.ui.fragments.SearchResultsFragment;
 import de.tum.mitfahr.ui.fragments.SettingsFragment;
 import de.tum.mitfahr.ui.fragments.TimelineFragment;
 import de.tum.mitfahr.util.ActionBarColorChangeListener;
@@ -28,7 +32,6 @@ import de.tum.mitfahr.util.ActionBarColorChangeListener;
 public class MainActivity extends FragmentActivity
         implements ActionBarColorChangeListener,
         NavigationDrawerFragment.NavigationDrawerCallbacks {
-
     private static final String TAG_TIMELINE_FRAGMENT = "timeline_fragment";
     private static final String TAG_ACTIVITY_RIDES_FRAGMENT = "activity_rides_fragment";
     private static final String TAG_CAMPUS_RIDES_FRAGMENT = "campus_rides_fragment";
@@ -38,6 +41,9 @@ public class MainActivity extends FragmentActivity
     private static final String TAG_SETTINGS_FRAGMENT = "settings_fragment";
     private static final String TAG_PROFILE_FRAGMENT = "profile_fragment";
 
+    private static final String TAG_SEARCH_RESULTS_FRAGMENT = "search_results_fragment";
+
+
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private AbstractNavigationFragment mCurrentFragment;
 
@@ -46,7 +52,7 @@ public class MainActivity extends FragmentActivity
      */
     private CharSequence mTitle;
     private String[] mNavigationTitleArray;
-    private int mCurrentPosition = 1;
+    private int mCurrentPosition = -1;
 
     private int mCurrentActionBarColor = 0xFF0F3750;
 
@@ -59,12 +65,11 @@ public class MainActivity extends FragmentActivity
             startActivity(intent);
             finish();
         }
-        mNavigationTitleArray = getResources().getStringArray(R.array.navigation_drawer_array);
         mTitle = getTitle();
 
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
-            onNavigationDrawerItemSelected(1);
+            onNavigationDrawerItemSelected(1, "Timeline");
         } else {
             mTitle = savedInstanceState.getCharSequence("title");
             restoreActionBar();
@@ -100,15 +105,12 @@ public class MainActivity extends FragmentActivity
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
+    public void onNavigationDrawerItemSelected(int position, String title) {
         // update the main content by replacing fragments
         if (position == mCurrentPosition)
             return;
         mCurrentPosition = position;
-        if (position == 0)
-            mTitle = "";
-        else
-            mTitle = mNavigationTitleArray[position - 1];
+        mTitle = title;
         restoreActionBar();
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position) {
@@ -228,4 +230,35 @@ public class MainActivity extends FragmentActivity
     public int getCurrentActionBarColor() {
         return mCurrentActionBarColor;
     }
+
+    @Subscribe
+    public void onDisplaySearch(DisplaySearchEvent event) {
+        SearchResultsFragment fragment = SearchResultsFragment.newInstance(event.getRides(), event.getFromLocation(), event.getToLocation(), 6);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment, TAG_SEARCH_RESULTS_FRAGMENT)
+                .addToBackStack(SearchResultsFragment.class.getName())
+                .commit();
+    }
+
+    @Subscribe
+    public void onSearchClicked(SearchClickedEvent event) {
+        SearchResultsFragment fragment = SearchResultsFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment, TAG_SEARCH_RESULTS_FRAGMENT)
+                .addToBackStack(SearchResultsFragment.class.getName())
+                .commit();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
 }

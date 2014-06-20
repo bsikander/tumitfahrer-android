@@ -5,7 +5,6 @@ import android.content.Context;
 
 import com.squareup.otto.Bus;
 
-import de.tum.mitfahr.networking.adapters.SearchAdapter;
 import de.tum.mitfahr.services.ProfileService;
 import de.tum.mitfahr.services.RidesService;
 import de.tum.mitfahr.services.SearchService;

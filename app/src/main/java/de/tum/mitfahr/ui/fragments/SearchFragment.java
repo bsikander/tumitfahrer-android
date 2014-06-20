@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
 import com.doomonafireball.betterpickers.timepicker.TimePickerBuilder;
 import com.doomonafireball.betterpickers.timepicker.TimePickerDialogFragment;
+import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
@@ -24,9 +25,14 @@ import java.util.TimeZone;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.DisplaySearchEvent;
+import de.tum.mitfahr.events.SearchClickedEvent;
 import de.tum.mitfahr.events.SearchEvent;
+import de.tum.mitfahr.networking.models.Ride;
+import de.tum.mitfahr.util.ActionBarColorChangeListener;
 
 /**
  * Created by abhijith on 22/05/14.
@@ -63,6 +69,11 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
@@ -78,9 +89,11 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
         String to = toText.getText().toString();
         String dateTime = getFormattedDate();
         if (from != "" && to != "") {
-            TUMitfahrApplication.getApplication(getActivity()).getSearchService()
-                    .search(from, to, dateTime);
+//            TUMitfahrApplication.getApplication(getActivity()).getSearchService()
+//                    .search(from, to, dateTime);
         }
+
+        BusProvider.getInstance().post(new SearchClickedEvent());
     }
 
     @OnClick(R.id.pickTimeSearchButton)
@@ -121,8 +134,10 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
         if (event.getType() == SearchEvent.Type.SEARCH_SUCCESSFUL) {
             Toast.makeText(getActivity(), "Search Succeeded",
                     Toast.LENGTH_SHORT).show();
-//            mSearchListener.showSearchResults(event.getResponse().getRides(),
-//                    fromText.getText().toString(), toText.getText().toString());
+            String from = fromText.getText().toString().trim();
+            String to = toText.getText().toString().trim();
+            BusProvider.getInstance().
+                    post(new DisplaySearchEvent(event.getResponse().getRides(), from, to));
         } else if (event.getType() == SearchEvent.Type.SEARCH_FAILED) {
             Toast.makeText(getActivity(), "Search Failed.",
                     Toast.LENGTH_SHORT).show();
