@@ -10,10 +10,13 @@ import com.squareup.otto.Subscribe;
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.DeleteRideEvent;
+import de.tum.mitfahr.events.JoinRequestEvent;
 import de.tum.mitfahr.events.MyRidesEvent;
 import de.tum.mitfahr.events.OfferRideEvent;
+import de.tum.mitfahr.events.RespondToRequestEvent;
 import de.tum.mitfahr.networking.clients.RidesRESTClient;
 import de.tum.mitfahr.networking.models.response.DeleteRideResponse;
+import de.tum.mitfahr.networking.models.response.JoinRequestResponse;
 import de.tum.mitfahr.networking.models.response.MyRidesResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
 
@@ -25,6 +28,8 @@ public class RidesService {
     private SharedPreferences mSharedPreferences;
     private RidesRESTClient mRidesRESTClient;
     private Bus mBus;
+    private String userAPIKey;
+    private int userId;
 
     public RidesService(final Context context) {
         String baseBackendURL = TUMitfahrApplication.getApplication(context).getBaseURLBackend();
@@ -32,11 +37,11 @@ public class RidesService {
         mBus.register(this);
         mRidesRESTClient = new RidesRESTClient(baseBackendURL);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        userId = mSharedPreferences.getInt("id", 0);
+        userAPIKey = mSharedPreferences.getString("api_key", null);
     }
 
     public void offerRide(String departure, String destination, String meetingPoint, String freeSeats, String dateTime, int rideType) {
-        int userId = mSharedPreferences.getInt("id", 0);
-        String userAPIKey = mSharedPreferences.getString("api_key", null);
         mRidesRESTClient.offerRide(departure, destination, meetingPoint, freeSeats, dateTime, userAPIKey, rideType, userId);
         //TODO : create otto event classes and stuff!
     }
@@ -54,7 +59,6 @@ public class RidesService {
     }
 
     public void getMyRides() {
-        int userId = mSharedPreferences.getInt("id", 0);
         mRidesRESTClient.getMyRides(userId);
     }
 
@@ -65,19 +69,46 @@ public class RidesService {
             if (null == response.getRides()) {
                 mBus.post(new MyRidesEvent(MyRidesEvent.Type.GET_FAILED, response));
             } else {
-                mBus.post(new MyRidesEvent(MyRidesEvent.Type.GET_FAILED, response));
+                mBus.post(new MyRidesEvent(MyRidesEvent.Type.GET_SUCCESSFUL, response));
             }
         }
     }
 
     public void deleteRide(int rideId) {
-        int userId = mSharedPreferences.getInt("id", 0);
-        String userAPIKey = mSharedPreferences.getString("api_key", null);
         mRidesRESTClient.deleteRide(userAPIKey, userId, rideId);
     }
 
     @Subscribe
     public void onDeleteResult(DeleteRideEvent result) {
         //TODO post events
+    }
+
+    public void joinRequest(int rideId) {
+        mRidesRESTClient.joinRequest(rideId, userId, userAPIKey);
+    }
+
+    @Subscribe
+    public void onRideRequestResult(JoinRequestEvent result) {
+        if(result.getType() == JoinRequestEvent.Type.RESULT) {
+            JoinRequestResponse joinRequestResponse = result.getJoinRequestResponse();
+            if (null == joinRequestResponse.getRideRequest()) {
+                mBus.post(new JoinRequestEvent(JoinRequestEvent.Type.REQUEST_FAILED,
+                        joinRequestResponse, result.getRetrofitResponse()));
+            } else {
+                mBus.post(new JoinRequestEvent(JoinRequestEvent.Type.REQUEST_SENT,
+                        joinRequestResponse, result.getRetrofitResponse()));
+            }
+        }
+    }
+
+    public void respondToRequest(int rideId, int requestId, boolean confirmed) {
+        mRidesRESTClient.respondToRequest(rideId, userId, requestId, confirmed, userAPIKey);
+    }
+
+    @Subscribe
+    public void onRespondToRequestResult(RespondToRequestEvent result) {
+        if(result.getType() == RespondToRequestEvent.Type.RESULT) {
+            // TODO handle events
+        }
     }
 }

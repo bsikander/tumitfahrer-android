@@ -1,12 +1,15 @@
 package de.tum.mitfahr.networking.clients;
 
 import de.tum.mitfahr.events.DeleteRideEvent;
+import de.tum.mitfahr.events.JoinRequestEvent;
 import de.tum.mitfahr.events.MyRidesEvent;
 import de.tum.mitfahr.events.OfferRideEvent;
+import de.tum.mitfahr.events.RespondToRequestEvent;
 import de.tum.mitfahr.networking.api.RidesAPIService;
 import de.tum.mitfahr.networking.events.RequestFailedEvent;
 import de.tum.mitfahr.networking.models.requests.OfferRideRequest;
 import de.tum.mitfahr.networking.models.response.DeleteRideResponse;
+import de.tum.mitfahr.networking.models.response.JoinRequestResponse;
 import de.tum.mitfahr.networking.models.response.MyRidesResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
 import retrofit.Callback;
@@ -18,8 +21,12 @@ import retrofit.client.Response;
  */
 public class RidesRESTClient extends AbstractRESTClient{
 
+    private RidesAPIService ridesAPIService;
+
     public RidesRESTClient(String mBaseBackendURL) {
+
         super(mBaseBackendURL);
+        ridesAPIService = mRestAdapter.create(RidesAPIService.class);
     }
 
     public void offerRide(final String departure,
@@ -31,7 +38,6 @@ public class RidesRESTClient extends AbstractRESTClient{
                                     final int rideType,
                                     final int userId) {
         OfferRideRequest requestData = new OfferRideRequest(departure, destination, meetingPoint, freeSeats, dateTime, rideType);
-        RidesAPIService ridesAPIService = mRestAdapter.create(RidesAPIService.class);
         ridesAPIService.offerRide(userAPIKey, userId, requestData, offerRideCallback);
     }
 
@@ -49,7 +55,6 @@ public class RidesRESTClient extends AbstractRESTClient{
     };
 
     public void getMyRides(final int userId) {
-        RidesAPIService ridesAPIService = mRestAdapter.create(RidesAPIService.class);
         ridesAPIService.getMyRides(userId, getMyRidesCallback);
     }
 
@@ -68,7 +73,6 @@ public class RidesRESTClient extends AbstractRESTClient{
 
 
     public void deleteRide(final String userAPIKey, final int userId, final int rideId) {
-        RidesAPIService ridesAPIService = mRestAdapter.create(RidesAPIService.class);
         ridesAPIService.deleteRide(userAPIKey, userId, rideId, deleteRideCallback);
     }
 
@@ -81,6 +85,38 @@ public class RidesRESTClient extends AbstractRESTClient{
 
         @Override
         public void failure(RetrofitError retrofitError) {
+            mBus.post(new RequestFailedEvent());
+        }
+    };
+
+    public void joinRequest(int rideId, int passengerId, String userAPIKey) {
+        ridesAPIService.joinRequest(userAPIKey, rideId, passengerId, joinRequestCallback);
+    }
+
+    private Callback<JoinRequestResponse> joinRequestCallback = new Callback<JoinRequestResponse>() {
+        @Override
+        public void success(JoinRequestResponse joinRequestResponse, Response response) {
+            mBus.post(new JoinRequestEvent(JoinRequestEvent.Type.RESULT, joinRequestResponse, response));
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
+            mBus.post(new RequestFailedEvent());
+        }
+    };
+
+    public void respondToRequest(int rideId, int passengerId, int requestId, boolean confirmed, String userAPIKey) {
+        ridesAPIService.respondToRequest(userAPIKey, rideId, requestId, passengerId, confirmed, respondToRequestCallback);
+    }
+
+    private Callback respondToRequestCallback = new Callback() {
+        @Override
+        public void success(Object o, Response response) {
+            mBus.post(new RespondToRequestEvent(RespondToRequestEvent.Type.RESULT));
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
             mBus.post(new RequestFailedEvent());
         }
     };
