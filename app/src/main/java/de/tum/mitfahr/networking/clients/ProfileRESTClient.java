@@ -6,15 +6,21 @@ import com.squareup.otto.Bus;
 
 import org.json.JSONObject;
 
+import de.tum.mitfahr.events.GetUserEvent;
 import de.tum.mitfahr.events.LoginEvent;
 import de.tum.mitfahr.events.RegisterEvent;
+import de.tum.mitfahr.events.UpdateUserEvent;
 import de.tum.mitfahr.networking.BackendUtil;
 import de.tum.mitfahr.networking.api.SessionAPIService;
 import de.tum.mitfahr.networking.api.UserAPIService;
 import de.tum.mitfahr.networking.events.RequestFailedEvent;
+import de.tum.mitfahr.networking.models.User;
 import de.tum.mitfahr.networking.models.requests.RegisterRequest;
+import de.tum.mitfahr.networking.models.requests.UpdateUserRequest;
+import de.tum.mitfahr.networking.models.response.GetUserResponse;
 import de.tum.mitfahr.networking.models.response.LoginResponse;
 import de.tum.mitfahr.networking.models.response.RegisterResponse;
+import de.tum.mitfahr.networking.models.response.UpdateUserResponse;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -24,9 +30,11 @@ import retrofit.client.Response;
  */
 public class ProfileRESTClient extends AbstractRESTClient {
 
+    private UserAPIService userAPIService;
 
     public ProfileRESTClient(String mBaseBackendURL) {
         super(mBaseBackendURL);
+        userAPIService = mRestAdapter.create(UserAPIService.class);
     }
 
     public void registerUserAccount(final String email,
@@ -69,4 +77,36 @@ public class ProfileRESTClient extends AbstractRESTClient {
             mBus.post(new RequestFailedEvent());
         }
     };
-}
+
+    public void getSomeUser(int someUserId, String userAPIKey) {
+        userAPIService.getSomeUser(userAPIKey, someUserId, getUserCallback);
+    }
+
+    private Callback<GetUserResponse> getUserCallback = new Callback<GetUserResponse>() {
+        @Override
+        public void success(GetUserResponse getUserResponse, Response response) {
+            mBus.post(new GetUserEvent(GetUserEvent.Type.RESULT, getUserResponse, response));
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
+            mBus.post(new RequestFailedEvent());
+        }
+    };
+
+    public void updateUser(int userId, UpdateUserRequest updateUserRequest, String email, String password) {
+        userAPIService.updateUser(BackendUtil.getLoginHeader(email, password), userId, updateUserRequest, updateUserCallback);
+    }
+
+    private Callback<UpdateUserResponse> updateUserCallback = new Callback<UpdateUserResponse>() {
+        @Override
+        public void success(UpdateUserResponse updateUserResponse, Response response) {
+            mBus.post(new UpdateUserEvent(UpdateUserEvent.Type.RESULT, updateUserResponse, response));
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
+            mBus.post(new RequestFailedEvent());
+        }
+    };
+ }
