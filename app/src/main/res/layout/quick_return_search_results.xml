@@ -3,7 +3,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -11,6 +10,7 @@
         android:layout_width="fill_parent"
         android:orientation="horizontal"
         android:showDividers="middle"
+        android:background="@color/white"
         android:layout_height="wrap_content">
 
 
@@ -98,5 +98,10 @@
             android:id="@+id/quick_return_edit_button" />
 
     </LinearLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="5dp"
+        android:background="@drawable/quick_return_shadow" />
 
 </LinearLayout>

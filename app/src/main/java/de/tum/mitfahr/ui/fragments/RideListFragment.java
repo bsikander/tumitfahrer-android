@@ -1,15 +1,31 @@
 package de.tum.mitfahr.ui.fragments;
 
-import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.ComposeShader;
+import android.graphics.LinearGradient;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
+import android.graphics.RadialGradient;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,57 +37,41 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.networking.models.Ride;
-import de.tum.mitfahr.util.QuickReturnViewHelper;
 
 /**
- * Authored by abhijith on 20/06/14.
+ * Authored by abhijith on 21/06/14.
  */
-public class SearchResultsFragment extends AbstractNavigationFragment {
+public class RideListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_FROM = "from";
-    private static final String ARG_TO = "to";
     private static final String ARG_RIDES = "rides";
-
-    private List<Ride> mRides;
-    private String mFrom;
-    private String mTo;
-    private QuickReturnViewHelper mQuickReturnViewHelper;
-
-    @InjectView(R.id.search_results_listview)
-    ListView searchResultsList;
-
-    View mQuickReturnView;
-    View mBlankHeader;
-
-    TextView fromText;
-    TextView toText;
-    TextView dateText;
-    ImageButton editButton;
-
 
     private static final String[] songs = {"1983... (A Merman I Should Turn to Be)", "51st Anniversary", "All Along The Watchtower", "Angel", "Are You Experienced?", "Bleeding Heart", "Bold As Love", "Burning Of The Midnight Lamp",
             "Castles Made Of Sand", "Crash Landing", "Crosstown Traffic", "Dolly Dagger", "Drifting", "Fire", "Foxy Lady", "Gypsy Eyes", "Hear My Train a Comin'", "Hey Joe", "Highway Chile", "House Burning Down", "Izabella", "Let Me Move You",
             "Little Wing", "Lover Man", "Machine Gun", "Manic Depression", "Mojo Man", "Mr. Bad Luck", "One Rainy Wish", "Purple Haze", "Red House", "She's So Fine", "Ships Passing In The Night", "Somewhere", "Spanish Castle Magic",
             "Stepping Stone", "Still Raining, Still Dreaming", "Stone Free", "The Wind Cries Mary", "Third Stone From The Sun", "Valleys of Neptune", "Voodoo Child (Slight Return)"};
 
-    public static SearchResultsFragment newInstance(List<Ride> rides, String from, String to, int sectionNumber) {
-        SearchResultsFragment fragment = new SearchResultsFragment();
+    private ArrayList<Ride> mRides;
+
+    @InjectView(R.id.rides_listview)
+    ListView ridesList;
+
+    @InjectView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
+
+    public static RideListFragment newInstance(List<Ride> rides) {
+        RideListFragment fragment = new RideListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_FROM, from);
-        args.putString(ARG_TO, to);
         args.putSerializable(ARG_RIDES, (java.io.Serializable) rides);
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static SearchResultsFragment newInstance() {
-        SearchResultsFragment fragment = new SearchResultsFragment();
+    public static RideListFragment newInstance() {
+        RideListFragment fragment = new RideListFragment();
         return fragment;
     }
 
-    public SearchResultsFragment() {
+    public RideListFragment() {
     }
 
     @Override
@@ -79,32 +79,19 @@ public class SearchResultsFragment extends AbstractNavigationFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mRides = (ArrayList<Ride>) getArguments().getSerializable(ARG_RIDES);
-            mFrom = getArguments().getString(ARG_FROM);
-            mTo = getArguments().getString(ARG_TO);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_search_results, container, false);
-        mQuickReturnViewHelper = new QuickReturnViewHelper(getActivity(), QuickReturnViewHelper.ViewPosition.TOP, inflater);
+        View rootView = inflater.inflate(R.layout.fragment_ride_list, container, false);
         ButterKnife.inject(this, rootView);
-
-        mBlankHeader = inflater.inflate(R.layout.blank_header, null, false);
-
-        mQuickReturnView = mQuickReturnViewHelper.createQuickReturnViewOnListView(searchResultsList, R.layout.quick_return_search_results, new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                //Log.d("SearchResultsFragment", "onScrollStateChanged");
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                //Log.d("SearchResultsFragment", "onScroll");
-            }
-        });
-        changeActionBarColor(getResources().getColor(R.color.blue3));
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorScheme(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
         return rootView;
     }
 
@@ -112,10 +99,20 @@ public class SearchResultsFragment extends AbstractNavigationFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //searchResultsList.addHeaderView(mBlankHeader, null, false);
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_drawer, R.id.menu_title, songs);
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_rides, R.id.rides_to_text, songs);
         RideAdapterTest adapter = new RideAdapterTest(getActivity());
         adapter.addAll(songs);
-        searchResultsList.setAdapter(adapter);
+        ridesList.setAdapter(adapter);
+    }
+
+    @Override
+    public void onRefresh() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }, 5000);
     }
 
     class RideAdapterTest extends ArrayAdapter<String> {
@@ -124,8 +121,6 @@ public class SearchResultsFragment extends AbstractNavigationFragment {
 
         public RideAdapterTest(Context context) {
             super(context, 0);
-
-            final float density = context.getResources().getDisplayMetrics().density;
             mInflater = LayoutInflater.from(getActivity());
         }
 
@@ -144,10 +139,4 @@ public class SearchResultsFragment extends AbstractNavigationFragment {
             return view;
         }
     }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
-
 }

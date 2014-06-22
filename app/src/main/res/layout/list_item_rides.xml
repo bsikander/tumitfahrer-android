@@ -1,7 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="150dp">
 
-</LinearLayout>
+    <ImageView
+        android:src="@drawable/list_gradient"
+        android:background="@drawable/list_image_placeholder"
+        android:layout_width="fill_parent"
+        android:scaleType="centerCrop"
+        android:layout_height="fill_parent"
+        android:id="@+id/ride_location_image" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_margin="16dp"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/ride_item_row_one"
+            android:layout_alignParentTop="true"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ride_type_image"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@color/blue1"
+                android:padding="3dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/placeholder" />
+
+            <Button
+                android:id="@+id/ride_action_button"
+                android:layout_width="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Join Ride"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:layout_toRightOf="@id/ride_type_image"
+                android:textColor="@color/white"
+                android:background="@android:color/holo_orange_dark"
+                android:layout_height="24dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:gravity="center"
+                android:text="2 seats left"
+                android:textColor="@color/white"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:layout_gravity="right"
+                android:background="@android:color/holo_orange_dark"
+                android:layout_height="24dp"
+                android:layout_alignParentRight="true"
+                android:id="@+id/ride_seats_text" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/ride_item_row_three"
+            android:layout_width="fill_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:id="@+id/rides_time_text"
+                android:text="11.00"
+                android:textColor="@color/white"
+                android:drawablePadding="3dp"
+                android:gravity="center"
+                android:layout_marginRight="16dp"
+                android:drawableLeft="@drawable/time_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:id="@+id/rides_date_text"
+                android:layout_toRightOf="@id/rides_time_text"
+                android:text="13.12.2014"
+                android:drawableLeft="@drawable/calendar_icon"
+                android:drawablePadding="3dp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/ride_item_row_two"
+            android:layout_above="@id/ride_item_row_three"
+            android:layout_width="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="8dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:id="@+id/rides_from_text"
+                android:text="Marienplatz"
+                android:textColor="@color/white"
+                android:drawablePadding="16dp"
+                android:gravity="center"
+                android:layout_marginRight="16dp"
+                android:drawableRight="@drawable/time_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:id="@+id/rides_to_text"
+                android:layout_toRightOf="@id/rides_from_text"
+                android:text="Garching-Forschungzentrum"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>

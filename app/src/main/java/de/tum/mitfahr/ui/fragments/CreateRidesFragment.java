@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -29,6 +30,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.adapters.LocationAutoCompleteAdapter;
 import de.tum.mitfahr.events.OfferRideEvent;
 
 /**
@@ -53,17 +55,17 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
 
     private static final String TAG_DATE_PICKER_FRAGMENT = "date_picker_fragment";
 
-    @InjectView(R.id.departureEditText)
-    EditText departureText;
+    @InjectView(R.id.departureText)
+    AutoCompleteTextView departureText;
 
-    @InjectView(R.id.destinationEditText)
-    EditText destinationText;
+    @InjectView(R.id.destinationText)
+    AutoCompleteTextView destinationText;
 
-    @InjectView(R.id.seatsEditText)
+    @InjectView(R.id.meetingText)
+    AutoCompleteTextView meetingText;
+
+    @InjectView(R.id.seatsText)
     EditText seatsText;
-
-    @InjectView(R.id.meetingEditText)
-    EditText meetingText;
 
     @InjectView(R.id.rideTypeSpinner)
     Spinner rideTypeSpinner;
@@ -105,6 +107,10 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
                 mRideType = 0;
             }
         });
+        final LocationAutoCompleteAdapter adapter = new LocationAutoCompleteAdapter(getActivity());
+        departureText.setAdapter(adapter);
+        destinationText.setAdapter(adapter);
+        meetingText.setAdapter(adapter);
     }
 
     @OnClick(R.id.offerRideButton)

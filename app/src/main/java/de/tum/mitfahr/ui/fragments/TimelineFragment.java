@@ -58,7 +58,7 @@ public class TimelineFragment extends AbstractNavigationFragment {
         pager.setAdapter(adapter);
         tabs.setViewPager(pager);
         changeActionBarColor(getResources().getColor(R.color.blue1));
-        showTabs();
+        //showTabs();
         return rootView;
     }
 
@@ -102,7 +102,7 @@ public class TimelineFragment extends AbstractNavigationFragment {
 
         @Override
         public Fragment getItem(int position) {
-            return SuperAwesomeFragment.newInstance(position);
+            return RideListFragment.newInstance();
         }
     }
 

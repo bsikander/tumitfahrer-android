@@ -31,7 +31,7 @@ public class SettingsFragment extends AbstractNavigationFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_activity_rides, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_settings, container, false);
         changeActionBarColor(getResources().getColor(R.color.gray));
         return rootView;
     }

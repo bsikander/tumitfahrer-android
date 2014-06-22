@@ -68,5 +68,10 @@
         <item name="android:background">@drawable/button_flat_blue1</item>
     </style>
 
+    <style name="TextAppearance.FloatLabel" parent="android:TextAppearance.Small">
+        <item name="android:textColor">@drawable/float_label_color</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
 </resources>

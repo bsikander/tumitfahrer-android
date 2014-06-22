@@ -49,40 +49,46 @@ public abstract class AbstractNavigationFragment extends Fragment {
     }
 
     public void changeActionBarColor(int newColor) {
-
-        Drawable newDrawable = new ColorDrawable(newColor);
-        Drawable oldBackground = new ColorDrawable(mCurrentColor);
-        if (oldBackground == null) {
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                newDrawable.setCallback(drawableCallback);
-            } else {
-                getActivity().getActionBar().setBackgroundDrawable(newDrawable);
-            }
-
+        Drawable newDrawable = new ColorDrawable((newColor));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            newDrawable.setCallback(drawableCallback);
         } else {
-
-            TransitionDrawable td = new TransitionDrawable(new Drawable[]{oldBackground, newDrawable});
-            td.setCrossFadeEnabled(true);
-            // workaround for broken ActionBarContainer drawable handling on
-            // pre-API 17 builds
-            // https://github.com/android/platform_frameworks_base/commit/a7cc06d82e45918c37429a59b14545c6a57db4e4
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                td.setCallback(drawableCallback);
-            } else {
-                getActivity().getActionBar().setBackgroundDrawable(td);
-            }
-
-            td.startTransition(200);
-
+            getActivity().getActionBar().setBackgroundDrawable(newDrawable);
         }
-        // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-mHandler
-        getActivity().getActionBar().setDisplayShowTitleEnabled(false);
-        getActivity().getActionBar().setDisplayShowTitleEnabled(true);
-
-        mCurrentColor = newColor;
-        ((MainActivity) getActivity()).onActionBarColorChanged(newColor);
     }
+
+//    public void changeActionBarColor(int newColor) {
+//
+//        Drawable newDrawable = new ColorDrawable(newColor);
+//        Drawable oldBackground = new ColorDrawable(mCurrentColor);
+//        if (oldBackground == null) {
+//
+//            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//                newDrawable.setCallback(drawableCallback);
+//            } else {
+//                getActivity().getActionBar().setBackgroundDrawable(newDrawable);
+//            }
+//
+//        } else {
+//
+//            TransitionDrawable td = new TransitionDrawable(new Drawable[]{oldBackground, newDrawable});
+//            td.setCrossFadeEnabled(true);
+//            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//                td.setCallback(drawableCallback);
+//            } else {
+//                getActivity().getActionBar().setBackgroundDrawable(td);
+//            }
+//
+//            td.startTransition(1000);
+//
+//        }
+//        // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-mHandler
+//        getActivity().getActionBar().setDisplayShowTitleEnabled(false);
+//        getActivity().getActionBar().setDisplayShowTitleEnabled(true);
+//
+//        mCurrentColor = newColor;
+//        ((MainActivity) getActivity()).onActionBarColorChanged(newColor);
+//    }
 
     @Override
     public void onResume() {

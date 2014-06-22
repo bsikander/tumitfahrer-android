@@ -2,10 +2,18 @@ package de.tum.mitfahr.ui.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.astuetz.PagerSlidingTabStrip;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import de.tum.mitfahr.R;
 
 /**
@@ -13,7 +21,13 @@ import de.tum.mitfahr.R;
  */
 public class CampusRidesFragment extends AbstractNavigationFragment {
 
-    protected static final int SECTION_COLOR = 0xFF9B2335;
+    @InjectView(R.id.tabs)
+    PagerSlidingTabStrip tabs;
+
+    @InjectView(R.id.pager)
+    ViewPager pager;
+
+    private CampusPagerAdapter adapter;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -34,8 +48,46 @@ public class CampusRidesFragment extends AbstractNavigationFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_campus_rides, container, false);
+        ButterKnife.inject(this, rootView);
+        adapter = new CampusPagerAdapter(getChildFragmentManager());
+        pager.setAdapter(adapter);
+        tabs.setViewPager(pager);
         changeActionBarColor(getResources().getColor(R.color.blue2));
+        //showTabs();
         return rootView;
+    }
+
+    /**
+     * Show the label using an animation
+     */
+    private void showTabs() {
+        tabs.setVisibility(View.VISIBLE);
+        tabs.setTranslationY(-getActivity().getActionBar().getHeight());
+        tabs.animate().translationY(0f).setDuration(100).start();
+    }
+
+    public class CampusPagerAdapter extends FragmentPagerAdapter {
+
+        private final String[] TITLES = {"All", "Around Me", "My Activity"};
+
+        public CampusPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return TITLES[position];
+        }
+
+        @Override
+        public int getCount() {
+            return TITLES.length;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return RideListFragment.newInstance();
+        }
     }
 
     @Override
