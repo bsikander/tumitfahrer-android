@@ -6,6 +6,7 @@ import com.squareup.otto.Bus;
 
 import org.json.JSONObject;
 
+import de.tum.mitfahr.events.ForgotPasswordEvent;
 import de.tum.mitfahr.events.GetUserEvent;
 import de.tum.mitfahr.events.LoginEvent;
 import de.tum.mitfahr.events.RegisterEvent;
@@ -102,6 +103,22 @@ public class ProfileRESTClient extends AbstractRESTClient {
         @Override
         public void success(UpdateUserResponse updateUserResponse, Response response) {
             mBus.post(new UpdateUserEvent(UpdateUserEvent.Type.RESULT, updateUserResponse, response));
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
+            mBus.post(new RequestFailedEvent());
+        }
+    };
+
+    public void forgotPassword(String email) {
+        userAPIService.forgotPassword(email, forgotPasswordCallback);
+    }
+
+    private Callback forgotPasswordCallback = new Callback() {
+        @Override
+        public void success(Object o, Response response) {
+            mBus.post(new ForgotPasswordEvent(ForgotPasswordEvent.Type.RESULT, response));
         }
 
         @Override

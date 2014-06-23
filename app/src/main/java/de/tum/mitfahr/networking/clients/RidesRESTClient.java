@@ -1,17 +1,21 @@
 package de.tum.mitfahr.networking.clients;
 
 import de.tum.mitfahr.events.DeleteRideEvent;
+import de.tum.mitfahr.events.GetRideEvent;
 import de.tum.mitfahr.events.JoinRequestEvent;
 import de.tum.mitfahr.events.MyRidesEvent;
 import de.tum.mitfahr.events.OfferRideEvent;
 import de.tum.mitfahr.events.RespondToRequestEvent;
+import de.tum.mitfahr.events.UpdateRideEvent;
 import de.tum.mitfahr.networking.api.RidesAPIService;
 import de.tum.mitfahr.networking.events.RequestFailedEvent;
+import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.requests.OfferRideRequest;
 import de.tum.mitfahr.networking.models.response.DeleteRideResponse;
 import de.tum.mitfahr.networking.models.response.JoinRequestResponse;
 import de.tum.mitfahr.networking.models.response.MyRidesResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
+import de.tum.mitfahr.networking.models.response.RideResponse;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -54,8 +58,40 @@ public class RidesRESTClient extends AbstractRESTClient{
         }
     };
 
-    public void getMyRides(final int userId) {
-        ridesAPIService.getMyRides(userId, getMyRidesCallback);
+    public void getRide(String userAPIKey, int rideId) {
+        ridesAPIService.getRide(userAPIKey, rideId, getRideCallback);
+    }
+
+    private Callback<RideResponse> getRideCallback = new Callback<RideResponse>() {
+        @Override
+        public void success(RideResponse rideResponse, Response response) {
+            mBus.post(new GetRideEvent(GetRideEvent.Type.RESULT, rideResponse));
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
+            mBus.post(new RequestFailedEvent());
+        }
+    };
+
+    public void updateRide(String userAPIKey, int userId, Ride updatedRide) {
+        ridesAPIService.updateRide(userAPIKey, userId, updatedRide.getId(), updatedRide, updateRideCallback);
+    }
+
+    private Callback<RideResponse> updateRideCallback = new Callback<RideResponse>() {
+        @Override
+        public void success(RideResponse rideResponse, Response response) {
+            mBus.post(new UpdateRideEvent(UpdateRideEvent.Type.RESULT, rideResponse));
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
+            mBus.post(new RequestFailedEvent());
+        }
+    };
+
+    public void getMyRides(final int userId, String userAPIKey) {
+        ridesAPIService.getMyRides(userAPIKey, userId, getMyRidesCallback);
     }
 
     private Callback<MyRidesResponse> getMyRidesCallback = new Callback<MyRidesResponse>() {

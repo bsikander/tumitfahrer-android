@@ -49,4 +49,10 @@ public interface UserAPIService {
             Callback<UpdateUserResponse> callback
     );
 
+    @POST("/forgot")
+    public void forgotPassword(
+            @Body String email,
+            Callback callback
+    );
+
 }

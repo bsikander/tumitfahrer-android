@@ -120,6 +120,10 @@ public class ProfileService {
         }
     }
 
+    public void forgotPassword(String email) {
+        mProfileRESTClient.forgotPassword(email);
+    }
+
     private void addUserToSharedPreferences(User user) {
         SharedPreferences.Editor prefEditor = mSharedPreferences.edit();
         prefEditor.putInt("id", user.getId());

@@ -10,15 +10,19 @@ import com.squareup.otto.Subscribe;
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.DeleteRideEvent;
+import de.tum.mitfahr.events.GetRideEvent;
 import de.tum.mitfahr.events.JoinRequestEvent;
 import de.tum.mitfahr.events.MyRidesEvent;
 import de.tum.mitfahr.events.OfferRideEvent;
 import de.tum.mitfahr.events.RespondToRequestEvent;
+import de.tum.mitfahr.events.UpdateRideEvent;
 import de.tum.mitfahr.networking.clients.RidesRESTClient;
+import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.response.DeleteRideResponse;
 import de.tum.mitfahr.networking.models.response.JoinRequestResponse;
 import de.tum.mitfahr.networking.models.response.MyRidesResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
+import de.tum.mitfahr.networking.models.response.RideResponse;
 
 /**
  * Created by amr on 18/05/14.
@@ -58,8 +62,40 @@ public class RidesService {
         }
     }
 
+    public void getRide(int rideId) {
+        mRidesRESTClient.getRide(userAPIKey, rideId);
+    }
+
+    @Subscribe
+    public void onGetRideResult(GetRideEvent result) {
+        if(result.getType() == GetRideEvent.Type.RESULT) {
+            RideResponse response = result.getResponse();
+            if (null == response.getRide()) {
+                mBus.post(new GetRideEvent(GetRideEvent.Type.GET_FAILED, response));
+            } else {
+                mBus.post(new GetRideEvent(GetRideEvent.Type.GET_SUCCESSFUL, response));
+            }
+        }
+    }
+
+    public void updateRide(Ride updatedRide) {
+        mRidesRESTClient.updateRide(userAPIKey, userId, updatedRide);
+    }
+
+    @Subscribe
+    public void onUpdateRideResult(UpdateRideEvent result) {
+        if(result.getType() == UpdateRideEvent.Type.RESULT) {
+            RideResponse response = result.getResponse();
+            if (null == response.getRide()) {
+                mBus.post(new UpdateRideEvent(UpdateRideEvent.Type.UPDATE_FAILED, response));
+            } else {
+                mBus.post(new UpdateRideEvent(UpdateRideEvent.Type.RIDE_UPDATED, response));
+            }
+        }
+    }
+
     public void getMyRides() {
-        mRidesRESTClient.getMyRides(userId);
+        mRidesRESTClient.getMyRides(userId, userAPIKey);
     }
 
     @Subscribe
