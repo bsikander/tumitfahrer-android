@@ -3,6 +3,7 @@ package de.tum.mitfahr.networking.clients;
 import java.text.SimpleDateFormat;
 
 import de.tum.mitfahr.events.DeleteRideEvent;
+import de.tum.mitfahr.events.DeleteRideRequestEvent;
 import de.tum.mitfahr.events.GetRideEvent;
 import de.tum.mitfahr.events.GetRideRequestsEvent;
 import de.tum.mitfahr.events.GetRidesDateEvent;
@@ -181,7 +182,7 @@ public class RidesRESTClient extends AbstractRESTClient{
 
         @Override
         public void success(DeleteRideResponse deleteRideResponse, Response response) {
-            mBus.post(new DeleteRideEvent(DeleteRideEvent.Type.RESULT, deleteRideResponse));
+            mBus.post(new DeleteRideEvent(DeleteRideEvent.Type.RESULT, deleteRideResponse, response));
         }
 
         @Override
@@ -213,7 +214,7 @@ public class RidesRESTClient extends AbstractRESTClient{
     private Callback respondToRequestCallback = new Callback() {
         @Override
         public void success(Object o, Response response) {
-            mBus.post(new RespondToRequestEvent(RespondToRequestEvent.Type.RESULT));
+            mBus.post(new RespondToRequestEvent(RespondToRequestEvent.Type.RESULT, response));
         }
 
         @Override
@@ -261,7 +262,7 @@ public class RidesRESTClient extends AbstractRESTClient{
     private Callback deleteRideRequestCallback = new Callback() {
         @Override
         public void success(Object o, Response response) {
-
+            mBus.post(new DeleteRideRequestEvent(DeleteRideRequestEvent.Type.RESULT, response));
         }
 
         @Override

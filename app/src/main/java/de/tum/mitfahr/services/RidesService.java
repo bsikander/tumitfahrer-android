@@ -3,6 +3,7 @@ package de.tum.mitfahr.services;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -31,6 +32,7 @@ import de.tum.mitfahr.networking.models.response.RequestsResponse;
 import de.tum.mitfahr.networking.models.response.RidesResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
 import de.tum.mitfahr.networking.models.response.RideResponse;
+import retrofit.client.Response;
 
 /**
  * Created by amr on 18/05/14.
@@ -175,7 +177,14 @@ public class RidesService {
 
     @Subscribe
     public void onDeleteResult(DeleteRideEvent result) {
-        //TODO post events
+        if(result.getType() == DeleteRideEvent.Type.RESULT) {
+            Response retrofitResponse = result.getRetrofitResponse();
+            if (200 == retrofitResponse.getStatus()) {
+                mBus.post(new DeleteRideEvent(DeleteRideEvent.Type.DELETE_SUCCESSFUL, result.getResponse(),retrofitResponse));
+            } else {
+                mBus.post(new DeleteRideEvent(DeleteRideEvent.Type.DELETE_FAILED, result.getResponse(),retrofitResponse));
+            }
+        }
     }
 
     public void joinRequest(int rideId) {
@@ -203,7 +212,12 @@ public class RidesService {
     @Subscribe
     public void onRespondToRequestResult(RespondToRequestEvent result) {
         if(result.getType() == RespondToRequestEvent.Type.RESULT) {
-            // TODO handle events
+            Response retrofitResponse = result.getRetrofitResponse();
+            if (200 == retrofitResponse.getStatus()) {
+                mBus.post(new RespondToRequestEvent(RespondToRequestEvent.Type.RESPOND_SENT, retrofitResponse));
+            } else {
+                mBus.post(new RespondToRequestEvent(RespondToRequestEvent.Type.RESPOND_FAILED, retrofitResponse));
+            }
         }
     }
 
@@ -246,7 +260,12 @@ public class RidesService {
     @Subscribe
     public void onDeleteRideRequest(DeleteRideRequestEvent result) {
         if(result.getType() == DeleteRideRequestEvent.Type.RESULT) {
-            // Ask Pawel about response
+            Response retrofitResponse = result.getRetrofitResponse();
+            if (200 == retrofitResponse.getStatus()) {
+                mBus.post(new DeleteRideRequestEvent(DeleteRideRequestEvent.Type.SUCCESSFUL, retrofitResponse));
+            } else {
+                mBus.post(new DeleteRideRequestEvent(DeleteRideRequestEvent.Type.FAILED, retrofitResponse));
+            }
         }
     }
 }
