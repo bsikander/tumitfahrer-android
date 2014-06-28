@@ -7,20 +7,28 @@ import android.preference.PreferenceManager;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.text.SimpleDateFormat;
+
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.DeleteRideEvent;
+import de.tum.mitfahr.events.DeleteRideRequestEvent;
 import de.tum.mitfahr.events.GetRideEvent;
+import de.tum.mitfahr.events.GetRideRequestsEvent;
+import de.tum.mitfahr.events.GetRidesDateEvent;
+import de.tum.mitfahr.events.GetRidesPageEvent;
+import de.tum.mitfahr.events.GetUserRequestsEvent;
 import de.tum.mitfahr.events.JoinRequestEvent;
 import de.tum.mitfahr.events.MyRidesEvent;
 import de.tum.mitfahr.events.OfferRideEvent;
+import de.tum.mitfahr.events.RemovePassengerEvent;
 import de.tum.mitfahr.events.RespondToRequestEvent;
 import de.tum.mitfahr.events.UpdateRideEvent;
 import de.tum.mitfahr.networking.clients.RidesRESTClient;
 import de.tum.mitfahr.networking.models.Ride;
-import de.tum.mitfahr.networking.models.response.DeleteRideResponse;
 import de.tum.mitfahr.networking.models.response.JoinRequestResponse;
-import de.tum.mitfahr.networking.models.response.MyRidesResponse;
+import de.tum.mitfahr.networking.models.response.RequestsResponse;
+import de.tum.mitfahr.networking.models.response.RidesResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
 import de.tum.mitfahr.networking.models.response.RideResponse;
 
@@ -94,19 +102,70 @@ public class RidesService {
         }
     }
 
-    public void getMyRides() {
-        mRidesRESTClient.getMyRides(userId, userAPIKey);
+    public void getMyRidesAsDriver() {
+        mRidesRESTClient.getMyRidesAsDriver(userId, userAPIKey);
+    }
+
+    public void getMyRidesAsPassenger() {
+        mRidesRESTClient.getMyRidesAsPassenger(userId, userAPIKey);
+    }
+
+    public void getMyRidesPast() {
+        mRidesRESTClient.getMyRidesPast(userId, userAPIKey);
     }
 
     @Subscribe
     public void onGetMyRidesResult(MyRidesEvent result) {
         if(result.getType() == OfferRideEvent.Type.RESULT) {
-            MyRidesResponse response = result.getResponse();
+            RidesResponse response = result.getResponse();
             if (null == response.getRides()) {
                 mBus.post(new MyRidesEvent(MyRidesEvent.Type.GET_FAILED, response));
             } else {
                 mBus.post(new MyRidesEvent(MyRidesEvent.Type.GET_SUCCESSFUL, response));
             }
+        }
+    }
+
+    public void getPage(int pageNo) {
+        mRidesRESTClient.getPage(userAPIKey, pageNo);
+    }
+
+    @Subscribe
+    public void onGetPageResult(GetRidesPageEvent result) {
+        if (result.getType() == GetRidesPageEvent.Type.RESULT) {
+            RidesResponse response = result.getResponse();
+            if (null == response.getRides()) {
+                mBus.post(new GetRidesPageEvent(GetRidesPageEvent.Type.GET_FAILED, response));
+            } else {
+                mBus.post(new GetRidesPageEvent(GetRidesPageEvent.Type.GET_SUCCESSFUL, response));
+            }
+        }
+    }
+
+    public void getRides(String fromDate, int rideType) {
+        mRidesRESTClient.getRides(userAPIKey, fromDate, rideType);
+    }
+
+    @Subscribe
+    public void onGetDateResult(GetRidesDateEvent result) {
+        if (result.getType() == GetRidesDateEvent.Type.RESULT) {
+            RidesResponse response = result.getResponse();
+            if (null == response.getRides()) {
+                mBus.post(new GetRidesDateEvent(GetRidesDateEvent.Type.GET_FAILED, response));
+            } else {
+                mBus.post(new GetRidesDateEvent(GetRidesDateEvent.Type.GET_SUCCESSFUL, response));
+            }
+        }
+    }
+
+    public void removePassenger(int rideId, int removedPassengerId) {
+        mRidesRESTClient.removePassenger(userAPIKey, userId, rideId, removedPassengerId);
+    }
+
+    @Subscribe
+    public void onRemovePassengerResult(RemovePassengerEvent result) {
+        if (result.getType() == RemovePassengerEvent.Type.RESULT) {
+            // Doc not clear
         }
     }
 
@@ -145,6 +204,49 @@ public class RidesService {
     public void onRespondToRequestResult(RespondToRequestEvent result) {
         if(result.getType() == RespondToRequestEvent.Type.RESULT) {
             // TODO handle events
+        }
+    }
+
+    public void getRideRequests(int rideId) {
+        mRidesRESTClient.getRideRequests(userAPIKey, rideId);
+    }
+
+    @Subscribe
+    public void onGetRideRequestsResult(GetRideRequestsEvent result) {
+        if(result.getType() == GetRideRequestsEvent.Type.RESULT) {
+            RequestsResponse requestsResponse = result.getResponse();
+            if (null == requestsResponse.getRequests()) {
+                mBus.post(new GetRideRequestsEvent(GetRideRequestsEvent.Type.GET_FAILED, requestsResponse));
+            } else {
+                mBus.post(new GetRideRequestsEvent(GetRideRequestsEvent.Type.GET_SUCCESSFUL, requestsResponse));
+            }
+        }
+    }
+
+    public void getUserRequests() {
+        mRidesRESTClient.getUserRequests(userAPIKey, userId);
+    }
+
+    @Subscribe
+    public void onGetUserRequestsResult(GetUserRequestsEvent result) {
+        if(result.getType() == GetUserRequestsEvent.Type.RESULT) {
+            RequestsResponse requestsResponse = result.getResponse();
+            if (null == requestsResponse.getRequests()) {
+                mBus.post(new GetUserRequestsEvent(GetUserRequestsEvent.Type.GET_FAILED, requestsResponse));
+            } else {
+                mBus.post(new GetUserRequestsEvent(GetUserRequestsEvent.Type.GET_SUCCESSFUL, requestsResponse));
+            }
+        }
+    }
+
+    public void deleteRideRequest(int rideId, int requestId) {
+        mRidesRESTClient.deleteRideRequest(userAPIKey, rideId, requestId);
+    }
+
+    @Subscribe
+    public void onDeleteRideRequest(DeleteRideRequestEvent result) {
+        if(result.getType() == DeleteRideRequestEvent.Type.RESULT) {
+            // Ask Pawel about response
         }
     }
 }

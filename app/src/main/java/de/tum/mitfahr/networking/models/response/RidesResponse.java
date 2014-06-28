@@ -7,13 +7,13 @@ import de.tum.mitfahr.networking.models.Ride;
 /**
  * Created by amr on 15/06/14.
  */
-public class MyRidesResponse {
+public class RidesResponse {
 
     private String status;
     private String message;
     private ArrayList<Ride> rides;
 
-    public MyRidesResponse(String status, String message, ArrayList<Ride> rides) {
+    public RidesResponse(String status, String message, ArrayList<Ride> rides) {
         this.status = status;
         this.message = message;
         this.rides = rides;

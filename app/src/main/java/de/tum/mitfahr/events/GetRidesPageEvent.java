@@ -3,9 +3,9 @@ package de.tum.mitfahr.events;
 import de.tum.mitfahr.networking.models.response.RidesResponse;
 
 /**
- * Created by amr on 15/06/14.
+ * Created by amr on 28/06/14.
  */
-public class MyRidesEvent extends AbstractEvent {
+public class GetRidesPageEvent extends AbstractEvent {
 
     public enum Type
     {
@@ -16,7 +16,7 @@ public class MyRidesEvent extends AbstractEvent {
 
     private RidesResponse mRidesResponse;
 
-    public MyRidesEvent(Type type, RidesResponse ridesResponse) {
+    public GetRidesPageEvent(Type type, RidesResponse ridesResponse) {
         super(type);
         this.mRidesResponse = ridesResponse;
     }

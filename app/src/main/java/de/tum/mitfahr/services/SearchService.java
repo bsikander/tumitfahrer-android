@@ -32,9 +32,9 @@ public class SearchService {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public void search(String from, String to, String dateTime) {
+    public void search(String from, int fromThreshold, String to, int toThreshold, String dateTime, int rideType) {
         String userAPIKey = mSharedPreferences.getString("api_key", null);
-        mSearchRESTClient.search(from, to, dateTime, userAPIKey);
+        mSearchRESTClient.search(userAPIKey, from, fromThreshold, to, toThreshold, dateTime, rideType);
     }
 
     @Subscribe
