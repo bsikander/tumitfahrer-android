@@ -8,11 +8,21 @@ public class RideRequest {
     private int id;
     private int passengerId;
     private Ride ride;
+    private String createdAt;
+    private String updatedAt;
 
     public RideRequest(int id, int passengerId, Ride ride) {
         this.id = id;
         this.passengerId = passengerId;
         this.ride = ride;
+    }
+
+    public RideRequest(int id, int passengerId, Ride ride, String createdAt, String updatedAt) {
+        this.id = id;
+        this.passengerId = passengerId;
+        this.ride = ride;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public Ride getRide() {
