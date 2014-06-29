@@ -167,7 +167,12 @@ public class RidesService {
     @Subscribe
     public void onRemovePassengerResult(RemovePassengerEvent result) {
         if (result.getType() == RemovePassengerEvent.Type.RESULT) {
-            // Doc not clear
+            Response retrofitResponse = result.getRetrofitResponse();
+            if (200 == retrofitResponse.getStatus()) {
+                mBus.post(new RemovePassengerEvent(RemovePassengerEvent.Type.SUCCESSFUL,retrofitResponse));
+            } else {
+                mBus.post(new RemovePassengerEvent(RemovePassengerEvent.Type.FAILED,retrofitResponse));
+            }
         }
     }
 

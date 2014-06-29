@@ -136,7 +136,7 @@ public interface RidesAPIService {
     public void getRides(
             @Header("apiKey") String apiKey,
             @Path("from_date")  String fromDate,
-            //@Body("") int rideType,
+            @Body int rideType,
             Callback<RidesResponse> callback
     );
 }

@@ -164,7 +164,7 @@ public class RidesRESTClient extends AbstractRESTClient{
     private Callback removePassengerCallback = new Callback() {
         @Override
         public void success(Object o, Response response) {
-            mBus.post(new RemovePassengerEvent(RemovePassengerEvent.Type.SUCCESSFUL));
+            mBus.post(new RemovePassengerEvent(RemovePassengerEvent.Type.RESULT, response));
         }
 
         @Override
