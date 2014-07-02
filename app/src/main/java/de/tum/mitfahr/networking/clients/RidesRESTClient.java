@@ -142,7 +142,7 @@ public class RidesRESTClient extends AbstractRESTClient{
 
     // Doc not clear
     public void getRides(String userAPIKey, String fromDate,int rideType) {
-        //ridesAPIService.getRides(userAPIKey, fromDate, rideType, getRidesCallback);
+        ridesAPIService.getRides(userAPIKey, fromDate, rideType, getRidesCallback);
     }
 
     private Callback<RidesResponse> getRidesCallback = new Callback<RidesResponse>() {

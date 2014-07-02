@@ -132,11 +132,11 @@ public interface RidesAPIService {
     );
 
     // Not sure about this call
-    @GET("/rides?from_date")
+    @GET("/rides?from_date={fromDate}&ride_type={rideType}")
     public void getRides(
             @Header("apiKey") String apiKey,
-            @Path("from_date")  String fromDate,
-            @Body int rideType,
+            @Path("fromDate")  String fromDate,
+            @Path("rideType") int rideType,
             Callback<RidesResponse> callback
     );
 }
