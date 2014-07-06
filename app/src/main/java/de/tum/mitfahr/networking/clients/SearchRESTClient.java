@@ -19,8 +19,10 @@ public class SearchRESTClient extends AbstractRESTClient {
         super(mBaseBackendURL);
     }
 
-    public void search(String from, String to, String dateTime, String userAPIKey) {
-        SearchRequest requestData = new SearchRequest(from, to, dateTime);
+    public void search(String userAPIKey, String from, int fromThreshold, String to,
+                       int toThreshold, String dateTime, int rideType) {
+        SearchRequest requestData = new SearchRequest(from, fromThreshold, to, toThreshold,
+                dateTime, rideType);
         SearchAPIService searchAPIService = mRestAdapter.create(SearchAPIService.class);
         searchAPIService.search(userAPIKey, requestData, searchCallback);
     }

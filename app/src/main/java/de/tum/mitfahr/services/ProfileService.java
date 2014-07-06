@@ -9,12 +9,17 @@ import com.squareup.otto.Subscribe;
 
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.GetUserEvent;
 import de.tum.mitfahr.events.LoginEvent;
 import de.tum.mitfahr.events.RegisterEvent;
+import de.tum.mitfahr.events.UpdateUserEvent;
 import de.tum.mitfahr.networking.clients.ProfileRESTClient;
 import de.tum.mitfahr.networking.models.User;
+import de.tum.mitfahr.networking.models.requests.UpdateUserRequest;
+import de.tum.mitfahr.networking.models.response.GetUserResponse;
 import de.tum.mitfahr.networking.models.response.LoginResponse;
 import de.tum.mitfahr.networking.models.response.RegisterResponse;
+import de.tum.mitfahr.networking.models.response.UpdateUserResponse;
 
 /**
  * Created by abhijith on 09/05/14.
@@ -24,6 +29,8 @@ public class ProfileService {
     private SharedPreferences mSharedPreferences;
     private ProfileRESTClient mProfileRESTClient;
     private Bus mBus;
+    private String userAPIKey;
+    private int userId;
 
     public ProfileService(final Context context) {
         String baseBackendURL = TUMitfahrApplication.getApplication(context).getBaseURLBackend();
@@ -31,6 +38,8 @@ public class ProfileService {
         mBus.register(this);
         mProfileRESTClient = new ProfileRESTClient(baseBackendURL);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        userId = mSharedPreferences.getInt("id", 0);
+        userAPIKey = mSharedPreferences.getString("api_key", null);
     }
 
     public ProfileService() {
@@ -76,6 +85,43 @@ public class ProfileService {
                 mBus.post(new RegisterEvent(RegisterEvent.Type.REGISTER_SUCCESSFUL));
             }
         }
+    }
+
+    public void getSomeUser(int someUserId) {
+        mProfileRESTClient.getSomeUser(someUserId, userAPIKey);
+    }
+
+    @Subscribe
+    public void onGetSomeUserResult(GetUserEvent result) {
+        if(result.getType() == GetUserEvent.Type.RESULT) {
+            GetUserResponse response = result.getGetUserResponse();
+            if (null == response.getUser()) {
+                mBus.post(new GetUserEvent(GetUserEvent.Type.GET_FAILED, response, result.getRetrofitResponse()));
+            } else {
+                mBus.post(new GetUserEvent(GetUserEvent.Type.GET_SUCCESSFUL, response, result.getRetrofitResponse()));
+            }
+        }
+    }
+
+    public void updateUser(User updatedUser, String email, String password, String passwordConfirmation) {
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest(updatedUser, password, passwordConfirmation);
+        mProfileRESTClient.updateUser(userId, updateUserRequest, email, password);
+    }
+
+    @Subscribe
+    public void onUpdateUserResult(UpdateUserEvent result) {
+        if(result.getType() == UpdateUserEvent.Type.RESULT) {
+            UpdateUserResponse response = result.getUpdateUserResponse();
+            if (null == response.getUser()) {
+                mBus.post(new UpdateUserEvent(UpdateUserEvent.Type.UPDATE_FAILED, response, result.getRetrofitResponse()));
+            } else {
+                mBus.post(new UpdateUserEvent(UpdateUserEvent.Type.USER_UPDATED, response, result.getRetrofitResponse()));
+            }
+        }
+    }
+
+    public void forgotPassword(String email) {
+        mProfileRESTClient.forgotPassword(email);
     }
 
     private void addUserToSharedPreferences(User user) {
