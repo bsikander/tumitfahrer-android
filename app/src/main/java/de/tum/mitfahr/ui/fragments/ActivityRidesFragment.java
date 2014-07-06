@@ -68,7 +68,7 @@ public class ActivityRidesFragment extends AbstractNavigationFragment {
 
     public class ActivityRidesPagerAdapter extends FragmentPagerAdapter {
 
-        private final String[] TITLES = {"All", "Around Me", "My Activity"};
+        private final String[] TITLES = {"All", "Around Me", "Recent"};
 
         public ActivityRidesPagerAdapter(FragmentManager fm) {
             super(fm);

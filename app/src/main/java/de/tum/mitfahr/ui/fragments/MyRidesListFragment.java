@@ -134,7 +134,6 @@ public class MyRidesListFragment extends Fragment implements SwipeRefreshLayout.
                 holder = new HeaderViewHolder();
                 convertView = mInflater.inflate(R.layout.header_separator, viewGroup, false);
                 holder.text = (TextView) convertView.findViewById(R.id.section_name_text);
-                holder.image = (ImageView) convertView.findViewById(R.id.section_image);
                 convertView.setTag(holder);
             } else {
                 holder = (HeaderViewHolder) convertView.getTag();
@@ -152,7 +151,6 @@ public class MyRidesListFragment extends Fragment implements SwipeRefreshLayout.
 
         class HeaderViewHolder {
             TextView text;
-            ImageView image;
         }
     }
 }
