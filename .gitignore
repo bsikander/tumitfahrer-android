@@ -11,3 +11,5 @@ gen
 # IntelliJ
 *.iml
 .idea
+/build
+.idea
