@@ -4,10 +4,10 @@ import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.requests.OfferRideRequest;
 import de.tum.mitfahr.networking.models.response.DeleteRideResponse;
 import de.tum.mitfahr.networking.models.response.JoinRequestResponse;
-import de.tum.mitfahr.networking.models.response.RequestsResponse;
-import de.tum.mitfahr.networking.models.response.RidesResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
+import de.tum.mitfahr.networking.models.response.RequestsResponse;
 import de.tum.mitfahr.networking.models.response.RideResponse;
+import de.tum.mitfahr.networking.models.response.RidesResponse;
 import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
@@ -16,6 +16,7 @@ import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
+import retrofit.http.Query;
 
 /**
  * Created by amr on 18/05/14.
@@ -131,12 +132,11 @@ public interface RidesAPIService {
             Callback<RidesResponse> callback
     );
 
-    // Not sure about this call
-    @GET("/rides?from_date={fromDate}&ride_type={rideType}")
+    @GET("/rides")
     public void getRides(
             @Header("apiKey") String apiKey,
-            @Path("fromDate")  String fromDate,
-            @Path("rideType") int rideType,
+            @Query("from_date") String fromDate,
+            @Query("ride_type") int rideType,
             Callback<RidesResponse> callback
     );
 }

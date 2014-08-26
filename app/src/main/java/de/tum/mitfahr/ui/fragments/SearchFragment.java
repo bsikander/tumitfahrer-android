@@ -2,22 +2,28 @@ package de.tum.mitfahr.ui.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dd.CircularProgressButton;
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
-import com.doomonafireball.betterpickers.timepicker.TimePickerBuilder;
-import com.doomonafireball.betterpickers.timepicker.TimePickerDialogFragment;
-import com.squareup.otto.Bus;
+import com.doomonafireball.betterpickers.radialtimepicker.RadialPickerLayout;
+import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -25,19 +31,23 @@ import java.util.TimeZone;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
-import de.tum.mitfahr.events.DisplaySearchEvent;
-import de.tum.mitfahr.events.SearchClickedEvent;
 import de.tum.mitfahr.events.SearchEvent;
-import de.tum.mitfahr.networking.models.Ride;
-import de.tum.mitfahr.util.ActionBarColorChangeListener;
+import de.tum.mitfahr.util.StringHelper;
+import info.hoang8f.android.segmented.SegmentedGroup;
 
 /**
  * Created by abhijith on 22/05/14.
  */
-public class SearchFragment extends AbstractNavigationFragment implements CalendarDatePickerDialog.OnDateSetListener, TimePickerDialogFragment.TimePickerDialogHandler {
+public class SearchFragment extends AbstractNavigationFragment implements CalendarDatePickerDialog.OnDateSetListener, RadialTimePickerDialog.OnTimeSetListener {
+
+    private static final String FRAG_TAG_TIME_PICKER = "timePickerDialogFragment";
+    private static final String FRAG_TAG_DATE_PICKER = "datePickerDialogFragment";
+
+
+    public static final int RIDE_TYPE_CAMPUS = 0;
+    public static final int RIDE_TYPE_ACTIVITY = 1;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -51,13 +61,21 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
         return fragment;
     }
 
-    private static final String TAG_DATE_PICKER_FRAGMENT = "date_picker_fragment";
-
+    private int mRideType = RIDE_TYPE_CAMPUS;
+    private int mFromRadius = 15;
+    private int mToRadius = 15;
     private int mHourOfDeparture;
     private int mMinuteOfDeparture;
     private int mYearOfDeparture;
     private int mMonthOfDeparture;
     private int mDayOfDeparture;
+
+    private Handler mSearchButtonHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            searchButton.setProgress(0);
+        }
+    };
 
     @InjectView(R.id.fromSearchEditText)
     EditText fromText;
@@ -65,12 +83,31 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
     @InjectView(R.id.toSearchEditText)
     EditText toText;
 
-    public SearchFragment() {
-    }
+    @InjectView(R.id.segmentedRideType)
+    SegmentedGroup rideTypeSegmentedGroup;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    @InjectView(R.id.fromRadiusSeekBar)
+    SeekBar fromRadiusSeekBar;
+
+    @InjectView(R.id.toRadiusSeekBar)
+    SeekBar toRadiusSeekBar;
+
+    @InjectView(R.id.fromRadiusTextView)
+    TextView fromRadiusTextView;
+
+    @InjectView(R.id.toRadiusTextView)
+    TextView toRadiusTextView;
+
+    @InjectView(R.id.pickTimeButton)
+    Button pickTimeButton;
+
+    @InjectView(R.id.pickDateButton)
+    Button pickDateButton;
+
+    @InjectView(R.id.searchButton)
+    CircularProgressButton searchButton;
+
+    public SearchFragment() {
     }
 
     @Override
@@ -78,41 +115,105 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.inject(this, rootView);
+        rideTypeSegmentedGroup.setTintColor(getResources().getColor(R.color.blue3));
+        rideTypeSegmentedGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.radioButtonCampus:
+                        mRideType = RIDE_TYPE_CAMPUS;
+                        break;
+                    case R.id.radioButtonActivity:
+                        mRideType = RIDE_TYPE_ACTIVITY;
+                        break;
+                    default:
+                        mRideType = RIDE_TYPE_CAMPUS;
+                        break;
+                }
+            }
+        });
+        searchButton.setIndeterminateProgressMode(true);
         changeActionBarColor(getResources().getColor(R.color.blue3));
         return rootView;
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        DateFormat dateFormat = new SimpleDateFormat("dd:MM:yyyy, hh:mm a");
+        String dateTimeString = dateFormat.format(Calendar.getInstance().getTime());
+
+        String[] dateTime = dateTimeString.split(",");
+
+        pickTimeButton.setText(dateTime[1]);
+        pickDateButton.setText(dateTime[0]);
+
+        fromRadiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mFromRadius = progress;
+                fromRadiusTextView.setText(mFromRadius + " km");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        toRadiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mToRadius = progress;
+                toRadiusTextView.setText(mToRadius + " km");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+    }
 
     @OnClick(R.id.searchButton)
     public void onSearchPressed(Button button) {
+        if (StringHelper.isBlank(fromText.getText().toString())) {
+            fromText.setError("Required");
+            return;
+        } else if (StringHelper.isBlank(toText.getText().toString())) {
+            toText.setError("Required");
+            return;
+        }
         String from = fromText.getText().toString();
         String to = toText.getText().toString();
         String dateTime = getFormattedDate();
-        if (from != "" && to != "") {
-//            TUMitfahrApplication.getApplication(getActivity()).getSearchService()
-//                    .search(from, to, dateTime);
-        }
-
-        BusProvider.getInstance().post(new SearchClickedEvent());
+        searchButton.setProgress(50);
+        TUMitfahrApplication.getApplication(getActivity()).getSearchService()
+                .search(from, mFromRadius, to, mToRadius, dateTime, mRideType);
     }
 
-    @OnClick(R.id.pickTimeSearchButton)
+    @OnClick(R.id.pickTimeButton)
     public void showTimePickerDialog() {
-        TimePickerBuilder timePickerBuilder = new TimePickerBuilder()
-                .setFragmentManager(getChildFragmentManager())
-                .setStyleResId(R.style.BetterPickersDialogFragment_Light)
-                .setTargetFragment(SearchFragment.this);
-        timePickerBuilder.show();
+        DateTime now = DateTime.now();
+        RadialTimePickerDialog timePickerDialog = RadialTimePickerDialog.newInstance(this, now.getHourOfDay(), now.getMinuteOfHour(), false);
+        timePickerDialog.show(getChildFragmentManager(), FRAG_TAG_TIME_PICKER);
     }
 
-    @OnClick(R.id.pickDateSearchButton)
+    @OnClick(R.id.pickDateButton)
     public void showDatePickerDialog() {
         FragmentManager fm = getChildFragmentManager();
         DateTime now = DateTime.now();
         CalendarDatePickerDialog calendarDatePickerDialog = CalendarDatePickerDialog
                 .newInstance(this, now.getYear(), now.getMonthOfYear() - 1,
                         now.getDayOfMonth());
-        calendarDatePickerDialog.show(fm, TAG_DATE_PICKER_FRAGMENT);
+        calendarDatePickerDialog.show(fm, FRAG_TAG_DATE_PICKER);
     }
 
     public String getFormattedDate() {
@@ -136,12 +237,24 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
                     Toast.LENGTH_SHORT).show();
             String from = fromText.getText().toString().trim();
             String to = toText.getText().toString().trim();
-            BusProvider.getInstance().
-                    post(new DisplaySearchEvent(event.getResponse().getRides(), from, to));
+            searchButton.setProgress(100);
+            // BusProvider.getInstance().post(new DisplaySearchEvent(event.getResponse().getRides(), from, to));
         } else if (event.getType() == SearchEvent.Type.SEARCH_FAILED) {
+            searchButton.setProgress(-1);
             Toast.makeText(getActivity(), "Search Failed.",
                     Toast.LENGTH_SHORT).show();
         }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                    mSearchButtonHandler.sendEmptyMessage(0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -157,13 +270,24 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
     @Override
     public void onDateSet(CalendarDatePickerDialog calendarDatePickerDialog, int year, int monthOfYear, int dayOfMonth) {
         mYearOfDeparture = year;
-        mMonthOfDeparture = monthOfYear;
+        mMonthOfDeparture = monthOfYear + 1;
         mDayOfDeparture = dayOfMonth;
+        String date = String.format("%02d.%02d." + year, dayOfMonth, monthOfYear + 1);
+        pickDateButton.setText(date);
     }
 
     @Override
-    public void onDialogTimeSet(int reference, int hourOfDay, int minute) {
+    public void onTimeSet(RadialPickerLayout radialPickerLayout, int hourOfDay, int minute) {
         mHourOfDeparture = hourOfDay;
         mMinuteOfDeparture = minute;
+        if (hourOfDay > 12) {
+            hourOfDay = hourOfDay - 12;
+            String time = String.format("%02d:%02d pm", hourOfDay, minute);
+            pickTimeButton.setText(time);
+        } else {
+            String time = String.format("%02d:%02d am", hourOfDay, minute);
+            pickTimeButton.setText(time);
+        }
     }
+
 }

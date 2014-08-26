@@ -1,7 +1,5 @@
 package de.tum.mitfahr.networking.clients;
 
-import java.text.SimpleDateFormat;
-
 import de.tum.mitfahr.events.DeleteRideEvent;
 import de.tum.mitfahr.events.DeleteRideRequestEvent;
 import de.tum.mitfahr.events.GetRideEvent;
@@ -10,7 +8,9 @@ import de.tum.mitfahr.events.GetRidesDateEvent;
 import de.tum.mitfahr.events.GetRidesPageEvent;
 import de.tum.mitfahr.events.GetUserRequestsEvent;
 import de.tum.mitfahr.events.JoinRequestEvent;
-import de.tum.mitfahr.events.MyRidesEvent;
+import de.tum.mitfahr.events.MyRidesAsDriverEvent;
+import de.tum.mitfahr.events.MyRidesAsPassengerEvent;
+import de.tum.mitfahr.events.MyRidesPastEvent;
 import de.tum.mitfahr.events.OfferRideEvent;
 import de.tum.mitfahr.events.RemovePassengerEvent;
 import de.tum.mitfahr.events.RespondToRequestEvent;
@@ -21,10 +21,10 @@ import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.requests.OfferRideRequest;
 import de.tum.mitfahr.networking.models.response.DeleteRideResponse;
 import de.tum.mitfahr.networking.models.response.JoinRequestResponse;
-import de.tum.mitfahr.networking.models.response.RequestsResponse;
-import de.tum.mitfahr.networking.models.response.RidesResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
+import de.tum.mitfahr.networking.models.response.RequestsResponse;
 import de.tum.mitfahr.networking.models.response.RideResponse;
+import de.tum.mitfahr.networking.models.response.RidesResponse;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -32,7 +32,7 @@ import retrofit.client.Response;
 /**
  * Created by amr on 18/05/14.
  */
-public class RidesRESTClient extends AbstractRESTClient{
+public class RidesRESTClient extends AbstractRESTClient {
 
     private RidesAPIService ridesAPIService;
 
@@ -43,13 +43,13 @@ public class RidesRESTClient extends AbstractRESTClient{
     }
 
     public void offerRide(final String departure,
-                                    final String destination,
-                                    final String meetingPoint,
-                                    final String freeSeats,
-                                    final String dateTime,
-                                    final String userAPIKey,
-                                    final int rideType,
-                                    final int userId) {
+                          final String destination,
+                          final String meetingPoint,
+                          final String freeSeats,
+                          final String dateTime,
+                          final String userAPIKey,
+                          final int rideType,
+                          final int userId) {
         OfferRideRequest requestData = new OfferRideRequest(departure, destination, meetingPoint, freeSeats, dateTime, rideType);
         ridesAPIService.offerRide(userAPIKey, userId, requestData, offerRideCallback);
     }
@@ -100,22 +100,48 @@ public class RidesRESTClient extends AbstractRESTClient{
     };
 
     public void getMyRidesAsDriver(final int userId, String userAPIKey) {
-        ridesAPIService.getMyRidesAsDriver(userAPIKey, userId, getMyRidesCallback);
+        ridesAPIService.getMyRidesAsDriver(userAPIKey, userId, getMyRidesAsDriverCallback);
     }
 
-    public void getMyRidesAsPassenger(final int userId, String userAPIKey) {
-        ridesAPIService.getMyRidesAsPassenger(userAPIKey, userId, getMyRidesCallback);
-    }
-
-    public void getMyRidesPast(final int userId, String userAPIKey) {
-        ridesAPIService.getMyRidesPast(userAPIKey, userId, getMyRidesCallback);
-    }
-
-    private Callback<RidesResponse> getMyRidesCallback = new Callback<RidesResponse>() {
+    private Callback<RidesResponse> getMyRidesAsDriverCallback = new Callback<RidesResponse>() {
 
         @Override
         public void success(RidesResponse ridesResponse, Response response) {
-            mBus.post(new MyRidesEvent(MyRidesEvent.Type.RESULT, ridesResponse));
+            mBus.post(new MyRidesAsDriverEvent(MyRidesAsDriverEvent.Type.RESULT, ridesResponse));
+        }
+
+        @Override
+        public void failure(RetrofitError retrofitError) {
+            mBus.post(new RequestFailedEvent());
+        }
+    };
+
+    public void getMyRidesAsPassenger(final int userId, String userAPIKey) {
+        ridesAPIService.getMyRidesAsPassenger(userAPIKey, userId, getMyRidesAsPassengerCallback);
+    }
+
+    private Callback<RidesResponse> getMyRidesAsPassengerCallback = new Callback<RidesResponse>() {
+
+        @Override
+        public void success(RidesResponse ridesResponse, Response response) {
+            mBus.post(new MyRidesAsPassengerEvent(MyRidesAsPassengerEvent.Type.RESULT, ridesResponse));
+        }
+
+        @Override
+        public void failure(RetrofitError retrofitError) {
+            mBus.post(new RequestFailedEvent());
+        }
+    };
+
+    public void getMyRidesPast(final int userId, String userAPIKey) {
+        ridesAPIService.getMyRidesPast(userAPIKey, userId, getMyRidesPastCallback);
+    }
+
+    private Callback<RidesResponse> getMyRidesPastCallback = new Callback<RidesResponse>() {
+
+        @Override
+        public void success(RidesResponse ridesResponse, Response response) {
+            mBus.post(new MyRidesPastEvent(MyRidesPastEvent.Type.RESULT, ridesResponse));
         }
 
         @Override
@@ -141,7 +167,7 @@ public class RidesRESTClient extends AbstractRESTClient{
     };
 
     // Doc not clear
-    public void getRides(String userAPIKey, String fromDate,int rideType) {
+    public void getRides(String userAPIKey, String fromDate, int rideType) {
         ridesAPIService.getRides(userAPIKey, fromDate, rideType, getRidesCallback);
     }
 

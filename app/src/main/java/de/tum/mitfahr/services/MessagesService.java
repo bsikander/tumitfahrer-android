@@ -37,7 +37,7 @@ public class MessagesService {
 
     public void createMessage(int rideId, int conversationId, int receiverId, String content) {
         MessageRequest message = new MessageRequest(senderId, receiverId, content);
-        mMessagesRESTClient.createMessage(userAPIKey, rideId, conversationId, message);
+        //mMessagesRESTClient.createMessage(userAPIKey, rideId, conversationId, message);
     }
 
     @Subscribe

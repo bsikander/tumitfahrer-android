@@ -20,7 +20,10 @@ import de.tum.mitfahr.events.GetRidesDateEvent;
 import de.tum.mitfahr.events.GetRidesPageEvent;
 import de.tum.mitfahr.events.GetUserRequestsEvent;
 import de.tum.mitfahr.events.JoinRequestEvent;
+import de.tum.mitfahr.events.MyRidesAsDriverEvent;
+import de.tum.mitfahr.events.MyRidesAsPassengerEvent;
 import de.tum.mitfahr.events.MyRidesEvent;
+import de.tum.mitfahr.events.MyRidesPastEvent;
 import de.tum.mitfahr.events.OfferRideEvent;
 import de.tum.mitfahr.events.RemovePassengerEvent;
 import de.tum.mitfahr.events.RespondToRequestEvent;
@@ -108,8 +111,32 @@ public class RidesService {
         mRidesRESTClient.getMyRidesAsDriver(userId, userAPIKey);
     }
 
+    @Subscribe
+    public void onGetMyRidesAsDriverResult(MyRidesAsDriverEvent result) {
+        if(result.getType() == MyRidesAsDriverEvent.Type.RESULT) {
+            RidesResponse response = result.getResponse();
+            if (null == response.getRides()) {
+                mBus.post(new MyRidesAsDriverEvent(MyRidesAsDriverEvent.Type.GET_FAILED, response));
+            } else {
+                mBus.post(new MyRidesAsDriverEvent(MyRidesAsDriverEvent.Type.GET_SUCCESSFUL, response));
+            }
+        }
+    }
+
     public void getMyRidesAsPassenger() {
         mRidesRESTClient.getMyRidesAsPassenger(userId, userAPIKey);
+    }
+
+    @Subscribe
+    public void onGetMyRidesAsPassengerResult(MyRidesAsPassengerEvent result) {
+        if(result.getType() == MyRidesAsPassengerEvent.Type.RESULT) {
+            RidesResponse response = result.getResponse();
+            if (null == response.getRides()) {
+                mBus.post(new MyRidesAsPassengerEvent(MyRidesAsPassengerEvent.Type.GET_FAILED, response));
+            } else {
+                mBus.post(new MyRidesAsPassengerEvent(MyRidesAsPassengerEvent.Type.GET_SUCCESSFUL, response));
+            }
+        }
     }
 
     public void getMyRidesPast() {
@@ -117,13 +144,13 @@ public class RidesService {
     }
 
     @Subscribe
-    public void onGetMyRidesResult(MyRidesEvent result) {
-        if(result.getType() == OfferRideEvent.Type.RESULT) {
+    public void onGetMyRidesPastResult(MyRidesPastEvent result) {
+        if(result.getType() == MyRidesPastEvent.Type.RESULT) {
             RidesResponse response = result.getResponse();
             if (null == response.getRides()) {
-                mBus.post(new MyRidesEvent(MyRidesEvent.Type.GET_FAILED, response));
+                mBus.post(new MyRidesPastEvent(MyRidesPastEvent.Type.GET_FAILED, response));
             } else {
-                mBus.post(new MyRidesEvent(MyRidesEvent.Type.GET_SUCCESSFUL, response));
+                mBus.post(new MyRidesPastEvent(MyRidesPastEvent.Type.GET_SUCCESSFUL, response));
             }
         }
     }

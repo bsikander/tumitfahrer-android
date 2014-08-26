@@ -1,9 +1,11 @@
 package de.tum.mitfahr.networking.clients;
 
-import de.tum.mitfahr.events.AbstractEvent;
+import java.util.ArrayList;
+
 import de.tum.mitfahr.events.SearchEvent;
 import de.tum.mitfahr.networking.api.SearchAPIService;
 import de.tum.mitfahr.networking.events.RequestFailedEvent;
+import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.requests.SearchRequest;
 import de.tum.mitfahr.networking.models.response.SearchResponse;
 import retrofit.Callback;
@@ -31,7 +33,11 @@ public class SearchRESTClient extends AbstractRESTClient {
 
         @Override
         public void success(SearchResponse searchResponse, Response response) {
-            mBus.post(new SearchEvent(SearchEvent.Type.RESULT, searchResponse));
+            if (response.getStatus() == 204) {
+                mBus.post(new SearchEvent(SearchEvent.Type.RESULT, new SearchResponse("", "", new ArrayList<Ride>())));
+            } else {
+                mBus.post(new SearchEvent(SearchEvent.Type.RESULT, searchResponse));
+            }
         }
 
         @Override

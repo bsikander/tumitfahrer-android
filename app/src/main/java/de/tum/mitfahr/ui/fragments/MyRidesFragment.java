@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,27 +52,24 @@ public class MyRidesFragment extends AbstractNavigationFragment {
         ButterKnife.inject(this, rootView);
         adapter = new MyRidesAdapter(getChildFragmentManager());
         pager.setAdapter(adapter);
+        pager.setOffscreenPageLimit(3);
         tabs.setViewPager(pager);
         changeActionBarColor(getResources().getColor(R.color.blue4));
-        //showTabs();
         return rootView;
     }
 
-    /**
-     * Show the label using an animation
-     */
-    private void showTabs() {
-        tabs.setVisibility(View.VISIBLE);
-        tabs.setTranslationY(-getActivity().getActionBar().getHeight());
-        tabs.animate().translationY(0f).setDuration(100).start();
-    }
+    public class MyRidesAdapter extends FragmentStatePagerAdapter {
 
-    public class MyRidesAdapter extends FragmentPagerAdapter {
-
-        private final String[] TITLES = {"Past", "Joined", "Created"};
+        private final String[] TITLES = {"Created", "Joined", "Past"};
+        private MyRidesCreatedFragment myRidesCreatedFragment;
+        private MyRidesPastFragment myRidesPastFragment;
+        private MyRidesJoinedFragment myRidesJoinedFragment;
 
         public MyRidesAdapter(FragmentManager fm) {
             super(fm);
+            myRidesCreatedFragment = MyRidesCreatedFragment.newInstance();
+            myRidesJoinedFragment = MyRidesJoinedFragment.newInstance();
+            myRidesPastFragment = MyRidesPastFragment.newInstance();
         }
 
         @Override
@@ -86,7 +84,12 @@ public class MyRidesFragment extends AbstractNavigationFragment {
 
         @Override
         public Fragment getItem(int position) {
-            return MyRidesListFragment.newInstance();
+            if (position == 0)
+                return myRidesCreatedFragment;
+            else if (position == 1)
+                return myRidesJoinedFragment;
+            else
+                return myRidesPastFragment;
         }
     }
 

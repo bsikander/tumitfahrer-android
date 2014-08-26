@@ -20,6 +20,9 @@ public class Ride implements Serializable {
     private int rideType;
     private String createdAt;
     private String updatedAt;
+    private double latitude;
+
+    private double longitude;
 
     public Ride(int id,
                 String departurePlace,
@@ -47,6 +50,8 @@ public class Ride implements Serializable {
         this.rideType = rideType;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.latitude = 0.0;
+        this.longitude = 0.0;
     }
 
     public int getId() {
@@ -151,5 +156,21 @@ public class Ride implements Serializable {
 
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 }

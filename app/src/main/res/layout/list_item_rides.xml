@@ -3,7 +3,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="150dp">
+    android:layout_height="170dp">
 
     <ImageView
         android:src="@drawable/list_gradient"
@@ -96,12 +96,13 @@
 
         </RelativeLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/ride_item_row_two"
             android:layout_above="@id/ride_item_row_three"
             android:layout_width="fill_parent"
             android:layout_alignParentLeft="true"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="4dp"
+            android:orientation="vertical"
             android:layout_height="wrap_content">
 
             <TextView
@@ -112,8 +113,9 @@
                 android:textColor="@color/white"
                 android:drawablePadding="16dp"
                 android:gravity="center"
-                android:layout_marginRight="16dp"
-                android:drawableRight="@drawable/time_icon"
+                android:layout_marginBottom="4dp"
+                android:layout_marginRight="10dp"
+                android:drawableLeft="@drawable/time_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -121,14 +123,16 @@
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:id="@+id/rides_to_text"
-                android:layout_toRightOf="@id/rides_from_text"
+                android:drawablePadding="16dp"
+                android:layout_marginRight="10dp"
+                android:drawableLeft="@drawable/time_icon"
                 android:text="Garching-Forschungzentrum"
                 android:textColor="@color/white"
                 android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </RelativeLayout>
 

@@ -136,6 +136,7 @@ public class RideListFragment extends Fragment implements SwipeRefreshLayout.OnR
             String text = getItem(position);
             ((ImageView) view.findViewById(R.id.ride_location_image)).setBackgroundResource(R.drawable.list_image_placeholder);
             ((TextView) view.findViewById(R.id.rides_to_text)).setText(text);
+
             return view;
         }
     }

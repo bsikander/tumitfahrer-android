@@ -16,9 +16,9 @@ public class MessagesRESTClient extends AbstractRESTClient {
         messagesAPIService = mRestAdapter.create(MessagesAPIService.class);
     }
 
-    public void createMessage(String userAPIKey, int rideId, int conversationId,
-                              MessageRequest message) {
-        messagesAPIService.createMessage(userAPIKey, rideId, conversationId, message,
-                createMessageCallback);
-    }
+//    public void createMessage(String userAPIKey, int rideId, int conversationId,
+//                              MessageRequest message) {
+//        messagesAPIService.createMessage(userAPIKey, rideId, conversationId, message,
+//                createMessageCallback);
+//    }
 }

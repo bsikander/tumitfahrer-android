@@ -5,7 +5,12 @@ import android.content.Context;
 
 import com.squareup.otto.Bus;
 
+import de.tum.mitfahr.services.ActivitiesService;
+import de.tum.mitfahr.services.ConversationsService;
+import de.tum.mitfahr.services.FeedbackService;
+import de.tum.mitfahr.services.MessagesService;
 import de.tum.mitfahr.services.ProfileService;
+import de.tum.mitfahr.services.RatingsService;
 import de.tum.mitfahr.services.RidesService;
 import de.tum.mitfahr.services.SearchService;
 
@@ -22,6 +27,12 @@ public class TUMitfahrApplication extends Application {
     private RidesService mRidesService;
     private SearchService mSearchService;
 
+    private ActivitiesService mActivitiesService;
+    private MessagesService mMessagesService;
+    private ConversationsService mConversationsService;
+    private FeedbackService mFeedbackService;
+    private RatingsService mRatingsService;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -31,11 +42,37 @@ public class TUMitfahrApplication extends Application {
         mSearchService = new SearchService(this);
     }
 
-    public ProfileService getProfileService(){
+    public ProfileService getProfileService() {
         return mProfileService;
     }
-    public RidesService getRidesService() { return  mRidesService; }
-    public SearchService getSearchService() { return mSearchService; }
+
+    public RidesService getRidesService() {
+        return mRidesService;
+    }
+
+    public SearchService getSearchService() {
+        return mSearchService;
+    }
+
+    public ActivitiesService getActivitiesService() {
+        return mActivitiesService;
+    }
+
+    public MessagesService getMessagesService(){
+        return mMessagesService;
+    }
+
+    public ConversationsService getConversationsService(){
+        return mConversationsService;
+    }
+
+    public FeedbackService getFeedbackService(){
+        return mFeedbackService;
+    }
+
+    public RatingsService getRatingsService(){
+        return mRatingsService;
+    }
 
     public String getBaseURLBackend() {
         return BASE_BACKEND_URL;

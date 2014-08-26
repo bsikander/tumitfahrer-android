@@ -58,7 +58,6 @@ public class TimelineFragment extends AbstractNavigationFragment {
         pager.setAdapter(adapter);
         tabs.setViewPager(pager);
         changeActionBarColor(getResources().getColor(R.color.blue1));
-        //showTabs();
         return rootView;
     }
 
@@ -71,16 +70,6 @@ public class TimelineFragment extends AbstractNavigationFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
-
-    /**
-     * Show the label using an animation
-     */
-    private void showTabs() {
-        tabs.setVisibility(View.VISIBLE);
-        tabs.setTranslationY(-getActivity().getActionBar().getHeight());
-        tabs.animate().translationY(0f).setDuration(100).start();
-    }
-
 
     public class TimelinePagerAdapter extends FragmentPagerAdapter {
 

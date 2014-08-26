@@ -21,6 +21,11 @@ import de.tum.mitfahr.R;
  */
 public class CampusRidesFragment extends AbstractNavigationFragment {
 
+    public static final int FRAGMENT_TYPE_ALL = 0;
+    public static final int FRAGMENT_TYPE_AROUND = 1;
+    public static final int FRAGMENT_TYPE_MY = 2;
+
+
     @InjectView(R.id.tabs)
     PagerSlidingTabStrip tabs;
 
@@ -51,6 +56,7 @@ public class CampusRidesFragment extends AbstractNavigationFragment {
         ButterKnife.inject(this, rootView);
         adapter = new CampusPagerAdapter(getChildFragmentManager());
         pager.setAdapter(adapter);
+        pager.setOffscreenPageLimit(3);
         tabs.setViewPager(pager);
         changeActionBarColor(getResources().getColor(R.color.blue2));
         //showTabs();
@@ -86,12 +92,18 @@ public class CampusRidesFragment extends AbstractNavigationFragment {
 
         @Override
         public Fragment getItem(int position) {
-            return RideListFragment.newInstance();
+            if (position == 0)
+                return CampusRideListFragment.newInstance(FRAGMENT_TYPE_ALL);
+            else if (position == 1)
+                return CampusRideListFragment.newInstance(FRAGMENT_TYPE_AROUND);
+            else
+                return CampusRideListFragment.newInstance(FRAGMENT_TYPE_MY);
         }
     }
 
     @Override
     public void onAttach(Activity activity) {
+
         super.onAttach(activity);
     }
 }

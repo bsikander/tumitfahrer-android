@@ -7,10 +7,62 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:paddingBottom="12dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp"
+        android:animateLayoutChanges="true"
         android:layout_height="wrap_content">
+
+        <info.hoang8f.android.segmented.SegmentedGroup
+            android:id="@+id/segmentedRequestType"
+            android:layout_width="fill_parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioButtonPassenger"
+                android:layout_width="0dp"
+                android:checked="true"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="I'm a Passenger"
+                style="@style/RadioButton" />
+
+            <RadioButton
+                android:id="@+id/radioButtonDriver"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="I'm a Driver"
+                android:layout_weight="1"
+                style="@style/RadioButton" />
+        </info.hoang8f.android.segmented.SegmentedGroup>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_marginTop="16dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="16sp"
+                android:paddingLeft="12dp"
+                android:paddingRight="3dp"
+                android:gravity="center"
+                android:text="Looking for"
+                android:layout_height="wrap_content" />
+
+            <Spinner
+                android:id="@+id/rideTypeSpinner"
+                style="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="@string/ride_type" />
+        </LinearLayout>
 
         <de.tum.mitfahr.widget.FloatLabelLayout
             android:layout_width="match_parent"
@@ -68,6 +120,8 @@
         </de.tum.mitfahr.widget.FloatLabelLayout>
 
         <de.tum.mitfahr.widget.FloatLabelLayout
+            android:id="@+id/seatsTextContainer"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -81,32 +135,52 @@
                 android:hint="@string/free_seats" />
         </de.tum.mitfahr.widget.FloatLabelLayout>
 
-        <Button
-            android:id="@+id/pickTimeButton"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/pick_time" />
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/pickDateButton"
-            android:layout_width="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_height="wrap_content"
-            android:text="@string/pick_date" />
+            <Button
+                android:id="@+id/pickTimeButton"
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/placeholder"
+                android:text="@string/pick_time" />
 
-        <Spinner
-            android:id="@+id/rideTypeSpinner"
-            android:layout_width="match_parent"
-            android:layout_marginTop="8dp"
-            android:layout_height="wrap_content"
-            android:hint="@string/ride_type" />
+            <View
+                android:layout_width="2dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/gray_faded"
+                android:layout_marginBottom="10dp"
+                android:layout_height="fill_parent" />
 
-        <Button
+
+            <Button
+                android:id="@+id/pickDateButton"
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/placeholder"
+                android:text="@string/pick_date" />
+        </LinearLayout>
+
+
+        <com.dd.CircularProgressButton
             android:id="@+id/offerRideButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/offer_ride" />
+            android:layout_width="fill_parent"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cpb_textComplete="Ride Created"
+            app:cpb_textError="Error"
+            app:cpb_cornerRadius="4dp"
+            app:cpb_textIdle="Create Ride"
+            app:cpb_selectorIdle="@drawable/button_blue3_idle_state_selector" />
     </LinearLayout>
 </ScrollView>
