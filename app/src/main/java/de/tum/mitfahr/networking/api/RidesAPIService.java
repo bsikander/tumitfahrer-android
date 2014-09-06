@@ -38,6 +38,12 @@ public interface RidesAPIService {
             Callback<RideResponse> callback
     );
 
+    @GET("/rides/{id}")
+    public RideResponse getRideSynchronous(
+            @Header("apiKey") String apiKey,
+            @Path("id") int rideId
+    );
+
     @PUT("/users/{userId}/rides/{rideId}")
     public void updateRide(
             @Header("apiKey") String apiKey,

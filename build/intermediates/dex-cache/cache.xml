@@ -20,17 +20,17 @@
         revision="19.1.0"
         sha1="204e63a153ba147b98f3d9631aa3b1cd1c9759e6"/>
     <item
-        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/otto-1.3.4-57f69a146f1d002998225f96ae3337bee296d389.jar"
-        jar="/Users/abhijith/.gradle/caches/modules-2/files-2.1/com.squareup/otto/1.3.4/4d72fb811c7b3c0e7f412112020d4430f044e510/otto-1.3.4.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="4d72fb811c7b3c0e7f412112020d4430f044e510"/>
-    <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-59e133bf0c1873fd1e7fbfe9924b207d27ce2b57.jar"
         jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/5.0.89/classes.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="d71573c9c5ea98a8db47ad6ff993a63d492b3bfa"/>
+    <item
+        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/otto-1.3.4-57f69a146f1d002998225f96ae3337bee296d389.jar"
+        jar="/Users/abhijith/.gradle/caches/modules-2/files-2.1/com.squareup/otto/1.3.4/4d72fb811c7b3c0e7f412112020d4430f044e510/otto-1.3.4.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="4d72fb811c7b3c0e7f412112020d4430f044e510"/>
     <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-c1618c34a19990cc7e2d86aaa8d3f3d0a964f765.jar"
         jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/info.hoang8f/android-segmented/1.0.2/classes.jar"
@@ -38,11 +38,11 @@
         revision="19.1.0"
         sha1="b345b04752628a557bfceefc3f15afb22533db18"/>
     <item
-        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/butterknife-5.1.0-a4ab4f3d3e324cd5ae20f14fdf9c173b1a35886c.jar"
-        jar="/Users/abhijith/.gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife/5.1.0/42e2b5bbe9a148d09d58f78362d02fcfa505c4d2/butterknife-5.1.0.jar"
+        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/renderscript-v8-dea84e7f5b86d667fb766ab87288921c44bdf1a3.jar"
+        jar="/Applications/Android Studio.app/sdk/build-tools/19.1.0/renderscript/lib/renderscript-v8.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="42e2b5bbe9a148d09d58f78362d02fcfa505c4d2"/>
+        sha1="daa96940c1ddb41cb50c36c4fa113edc5f81f09e"/>
     <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-fe930dc68beb1e566675ce71b270d4091c6c249b.jar"
         jar="/Applications/Android Studio.app/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
@@ -50,11 +50,11 @@
         revision="19.1.0"
         sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
     <item
-        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/renderscript-v8-dea84e7f5b86d667fb766ab87288921c44bdf1a3.jar"
-        jar="/Applications/Android Studio.app/sdk/build-tools/19.1.0/renderscript/lib/renderscript-v8.jar"
+        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/butterknife-5.1.0-a4ab4f3d3e324cd5ae20f14fdf9c173b1a35886c.jar"
+        jar="/Users/abhijith/.gradle/caches/modules-2/files-2.1/com.jakewharton/butterknife/5.1.0/42e2b5bbe9a148d09d58f78362d02fcfa505c4d2/butterknife-5.1.0.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="daa96940c1ddb41cb50c36c4fa113edc5f81f09e"/>
+        sha1="42e2b5bbe9a148d09d58f78362d02fcfa505c4d2"/>
     <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-0c74af5234f61c09f665e35b5b9221f605b59755.jar"
         jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/com.astuetz/pagerslidingtabstrip/1.0.1/classes.jar"
@@ -73,6 +73,18 @@
         jumboMode="false"
         revision="19.1.0"
         sha1="d6b7f0093cec6c9faf65dbfd6a6a345d0ed25e27"/>
+    <item
+        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/aws-android-sdk-1.7.1.1-core-964e98899598307ad6d898445b1dfb39f00e8696.jar"
+        jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/libs/aws-android-sdk-1.7.1.1-core.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="385121088c5a9ca2a74706391a9b013373cea280"/>
+    <item
+        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/aws-android-sdk-1.7.1.1-s3-c81c5cf15e7e0f9be6aeaf57a86d4d112ce6d88a.jar"
+        jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/libs/aws-android-sdk-1.7.1.1-s3.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="fe79f292dc7f04ef5c0f18a65b7d52202b7bbb42"/>
     <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/retrofit-1.6.0-7305025740bacdf8388cd87db2e5dda09c40964c.jar"
         jar="/Users/abhijith/.gradle/caches/modules-2/files-2.1/com.squareup.retrofit/retrofit/1.6.0/39a9e4b49ded46aa1b67d492fe287c4cebcd815c/retrofit-1.6.0.jar"

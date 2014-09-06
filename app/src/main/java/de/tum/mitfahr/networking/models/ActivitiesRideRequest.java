@@ -3,7 +3,7 @@ package de.tum.mitfahr.networking.models;
 /**
  * Created by amr on 02/07/14.
  */
-public class ActivityRideRequest {
+public class ActivitiesRideRequest {
 
     private int id;
     private int passengerId;
@@ -11,13 +11,13 @@ public class ActivityRideRequest {
     private String createdAt;
     private String updatedAt;
 
-    public ActivityRideRequest(int id, int passengerId, int rideId) {
+    public ActivitiesRideRequest(int id, int passengerId, int rideId) {
         this.id = id;
         this.passengerId = passengerId;
         this.rideId = rideId;
     }
 
-    public ActivityRideRequest(int id, int passengerId, int rideId, String createdAt, String updatedAt) {
+    public ActivitiesRideRequest(int id, int passengerId, int rideId, String createdAt, String updatedAt) {
         this.id = id;
         this.passengerId = passengerId;
         this.rideId = rideId;

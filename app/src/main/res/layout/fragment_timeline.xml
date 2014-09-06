@@ -14,7 +14,7 @@
         android:background="@color/blue1"
         app:pstsUnderlineColor="@color/blue1"
         app:pstsIndicatorColor="@color/white"
-        android:layout_height="36dp" />
+        android:layout_height="48dp" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"

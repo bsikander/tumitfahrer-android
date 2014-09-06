@@ -8,8 +8,8 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -33,6 +33,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.adapters.LocationAutoCompleteAdapter;
 import de.tum.mitfahr.events.SearchEvent;
 import de.tum.mitfahr.util.StringHelper;
 import info.hoang8f.android.segmented.SegmentedGroup;
@@ -74,14 +75,15 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
         @Override
         public void handleMessage(Message msg) {
             searchButton.setProgress(0);
+            searchButton.setClickable(true);
         }
     };
 
     @InjectView(R.id.fromSearchEditText)
-    EditText fromText;
+    AutoCompleteTextView fromText;
 
     @InjectView(R.id.toSearchEditText)
-    EditText toText;
+    AutoCompleteTextView toText;
 
     @InjectView(R.id.segmentedRideType)
     SegmentedGroup rideTypeSegmentedGroup;
@@ -108,6 +110,17 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
     CircularProgressButton searchButton;
 
     public SearchFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Calendar calendar = Calendar.getInstance();
+        mHourOfDeparture = calendar.get(Calendar.HOUR_OF_DAY);
+        mMinuteOfDeparture = calendar.get(Calendar.MINUTE);
+        mYearOfDeparture = calendar.get(Calendar.YEAR);
+        mMonthOfDeparture = calendar.get(Calendar.MONTH);
+        mDayOfDeparture = calendar.get(Calendar.DAY_OF_MONTH);
     }
 
     @Override
@@ -180,7 +193,12 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
+
+        final LocationAutoCompleteAdapter adapter = new LocationAutoCompleteAdapter(getActivity());
+        fromText.setAdapter(adapter);
+        toText.setAdapter(adapter);
     }
+
 
     @OnClick(R.id.searchButton)
     public void onSearchPressed(Button button) {
@@ -191,6 +209,7 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
             toText.setError("Required");
             return;
         }
+        searchButton.setClickable(false);
         String from = fromText.getText().toString();
         String to = toText.getText().toString();
         String dateTime = getFormattedDate();
@@ -241,8 +260,6 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
             // BusProvider.getInstance().post(new DisplaySearchEvent(event.getResponse().getRides(), from, to));
         } else if (event.getType() == SearchEvent.Type.SEARCH_FAILED) {
             searchButton.setProgress(-1);
-            Toast.makeText(getActivity(), "Search Failed.",
-                    Toast.LENGTH_SHORT).show();
         }
         new Thread(new Runnable() {
             @Override
@@ -272,7 +289,7 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
         mYearOfDeparture = year;
         mMonthOfDeparture = monthOfYear + 1;
         mDayOfDeparture = dayOfMonth;
-        String date = String.format("%02d.%02d." + year, dayOfMonth, monthOfYear + 1);
+        String date = String.format("%02d/%02d/" + year, dayOfMonth, monthOfYear + 1);
         pickDateButton.setText(date);
     }
 

@@ -10,6 +10,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="16dp"
+        android:paddingTop="16dp"
         android:animateLayoutChanges="true"
         android:layout_height="wrap_content">
 
@@ -28,6 +29,8 @@
                 android:checked="true"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textAllCaps="true"
+                android:textSize="12sp"
                 android:text="I'm a Passenger"
                 style="@style/RadioButton" />
 
@@ -37,6 +40,8 @@
                 android:layout_height="wrap_content"
                 android:text="I'm a Driver"
                 android:layout_weight="1"
+                android:textAllCaps="true"
+                android:textSize="12sp"
                 style="@style/RadioButton" />
         </info.hoang8f.android.segmented.SegmentedGroup>
 
@@ -106,7 +111,7 @@
             android:layout_marginTop="8dp"
             app:floatLabelTextAppearance="@style/TextAppearance.FloatLabel">
 
-            <AutoCompleteTextView
+            <EditText
                 android:id="@id/meetingText"
                 android:inputType="textNoSuggestions"
                 android:layout_width="match_parent"
@@ -136,6 +141,7 @@
         </de.tum.mitfahr.widget.FloatLabelLayout>
 
         <LinearLayout
+            android:layout_marginTop="16dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -145,13 +151,12 @@
                 style="?android:buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_weight="1"
                 android:drawableLeft="@drawable/placeholder"
                 android:text="@string/pick_time" />
 
             <View
-                android:layout_width="2dp"
+                android:layout_width="2px"
                 android:layout_marginTop="10dp"
                 android:background="@color/gray_faded"
                 android:layout_marginBottom="10dp"
@@ -163,7 +168,6 @@
                 style="?android:buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_marginTop="8dp"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/placeholder"
                 android:text="@string/pick_date" />
@@ -176,11 +180,12 @@
             android:layout_height="48dp"
             android:layout_margin="16dp"
             android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textAllCaps="true"
+            android:textSize="14sp"
             app:cpb_textComplete="Ride Created"
             app:cpb_textError="Error"
-            app:cpb_cornerRadius="4dp"
-            app:cpb_textIdle="Create Ride"
+            app:cpb_cornerRadius="2dp"
+            app:cpb_textIdle="Create"
             app:cpb_selectorIdle="@drawable/button_blue3_idle_state_selector" />
     </LinearLayout>
 </ScrollView>

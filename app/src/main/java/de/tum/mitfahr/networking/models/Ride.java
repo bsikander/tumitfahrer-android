@@ -54,6 +54,15 @@ public class Ride implements Serializable {
         this.longitude = 0.0;
     }
 
+    public Ride(ActivitiesRideSearch searchedRide) {
+        this.createdAt = searchedRide.getCreatedAt();
+        this.departurePlace = searchedRide.getDeparturePlace();
+        this.departureTime = searchedRide.getDepartureTime();
+        this.destination = searchedRide.getDestination();
+        this.rideType = searchedRide.getRideType();
+        this.updatedAt = searchedRide.getUpdatedAt();
+    }
+
     public int getId() {
         return id;
     }

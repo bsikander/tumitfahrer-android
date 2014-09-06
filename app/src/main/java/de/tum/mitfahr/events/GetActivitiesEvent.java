@@ -19,7 +19,7 @@ public class GetActivitiesEvent extends AbstractEvent {
 
     public GetActivitiesEvent(Type type, ActivitiesResponse activitiesResponse, Response retrofitResponse) {
         super(type);
-        this.mActivitiesResponse = mActivitiesResponse;
+        this.mActivitiesResponse = activitiesResponse;
         this.retrofitResponse = retrofitResponse;
     }
 
@@ -27,5 +27,5 @@ public class GetActivitiesEvent extends AbstractEvent {
         return this.mActivitiesResponse;
     }
 
-    public Response getRetrofitResponse() { return this.getRetrofitResponse(); }
+    public Response getRetrofitResponse() { return this.retrofitResponse; }
 }

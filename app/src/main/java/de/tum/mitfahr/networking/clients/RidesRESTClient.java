@@ -83,6 +83,14 @@ public class RidesRESTClient extends AbstractRESTClient {
         }
     };
 
+    public Ride getRideSynchronous(String userAPIKey, int rideId) {
+        RideResponse response = ridesAPIService.getRideSynchronous(userAPIKey, rideId);
+        if (null != response && null != response.getRide()) {
+            return response.getRide();
+        }
+        return null;
+    }
+
     public void updateRide(String userAPIKey, int userId, Ride updatedRide) {
         ridesAPIService.updateRide(userAPIKey, userId, updatedRide.getId(), updatedRide, updateRideCallback);
     }

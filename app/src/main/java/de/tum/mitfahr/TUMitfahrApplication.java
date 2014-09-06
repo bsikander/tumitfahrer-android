@@ -40,6 +40,7 @@ public class TUMitfahrApplication extends Application {
         mProfileService = new ProfileService(this);
         mRidesService = new RidesService(this);
         mSearchService = new SearchService(this);
+        mActivitiesService = new ActivitiesService(this);
     }
 
     public ProfileService getProfileService() {

@@ -13,7 +13,7 @@
         <FrameLayout
             android:layout_width="fill_parent"
             android:orientation="vertical"
-            android:layout_height="200dp">
+            android:layout_height="160dp">
 
             <ImageView
                 android:layout_width="fill_parent"
@@ -110,76 +110,172 @@
                 android:layout_gravity="center"
                 android:layout_height="wrap_content" />
 
-
         </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:padding="16dp"
             android:layout_height="wrap_content">
 
             <ImageView
-                android:layout_width="56dp"
-                android:layout_margin="6dp"
+                android:layout_width="30dp"
                 android:src="@drawable/placeholder"
-                android:layout_height="56dp" />
+                android:layout_height="30dp" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:text="Far over the misty mountains cold.Through Dungeons deep, and caverns old"
+                android:id="@+id/profile_email"
+                android:layout_width="0dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:text="hello@helloworld.com"
                 android:textColor="@color/gray"
-                android:textSize="16sp"
                 android:layout_gravity="center"
-                android:layout_height="wrap_content" />
+                android:layout_marginLeft="6dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
         </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@color/gray_faded"
+            android:layout_height="2px" />
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:padding="16dp"
             android:layout_height="wrap_content">
 
             <ImageView
-                android:layout_width="56dp"
-                android:layout_margin="6dp"
+                android:layout_width="30dp"
                 android:src="@drawable/placeholder"
-                android:layout_height="56dp" />
+                android:layout_height="30dp" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:text="English, German, Spanish"
+                android:id="@+id/profile_password"
+                android:layout_width="0dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:text="Password"
                 android:textColor="@color/gray"
-                android:textSize="16sp"
                 android:layout_gravity="center"
-                android:layout_height="wrap_content" />
+                android:layout_marginLeft="6dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <View
+                android:layout_width="2px"
+                android:background="@color/gray_faded"
+                android:layout_height="fill_parent" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:background="@color/transparent"
+                android:src="@drawable/placeholder"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_height="fill_parent" />
         </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@color/gray_faded"
+            android:layout_height="2px" />
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:padding="16dp"
             android:layout_height="wrap_content">
 
             <ImageView
-                android:layout_width="56dp"
-                android:layout_margin="6dp"
+                android:layout_width="30dp"
                 android:src="@drawable/placeholder"
-                android:layout_height="56dp" />
+                android:layout_height="30dp" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:text="Mini Cooper, BMW M3"
+                android:id="@+id/profile_phone"
+                android:layout_width="0dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:text="0123456 77890"
                 android:textColor="@color/gray"
-                android:textSize="16sp"
                 android:layout_gravity="center"
-                android:layout_height="wrap_content" />
+                android:layout_marginLeft="6dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@color/gray_faded"
+            android:layout_height="2px" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:padding="16dp"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:src="@drawable/placeholder"
+                android:layout_height="30dp" />
+
+            <TextView
+                android:id="@+id/profile_car"
+                android:layout_width="0dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:text="McLaren MP4-19(B)"
+                android:textColor="@color/gray"
+                android:layout_gravity="center"
+                android:layout_marginLeft="6dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@color/gray_faded"
+            android:layout_height="2px" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:padding="16dp"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:src="@drawable/placeholder"
+                android:layout_height="30dp" />
+
+            <TextView
+                android:id="@+id/profile_department"
+                android:layout_width="0dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:text="Informatics"
+                android:textColor="@color/gray"
+                android:layout_gravity="center"
+                android:layout_marginLeft="6dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

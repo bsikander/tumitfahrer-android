@@ -77,7 +77,7 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
     AutoCompleteTextView destinationText;
 
     @InjectView(R.id.meetingText)
-    AutoCompleteTextView meetingText;
+    EditText meetingText;
 
     @InjectView(R.id.seatsText)
     EditText seatsText;
@@ -102,15 +102,27 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
     private int mYearOfDeparture;
     private int mMonthOfDeparture;
     private int mDayOfDeparture;
-    private int mRideType = 0;
+    private int mRideType = RIDE_TYPE_CAMPUS;
     private boolean driver = false;
     private ArrayAdapter<CharSequence> mRideTypeAdapter;
     private Handler mCreateButtonHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             offerRideButton.setProgress(0);
+            offerRideButton.setClickable(true);
         }
     };
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Calendar calendar = Calendar.getInstance();
+        mHourOfDeparture = calendar.get(Calendar.HOUR_OF_DAY);
+        mMinuteOfDeparture = calendar.get(Calendar.MINUTE);
+        mYearOfDeparture = calendar.get(Calendar.YEAR);
+        mMonthOfDeparture = calendar.get(Calendar.MONTH);
+        mDayOfDeparture = calendar.get(Calendar.DAY_OF_MONTH);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -146,7 +158,7 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        DateFormat dateFormat = new SimpleDateFormat("dd:MM:yyyy, hh:mm a");
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy, hh:mm a");
         String dateTimeString = dateFormat.format(Calendar.getInstance().getTime());
 
         String[] dateTime = dateTimeString.split(",");
@@ -162,18 +174,21 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
         rideTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mRideType = position;
+                if (position == 0) {
+                    mRideType = RIDE_TYPE_CAMPUS;
+                } else {
+                    mRideType = RIDE_TYPE_ACTIVITY;
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                mRideType = 0;
+                mRideType = RIDE_TYPE_CAMPUS;
             }
         });
         final LocationAutoCompleteAdapter adapter = new LocationAutoCompleteAdapter(getActivity());
         departureText.setAdapter(adapter);
         destinationText.setAdapter(adapter);
-        meetingText.setAdapter(adapter);
     }
 
     private void updateLayoutForDriverAndPassenger() {
@@ -199,6 +214,7 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
             seatsText.setError("Required");
             return;
         }
+        offerRideButton.setClickable(false);
         String departure = departureText.getText().toString();
         String destination = destinationText.getText().toString();
         String meetingPoint = meetingText.getText().toString();
@@ -284,7 +300,7 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
         mMonthOfDeparture = monthOfYear + 1;
         mDayOfDeparture = dayOfMonth;
         Log.e("MONTH:", String.valueOf(mMonthOfDeparture));
-        String date = String.format("%02d.%02d." + year, dayOfMonth, monthOfYear + 1);
+        String date = String.format("%02d/%02d/" + year, dayOfMonth, monthOfYear + 1);
         pickDateButton.setText(date);
 
     }

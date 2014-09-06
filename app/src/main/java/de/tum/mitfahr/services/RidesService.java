@@ -3,12 +3,9 @@ package de.tum.mitfahr.services;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-
-import java.text.SimpleDateFormat;
 
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.TUMitfahrApplication;
@@ -22,7 +19,6 @@ import de.tum.mitfahr.events.GetUserRequestsEvent;
 import de.tum.mitfahr.events.JoinRequestEvent;
 import de.tum.mitfahr.events.MyRidesAsDriverEvent;
 import de.tum.mitfahr.events.MyRidesAsPassengerEvent;
-import de.tum.mitfahr.events.MyRidesEvent;
 import de.tum.mitfahr.events.MyRidesPastEvent;
 import de.tum.mitfahr.events.OfferRideEvent;
 import de.tum.mitfahr.events.RemovePassengerEvent;
@@ -31,10 +27,10 @@ import de.tum.mitfahr.events.UpdateRideEvent;
 import de.tum.mitfahr.networking.clients.RidesRESTClient;
 import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.response.JoinRequestResponse;
-import de.tum.mitfahr.networking.models.response.RequestsResponse;
-import de.tum.mitfahr.networking.models.response.RidesResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
+import de.tum.mitfahr.networking.models.response.RequestsResponse;
 import de.tum.mitfahr.networking.models.response.RideResponse;
+import de.tum.mitfahr.networking.models.response.RidesResponse;
 import retrofit.client.Response;
 
 /**
@@ -60,12 +56,11 @@ public class RidesService {
 
     public void offerRide(String departure, String destination, String meetingPoint, String freeSeats, String dateTime, int rideType) {
         mRidesRESTClient.offerRide(departure, destination, meetingPoint, freeSeats, dateTime, userAPIKey, rideType, userId);
-        //TODO : create otto event classes and stuff!
     }
 
     @Subscribe
     public void onOfferRidesResult(OfferRideEvent result) {
-        if(result.getType() == OfferRideEvent.Type.RESULT) {
+        if (result.getType() == OfferRideEvent.Type.RESULT) {
             OfferRideResponse response = result.getResponse();
             if (null == response.getRide()) {
                 mBus.post(new OfferRideEvent(OfferRideEvent.Type.OFFER_RIDE_FAILED));
@@ -81,7 +76,7 @@ public class RidesService {
 
     @Subscribe
     public void onGetRideResult(GetRideEvent result) {
-        if(result.getType() == GetRideEvent.Type.RESULT) {
+        if (result.getType() == GetRideEvent.Type.RESULT) {
             RideResponse response = result.getResponse();
             if (null == response.getRide()) {
                 mBus.post(new GetRideEvent(GetRideEvent.Type.GET_FAILED, response));
@@ -91,13 +86,18 @@ public class RidesService {
         }
     }
 
+    public Ride getRideSynchronous(int rideId) {
+        return mRidesRESTClient.getRideSynchronous(userAPIKey, rideId);
+    }
+
+
     public void updateRide(Ride updatedRide) {
         mRidesRESTClient.updateRide(userAPIKey, userId, updatedRide);
     }
 
     @Subscribe
     public void onUpdateRideResult(UpdateRideEvent result) {
-        if(result.getType() == UpdateRideEvent.Type.RESULT) {
+        if (result.getType() == UpdateRideEvent.Type.RESULT) {
             RideResponse response = result.getResponse();
             if (null == response.getRide()) {
                 mBus.post(new UpdateRideEvent(UpdateRideEvent.Type.UPDATE_FAILED, response));
@@ -113,7 +113,7 @@ public class RidesService {
 
     @Subscribe
     public void onGetMyRidesAsDriverResult(MyRidesAsDriverEvent result) {
-        if(result.getType() == MyRidesAsDriverEvent.Type.RESULT) {
+        if (result.getType() == MyRidesAsDriverEvent.Type.RESULT) {
             RidesResponse response = result.getResponse();
             if (null == response.getRides()) {
                 mBus.post(new MyRidesAsDriverEvent(MyRidesAsDriverEvent.Type.GET_FAILED, response));
@@ -129,7 +129,7 @@ public class RidesService {
 
     @Subscribe
     public void onGetMyRidesAsPassengerResult(MyRidesAsPassengerEvent result) {
-        if(result.getType() == MyRidesAsPassengerEvent.Type.RESULT) {
+        if (result.getType() == MyRidesAsPassengerEvent.Type.RESULT) {
             RidesResponse response = result.getResponse();
             if (null == response.getRides()) {
                 mBus.post(new MyRidesAsPassengerEvent(MyRidesAsPassengerEvent.Type.GET_FAILED, response));
@@ -145,7 +145,7 @@ public class RidesService {
 
     @Subscribe
     public void onGetMyRidesPastResult(MyRidesPastEvent result) {
-        if(result.getType() == MyRidesPastEvent.Type.RESULT) {
+        if (result.getType() == MyRidesPastEvent.Type.RESULT) {
             RidesResponse response = result.getResponse();
             if (null == response.getRides()) {
                 mBus.post(new MyRidesPastEvent(MyRidesPastEvent.Type.GET_FAILED, response));
@@ -196,9 +196,9 @@ public class RidesService {
         if (result.getType() == RemovePassengerEvent.Type.RESULT) {
             Response retrofitResponse = result.getRetrofitResponse();
             if (200 == retrofitResponse.getStatus()) {
-                mBus.post(new RemovePassengerEvent(RemovePassengerEvent.Type.SUCCESSFUL,retrofitResponse));
+                mBus.post(new RemovePassengerEvent(RemovePassengerEvent.Type.SUCCESSFUL, retrofitResponse));
             } else {
-                mBus.post(new RemovePassengerEvent(RemovePassengerEvent.Type.FAILED,retrofitResponse));
+                mBus.post(new RemovePassengerEvent(RemovePassengerEvent.Type.FAILED, retrofitResponse));
             }
         }
     }
@@ -209,12 +209,12 @@ public class RidesService {
 
     @Subscribe
     public void onDeleteResult(DeleteRideEvent result) {
-        if(result.getType() == DeleteRideEvent.Type.RESULT) {
+        if (result.getType() == DeleteRideEvent.Type.RESULT) {
             Response retrofitResponse = result.getRetrofitResponse();
             if (200 == retrofitResponse.getStatus()) {
-                mBus.post(new DeleteRideEvent(DeleteRideEvent.Type.DELETE_SUCCESSFUL, result.getResponse(),retrofitResponse));
+                mBus.post(new DeleteRideEvent(DeleteRideEvent.Type.DELETE_SUCCESSFUL, result.getResponse(), retrofitResponse));
             } else {
-                mBus.post(new DeleteRideEvent(DeleteRideEvent.Type.DELETE_FAILED, result.getResponse(),retrofitResponse));
+                mBus.post(new DeleteRideEvent(DeleteRideEvent.Type.DELETE_FAILED, result.getResponse(), retrofitResponse));
             }
         }
     }
@@ -225,7 +225,7 @@ public class RidesService {
 
     @Subscribe
     public void onRideRequestResult(JoinRequestEvent result) {
-        if(result.getType() == JoinRequestEvent.Type.RESULT) {
+        if (result.getType() == JoinRequestEvent.Type.RESULT) {
             JoinRequestResponse joinRequestResponse = result.getJoinRequestResponse();
             if (null == joinRequestResponse.getRideRequest()) {
                 mBus.post(new JoinRequestEvent(JoinRequestEvent.Type.REQUEST_FAILED,
@@ -243,7 +243,7 @@ public class RidesService {
 
     @Subscribe
     public void onRespondToRequestResult(RespondToRequestEvent result) {
-        if(result.getType() == RespondToRequestEvent.Type.RESULT) {
+        if (result.getType() == RespondToRequestEvent.Type.RESULT) {
             Response retrofitResponse = result.getRetrofitResponse();
             if (200 == retrofitResponse.getStatus()) {
                 mBus.post(new RespondToRequestEvent(RespondToRequestEvent.Type.RESPOND_SENT, retrofitResponse));
@@ -259,7 +259,7 @@ public class RidesService {
 
     @Subscribe
     public void onGetRideRequestsResult(GetRideRequestsEvent result) {
-        if(result.getType() == GetRideRequestsEvent.Type.RESULT) {
+        if (result.getType() == GetRideRequestsEvent.Type.RESULT) {
             RequestsResponse requestsResponse = result.getResponse();
             if (null == requestsResponse.getRequests()) {
                 mBus.post(new GetRideRequestsEvent(GetRideRequestsEvent.Type.GET_FAILED, requestsResponse));
@@ -275,7 +275,7 @@ public class RidesService {
 
     @Subscribe
     public void onGetUserRequestsResult(GetUserRequestsEvent result) {
-        if(result.getType() == GetUserRequestsEvent.Type.RESULT) {
+        if (result.getType() == GetUserRequestsEvent.Type.RESULT) {
             RequestsResponse requestsResponse = result.getResponse();
             if (null == requestsResponse.getRequests()) {
                 mBus.post(new GetUserRequestsEvent(GetUserRequestsEvent.Type.GET_FAILED, requestsResponse));
@@ -291,7 +291,7 @@ public class RidesService {
 
     @Subscribe
     public void onDeleteRideRequest(DeleteRideRequestEvent result) {
-        if(result.getType() == DeleteRideRequestEvent.Type.RESULT) {
+        if (result.getType() == DeleteRideRequestEvent.Type.RESULT) {
             Response retrofitResponse = result.getRetrofitResponse();
             if (200 == retrofitResponse.getStatus()) {
                 mBus.post(new DeleteRideRequestEvent(DeleteRideRequestEvent.Type.SUCCESSFUL, retrofitResponse));
