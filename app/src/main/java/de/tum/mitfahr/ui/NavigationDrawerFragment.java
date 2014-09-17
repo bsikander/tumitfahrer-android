@@ -24,7 +24,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import de.tum.mitfahr.R;
+import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.networking.models.User;
+import de.tum.mitfahr.widget.CircularImageView;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -67,6 +72,15 @@ public class NavigationDrawerFragment extends Fragment {
     private View mProfileHeaderView;
     private DrawerAdapter mAdapter;
 
+    @InjectView(R.id.header_drawer_first_name)
+    TextView mFirstNameView;
+
+    @InjectView(R.id.header_drawer_last_name)
+    TextView mLastNameView;
+
+    @InjectView(R.id.header_drawer_profile_image)
+    CircularImageView mProfileImageView;
+
     private int mCurrentSelectedPosition = 1;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
@@ -103,6 +117,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView = (ListView) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
         mProfileHeaderView = (View) inflater.inflate(R.layout.header_item_profile_drawer, null);
+        ButterKnife.inject(this, mProfileHeaderView);
         mDrawerListView.addHeaderView(mProfileHeaderView);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -126,10 +141,19 @@ public class NavigationDrawerFragment extends Fragment {
         return mDrawerListView;
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        User currentUser = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getUserFromPreferences();
+        mFirstNameView.setText(currentUser.getFirstName());
+        mLastNameView.setText(currentUser.getLastName());
+
+    }
 
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
-        mAdapter.setSelectedItem(position-1);
+        mAdapter.setSelectedItem(position - 1);
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
         }

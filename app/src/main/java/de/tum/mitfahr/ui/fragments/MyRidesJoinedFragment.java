@@ -57,7 +57,6 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
     public void onGetMyRidesAsPassengerResult(MyRidesAsPassengerEvent result) {
         if (result.getType() == MyRidesAsPassengerEvent.Type.GET_SUCCESSFUL) {
             RideAdapterTest adapter = new RideAdapterTest(getActivity());
-            Log.e("PASSENGERS RIDE OBJECT", result.getResponse().getRides().toString());
             adapter.addAll(result.getResponse().getRides());
             ridesList.setAdapter(adapter);
         } else if (result.getType() == MyRidesAsPassengerEvent.Type.GET_FAILED) {

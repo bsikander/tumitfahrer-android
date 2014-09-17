@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +16,7 @@ import android.widget.Toast;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -26,6 +26,7 @@ import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.GetUserRequestsEvent;
 import de.tum.mitfahr.events.MyRidesAsDriverEvent;
 import de.tum.mitfahr.networking.models.Ride;
+import de.tum.mitfahr.networking.models.RideRequest;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -34,10 +35,8 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private ArrayList<Ride> mRidesAsDriver;
-
     @InjectView(R.id.list)
-    StickyListHeadersListView ridesList;
+    StickyListHeadersListView ridesListView;
 
     @InjectView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -47,39 +46,15 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
         return fragment;
     }
 
+    List<MyCreatedRide> myCreatedRideList = new ArrayList<MyCreatedRide>();
+    RideAdapterTest mAdapter;
+
     public MyRidesCreatedFragment() {
-    }
-
-    private void fetchRides() {
-        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getMyRidesAsDriver();
-        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getUserRequests();
-    }
-
-    @Subscribe
-    public void onGetUserRequestsResult(GetUserRequestsEvent result) {
-        if (result.getType() == GetUserRequestsEvent.Type.GET_SUCCESSFUL) {
-            Log.e("PAST RIDE OBJECT", result.getResponse().getRequests().toString());
-        } else if (result.getType() == GetUserRequestsEvent.Type.GET_FAILED) {
-            Toast.makeText(getActivity(), "Failed", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Subscribe
-    public void onGetMyRidesAsDriverResult(MyRidesAsDriverEvent result) {
-        if (result.getType() == MyRidesAsDriverEvent.Type.GET_SUCCESSFUL) {
-            RideAdapterTest adapter = new RideAdapterTest(getActivity());
-            Log.e("DRIVER RIDE OBJECT", result.getResponse().getRides().toString());
-            adapter.addAll(result.getResponse().getRides());
-            ridesList.setAdapter(adapter);
-        } else if (result.getType() == MyRidesAsDriverEvent.Type.GET_FAILED) {
-            Toast.makeText(getActivity(), "Failed", Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fetchRides();
     }
 
     @Override
@@ -95,6 +70,53 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
         return rootView;
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mAdapter = new RideAdapterTest(getActivity());
+        ridesListView.setAdapter(mAdapter);
+        fetchRides();
+    }
+
+    private void fetchRides() {
+        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getMyRidesAsDriver();
+        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getUserRequests();
+    }
+
+    @Subscribe
+    public void onGetUserRequestsResult(GetUserRequestsEvent result) {
+        if (result.getType() == GetUserRequestsEvent.Type.GET_SUCCESSFUL) {
+            if (result.getResponse().getRequests() != null) {
+                for (RideRequest request : result.getResponse().getRequests()) {
+                    MyCreatedRide createdRide = new MyCreatedRide(MyRideType.MY_RIDE_REQUESTS, null, request);
+                    myCreatedRideList.add(createdRide);
+                }
+                mAdapter.clear();
+                mAdapter.addAll(myCreatedRideList);
+                mAdapter.notifyDataSetChanged();
+            }
+
+        } else if (result.getType() == GetUserRequestsEvent.Type.GET_FAILED) {
+            Toast.makeText(getActivity(), "Failed to fetch Rides requests", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Subscribe
+    public void onGetMyRidesAsDriverResult(MyRidesAsDriverEvent result) {
+        if (result.getType() == MyRidesAsDriverEvent.Type.GET_SUCCESSFUL) {
+            if (result.getResponse().getRides() != null) {
+                for (Ride ride : result.getResponse().getRides()) {
+                    MyCreatedRide createdRide = new MyCreatedRide(MyRideType.MY_RIDES_AS_DRIVER, ride, null);
+                    myCreatedRideList.add(createdRide);
+                }
+                mAdapter.clear();
+                mAdapter.addAll(myCreatedRideList);
+                mAdapter.notifyDataSetChanged();
+            }
+        } else if (result.getType() == MyRidesAsDriverEvent.Type.GET_FAILED) {
+            Toast.makeText(getActivity(), "Failed to fetch Rides as Driver", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     @Override
     public void onRefresh() {
@@ -106,13 +128,12 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
         }, 5000);
     }
 
-    class RideAdapterTest extends ArrayAdapter<Ride> implements StickyListHeadersAdapter {
+    class RideAdapterTest extends ArrayAdapter<MyCreatedRide> implements StickyListHeadersAdapter {
 
         private final LayoutInflater mInflater;
 
         public RideAdapterTest(Context context) {
             super(context, 0);
-
             final float density = context.getResources().getDisplayMetrics().density;
             mInflater = LayoutInflater.from(getActivity());
         }
@@ -126,7 +147,8 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
             } else {
                 view = (ViewGroup) convertView;
             }
-            Ride ride = getItem(position);
+            MyCreatedRide createdRide = getItem(position);
+            Ride ride = createdRide.ride;
 
             ((ImageView) view.findViewById(R.id.my_rides_location_image)).setImageResource(R.drawable.list_image_placeholder);
             ((TextView) view.findViewById(R.id.my_rides_from_text)).setText(ride.getDeparturePlace());
@@ -147,19 +169,37 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
                 holder = (HeaderViewHolder) convertView.getTag();
             }
             //set header text as first char in name
-            String headerText = Integer.toString(position);
+            String headerText = getItem(position).type.name();
             holder.text.setText(headerText);
             return convertView;
         }
 
         @Override
         public long getHeaderId(int position) {
-            return position;
+            MyCreatedRide ride = getItem(position);
+            return ride.type.ordinal();
         }
 
         class HeaderViewHolder {
             TextView text;
         }
+    }
+
+    private class MyCreatedRide {
+        MyRideType type;
+        Ride ride;
+        RideRequest request;
+
+        private MyCreatedRide(MyRideType type, Ride ride, RideRequest request) {
+            this.type = type;
+            this.ride = ride;
+            this.request = request;
+        }
+    }
+
+    private enum MyRideType {
+        MY_RIDES_AS_DRIVER,
+        MY_RIDE_REQUESTS
     }
 
     @Override

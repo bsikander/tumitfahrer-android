@@ -12,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_marginLeft="20dp"
             android:drawablePadding="16dp"
-            android:layout_height="64dp"
+            android:layout_height="60dp"
             android:gravity="center_vertical"
             android:paddingRight="@dimen/default_padding"
             android:textSize="18sp"

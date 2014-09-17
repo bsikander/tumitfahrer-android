@@ -19,7 +19,9 @@
         android:paddingLeft="6dp"
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:textSize="14dp"
         android:layout_gravity="center"
         android:layout_height="wrap_content" />
 

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +16,7 @@ import android.widget.Toast;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -33,13 +33,14 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class MyRidesPastFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private ArrayList<Ride> mRidesAsDriver;
-
     @InjectView(R.id.list)
-    StickyListHeadersListView ridesList;
+    StickyListHeadersListView ridesListView;
 
     @InjectView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
+
+    RideAdapterTest mAdapter;
+    List<Ride> mPastRides = new ArrayList<Ride>();
 
     public static MyRidesPastFragment newInstance() {
         MyRidesPastFragment fragment = new MyRidesPastFragment();
@@ -49,26 +50,9 @@ public class MyRidesPastFragment extends Fragment implements SwipeRefreshLayout.
     public MyRidesPastFragment() {
     }
 
-    private void fetchRides() {
-        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getMyRidesPast();
-    }
-
-    @Subscribe
-    public void onGetMyRidesPastResult(MyRidesPastEvent result) {
-        if (result.getType() == MyRidesPastEvent.Type.GET_SUCCESSFUL) {
-            RideAdapterTest adapter = new RideAdapterTest(getActivity());
-            adapter.addAll(result.getResponse().getRides());
-            Log.e("PAST RIDE OBJECT", result.getResponse().getRides().toString());
-            ridesList.setAdapter(adapter);
-        } else if (result.getType() == MyRidesPastEvent.Type.GET_FAILED) {
-            Toast.makeText(getActivity(), "Failed", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fetchRides();
     }
 
     @Override
@@ -82,6 +66,31 @@ public class MyRidesPastFragment extends Fragment implements SwipeRefreshLayout.
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mAdapter = new RideAdapterTest(getActivity());
+        ridesListView.setAdapter(mAdapter);
+        fetchRides();
+
+    }
+
+    private void fetchRides() {
+        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getMyRidesPast();
+    }
+
+    @Subscribe
+    public void onGetMyRidesPastResult(MyRidesPastEvent result) {
+        if (result.getType() == MyRidesPastEvent.Type.GET_SUCCESSFUL) {
+            mPastRides.addAll(result.getResponse().getRides());
+            mAdapter.clear();
+            mAdapter.addAll(result.getResponse().getRides());
+            mAdapter.notifyDataSetChanged();
+        } else if (result.getType() == MyRidesPastEvent.Type.GET_FAILED) {
+            Toast.makeText(getActivity(), "Failed to fetch Past rides", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -135,14 +144,14 @@ public class MyRidesPastFragment extends Fragment implements SwipeRefreshLayout.
                 holder = (HeaderViewHolder) convertView.getTag();
             }
             //set header text as first char in name
-            String headerText = Integer.toString(position);
+            String headerText = "All My Past Rides";
             holder.text.setText(headerText);
             return convertView;
         }
 
         @Override
         public long getHeaderId(int position) {
-            return position;
+            return 0;
         }
 
         class HeaderViewHolder {

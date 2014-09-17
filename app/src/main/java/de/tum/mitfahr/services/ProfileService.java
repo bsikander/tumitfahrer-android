@@ -2,10 +2,19 @@ package de.tum.mitfahr.services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
+import com.amazonaws.HttpMethod;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+
+import java.net.URL;
+import java.util.Date;
 
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.TUMitfahrApplication;
@@ -25,6 +34,12 @@ import de.tum.mitfahr.networking.models.response.UpdateUserResponse;
  * Created by abhijith on 09/05/14.
  */
 public class ProfileService {
+
+    private static final String AMZ_BUCKET_NAME = "";
+    private static final String AMZ_SECRET_KEY = "";
+    private static final String AMZ_ACCESS_KEY_ID = "";
+    private static final String AMZ_PATH = "users/";
+    private static final String AMZ_FILENAME = "/profile_picture.jpg";
 
     private SharedPreferences mSharedPreferences;
     private ProfileRESTClient mProfileRESTClient;
@@ -48,12 +63,10 @@ public class ProfileService {
 
     public void login(String email, String password) {
         mProfileRESTClient.login(email, password);
-        //TODO : create otto event classes and stuff!
     }
 
     public void register(String email, String firstName, String lastName, String department) {
         mProfileRESTClient.registerUserAccount(email, firstName, lastName, department, true);
-        //TODO : create otto event classes and stuff!
     }
 
     public boolean isLoggedIn() {
@@ -87,13 +100,13 @@ public class ProfileService {
         }
     }
 
-    public void getSomeUser(int someUserId) {
-        mProfileRESTClient.getSomeUser(someUserId, userAPIKey);
+    public void getUser(int userId) {
+        mProfileRESTClient.getSomeUser(userId, userAPIKey);
     }
 
     @Subscribe
-    public void onGetSomeUserResult(GetUserEvent result) {
-        if(result.getType() == GetUserEvent.Type.RESULT) {
+    public void onGetUserResult(GetUserEvent result) {
+        if (result.getType() == GetUserEvent.Type.RESULT) {
             GetUserResponse response = result.getGetUserResponse();
             if (null == response.getUser()) {
                 mBus.post(new GetUserEvent(GetUserEvent.Type.GET_FAILED, response, result.getRetrofitResponse()));
@@ -110,7 +123,7 @@ public class ProfileService {
 
     @Subscribe
     public void onUpdateUserResult(UpdateUserEvent result) {
-        if(result.getType() == UpdateUserEvent.Type.RESULT) {
+        if (result.getType() == UpdateUserEvent.Type.RESULT) {
             UpdateUserResponse response = result.getUpdateUserResponse();
             if (null == response.getUser()) {
                 mBus.post(new UpdateUserEvent(UpdateUserEvent.Type.UPDATE_FAILED, response, result.getRetrofitResponse()));
@@ -124,13 +137,67 @@ public class ProfileService {
         mProfileRESTClient.forgotPassword(email);
     }
 
+    public User getUserFromPreferences() {
+
+        int id = mSharedPreferences.getInt("id", 0);
+        String firstName = mSharedPreferences.getString("first_name", "");
+        String lastName = mSharedPreferences.getString("last_name", "");
+        String email = mSharedPreferences.getString("email", "");
+        String phoneNumber = mSharedPreferences.getString("phone_number", "");
+        String department = mSharedPreferences.getString("department", "");
+        String car = mSharedPreferences.getString("car", "");
+        boolean isStudent = mSharedPreferences.getBoolean("is_student", true);
+        String apiKey = mSharedPreferences.getString("api_key", "");
+        int ratingAverage = mSharedPreferences.getInt("rating_average", 0);
+        String createdAt = mSharedPreferences.getString("created_at", "");
+        String updatedAt = mSharedPreferences.getString("updated_at", "");
+
+        User currentUser = new User(
+                id, firstName, lastName, email,
+                phoneNumber, department, car,
+                isStudent, apiKey, ratingAverage,
+                createdAt, updatedAt);
+        return currentUser;
+    }
+
     private void addUserToSharedPreferences(User user) {
+        Log.d("USER", user.toString());
         SharedPreferences.Editor prefEditor = mSharedPreferences.edit();
         prefEditor.putInt("id", user.getId());
-        prefEditor.putString("name", user.getFirstName() + " " + user.getLastName());
+        prefEditor.putString("first_name", user.getFirstName());
+        prefEditor.putString("last_name", user.getLastName());
         prefEditor.putString("email", user.getEmail());
+        prefEditor.putString("phone_number", user.getPhoneNumber());
+        prefEditor.putString("car", user.getCar());
+        prefEditor.putBoolean("is_student", user.isStudent());
         prefEditor.putString("api_key", user.getApiKey());
+        prefEditor.putInt("rating_average", user.getRatingAverage());
+        prefEditor.putString("created_at", user.getCreatedAt());
+        prefEditor.putString("updated_at", user.getUpdatedAt());
+
+        String deptString = user.getDepartment();
+        String deptIndex = deptString.replaceAll("[^0-9]", "");
+        Log.e("DeptIndex", deptIndex);
+
+        prefEditor.putString("department", deptIndex);
         prefEditor.commit();
+    }
+
+    public URL getProfileImageURL() {
+        int id = mSharedPreferences.getInt("id", 0);
+        String userId = Integer.toString(id);
+        GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(AMZ_BUCKET_NAME, AMZ_PATH + userId + AMZ_FILENAME);
+        request.setMethod(HttpMethod.GET);
+        request.setExpiration(new Date(System.currentTimeMillis() + (long) 1000 * 3 * 60)); // 3 minutes
+
+        AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(AMZ_ACCESS_KEY_ID, AMZ_SECRET_KEY));
+        URL urlForGet = s3Client.generatePresignedUrl(request);
+        return urlForGet;
+    }
+
+    public boolean uploadImage(Bitmap bitmap) {
+
+        return false;
     }
 
 }

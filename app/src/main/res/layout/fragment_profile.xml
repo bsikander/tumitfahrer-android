@@ -13,7 +13,7 @@
         <FrameLayout
             android:layout_width="fill_parent"
             android:orientation="vertical"
-            android:layout_height="160dp">
+            android:layout_height="180dp">
 
             <ImageView
                 android:layout_width="fill_parent"
@@ -25,7 +25,8 @@
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:orientation="vertical"
-                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"
+                android:layout_gravity="bottom"
                 android:layout_height="wrap_content">
 
                 <de.tum.mitfahr.widget.CircularImageView
@@ -51,17 +52,6 @@
                     android:textAppearance="?android:attr/textAppearanceLargeInverse"
                     android:layout_height="wrap_content" />
 
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:id="@+id/profile_faculty_text"
-                    android:text="TUM Informatics"
-                    android:gravity="center"
-                    android:shadowColor="@color/text_shadow"
-                    android:shadowDx="1"
-                    android:shadowDy="1"
-                    android:shadowRadius="2"
-                    android:textAppearance="?android:attr/textAppearanceSmallInverse"
-                    android:layout_height="wrap_content" />
             </LinearLayout>
 
 
@@ -206,7 +196,7 @@
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
-                android:text="0123456 77890"
+                android:text="Not defined"
                 android:textColor="@color/gray"
                 android:layout_gravity="center"
                 android:layout_marginLeft="6dp"
@@ -238,7 +228,7 @@
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
-                android:text="McLaren MP4-19(B)"
+                android:text="Not defined"
                 android:textColor="@color/gray"
                 android:layout_gravity="center"
                 android:layout_marginLeft="6dp"
