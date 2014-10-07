@@ -54,8 +54,8 @@ public class RidesService {
         userAPIKey = mSharedPreferences.getString("api_key", null);
     }
 
-    public void offerRide(String departure, String destination, String meetingPoint, String freeSeats, String dateTime, int rideType) {
-        mRidesRESTClient.offerRide(departure, destination, meetingPoint, freeSeats, dateTime, userAPIKey, rideType, userId);
+    public void offerRide(String departure, String destination, String meetingPoint, String freeSeats, String dateTime, int rideType,boolean isDriving) {
+        mRidesRESTClient.offerRide(departure, destination, meetingPoint, freeSeats, dateTime, userAPIKey, rideType, userId, isDriving);
     }
 
     @Subscribe

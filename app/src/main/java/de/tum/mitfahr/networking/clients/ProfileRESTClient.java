@@ -1,11 +1,5 @@
 package de.tum.mitfahr.networking.clients;
 
-import android.util.Log;
-
-import com.squareup.otto.Bus;
-
-import org.json.JSONObject;
-
 import de.tum.mitfahr.events.ForgotPasswordEvent;
 import de.tum.mitfahr.events.GetUserEvent;
 import de.tum.mitfahr.events.LoginEvent;
@@ -79,6 +73,14 @@ public class ProfileRESTClient extends AbstractRESTClient {
         }
     };
 
+    public User getUserSynchronous(int someUserId, String userAPIKey) {
+        GetUserResponse response = userAPIService.getUserSynchronous(userAPIKey, someUserId);
+        if (null != response && null != response.getUser()) {
+            return response.getUser();
+        }
+        return null;
+    }
+
     public void getSomeUser(int someUserId, String userAPIKey) {
         userAPIService.getSomeUser(userAPIKey, someUserId, getUserCallback);
     }
@@ -126,4 +128,4 @@ public class ProfileRESTClient extends AbstractRESTClient {
             mBus.post(new RequestFailedEvent());
         }
     };
- }
+}

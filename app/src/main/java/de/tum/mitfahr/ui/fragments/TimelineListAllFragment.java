@@ -1,7 +1,7 @@
 package de.tum.mitfahr.ui.fragments;
 
 import android.content.Context;
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -11,31 +11,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.TimeZone;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
-import de.tum.mitfahr.TUMitfahrApplication;
-import de.tum.mitfahr.networking.models.Activities;
-import de.tum.mitfahr.networking.models.ActivitiesRideRequest;
-import de.tum.mitfahr.networking.models.ActivitiesRideSearch;
 import de.tum.mitfahr.networking.models.Ride;
+import de.tum.mitfahr.ui.RideDetailsActivity;
 import de.tum.mitfahr.util.TimelineItem;
-import retrofit.RetrofitError;
+import de.tum.mitfahr.widget.FloatingActionButton;
 
 /**
  * Authored by abhijith on 21/06/14.
@@ -43,7 +35,6 @@ import retrofit.RetrofitError;
 public class TimelineListAllFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = TimelineListAllFragment.class.getName();
-
     private List<TimelineItem> mTimeline = new ArrayList<TimelineItem>();
 
     private TimelineAdapter mAdapter;
@@ -55,6 +46,9 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
 
     @InjectView(R.id.swipeRefreshLayout_emptyView)
     SwipeRefreshLayout swipeRefreshLayoutEmptyView;
+
+    @InjectView(R.id.button_floating_action)
+    FloatingActionButton floatingActionButton;
 
     public static TimelineListAllFragment newInstance() {
         TimelineListAllFragment fragment = new TimelineListAllFragment();
@@ -82,6 +76,8 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
                 android.R.color.holo_red_light);
 
         timelineList.setEmptyView(swipeRefreshLayoutEmptyView);
+
+        floatingActionButton.attachToListView(timelineList);
         return rootView;
     }
 
@@ -90,8 +86,25 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
         super.onViewCreated(view, savedInstanceState);
         mAdapter = new TimelineAdapter(getActivity());
         timelineList.setAdapter(mAdapter);
+        timelineList.setOnItemClickListener(mItemClickListener);
         setLoading(true);
     }
+
+    private AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            TimelineItem clickedItem = mTimeline.get(position);
+
+            if (!TimelineItem.TimelineItemType.RIDE_SEARCHED.equals(clickedItem.getType())) {
+                Ride ride = clickedItem.getRide();
+                if (ride != null) {
+                    Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
+                    intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, ride);
+                    startActivity(intent);
+                }
+            }
+        }
+    };
 
     public void setTimelineItems(List<TimelineItem> timelineItems) {
         setLoading(false);

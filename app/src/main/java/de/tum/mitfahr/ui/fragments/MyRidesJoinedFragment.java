@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,10 +35,13 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
     private ArrayList<Ride> mRidesAsDriver;
 
     @InjectView(R.id.list)
-    StickyListHeadersListView ridesList;
+    StickyListHeadersListView ridesListView;
 
     @InjectView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
+
+    @InjectView(R.id.swipeRefreshLayout_emptyView)
+    SwipeRefreshLayout swipeRefreshLayoutEmptyView;
 
     public static MyRidesJoinedFragment newInstance() {
         MyRidesJoinedFragment fragment = new MyRidesJoinedFragment();
@@ -58,7 +60,7 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
         if (result.getType() == MyRidesAsPassengerEvent.Type.GET_SUCCESSFUL) {
             RideAdapterTest adapter = new RideAdapterTest(getActivity());
             adapter.addAll(result.getResponse().getRides());
-            ridesList.setAdapter(adapter);
+            ridesListView.setAdapter(adapter);
         } else if (result.getType() == MyRidesAsPassengerEvent.Type.GET_FAILED) {
             Toast.makeText(getActivity(), "Failed", Toast.LENGTH_SHORT).show();
         }
@@ -80,6 +82,14 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+
+        swipeRefreshLayoutEmptyView.setOnRefreshListener(this);
+        swipeRefreshLayoutEmptyView.setColorScheme(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+        ridesListView.setEmptyView(swipeRefreshLayoutEmptyView);
         return rootView;
     }
 

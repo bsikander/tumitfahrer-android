@@ -41,6 +41,11 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
     @InjectView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
+    @InjectView(R.id.swipeRefreshLayout_emptyView)
+    SwipeRefreshLayout swipeRefreshLayoutEmptyView;
+
+
+
     public static MyRidesCreatedFragment newInstance() {
         MyRidesCreatedFragment fragment = new MyRidesCreatedFragment();
         return fragment;
@@ -67,6 +72,14 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+
+        swipeRefreshLayoutEmptyView.setOnRefreshListener(this);
+        swipeRefreshLayoutEmptyView.setColorScheme(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+        ridesListView.setEmptyView(swipeRefreshLayoutEmptyView);
         return rootView;
     }
 
@@ -76,6 +89,7 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
         mAdapter = new RideAdapterTest(getActivity());
         ridesListView.setAdapter(mAdapter);
         fetchRides();
+        setLoading(true);
     }
 
     private void fetchRides() {
@@ -85,6 +99,7 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
 
     @Subscribe
     public void onGetUserRequestsResult(GetUserRequestsEvent result) {
+        setLoading(false);
         if (result.getType() == GetUserRequestsEvent.Type.GET_SUCCESSFUL) {
             if (result.getResponse().getRequests() != null) {
                 for (RideRequest request : result.getResponse().getRequests()) {
@@ -103,6 +118,7 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
 
     @Subscribe
     public void onGetMyRidesAsDriverResult(MyRidesAsDriverEvent result) {
+        setLoading(false);
         if (result.getType() == MyRidesAsDriverEvent.Type.GET_SUCCESSFUL) {
             if (result.getResponse().getRides() != null) {
                 for (Ride ride : result.getResponse().getRides()) {
@@ -212,5 +228,10 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
     public void onPause() {
         super.onPause();
         BusProvider.getInstance().unregister(this);
+    }
+
+    private void setLoading(boolean loading) {
+        swipeRefreshLayout.setRefreshing(loading);
+        swipeRefreshLayoutEmptyView.setRefreshing(loading);
     }
 }

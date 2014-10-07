@@ -38,6 +38,12 @@
         revision="19.1.0"
         sha1="fe79f292dc7f04ef5c0f18a65b7d52202b7bbb42"/>
     <item
+        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/support-annotations-20.0.0-bca9cd8c8082330ef7549e0398af852faae531fd.jar"
+        jar="/Applications/Android Studio.app/sdk/extras/android/m2repository/com/android/support/support-annotations/20.0.0/support-annotations-20.0.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="9d9013e9ff35fc3756411e62873c363c70c638fa"/>
+    <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/support-v13-19.1.0-432d29bb26d6067815408d15c09d69cadf2dd68d.jar"
         jar="/Applications/Android Studio.app/sdk/extras/android/m2repository/com/android/support/support-v13/19.1.0/support-v13-19.1.0.jar"
         jumboMode="false"
@@ -49,6 +55,12 @@
         jumboMode="false"
         revision="19.1.0"
         sha1="e9b63380f3a242dbdbf103a2355ad7e43bad17cb"/>
+    <item
+        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-ad0896eec5be0015a6902259569491d0fd4aeb9d.jar"
+        jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/com.github.castorflex.smoothprogressbar/library/1.0.0/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="698b40a43ecff2ebadc58b019ae236edd053fc67"/>
     <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-f8c0e715d41e2ed4e406053edc5840912ee405ec.jar"
         jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/se.emilsjolander/stickylistheaders/2.4.1/classes.jar"

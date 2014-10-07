@@ -73,6 +73,9 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
         }
     };
 
+    private GetAddressTask mGetAddressTask;
+    private Geocoder mGeocoder;
+
     public static RidesAroundListFragment newInstance() {
         RidesAroundListFragment fragment = new RidesAroundListFragment();
         return fragment;
@@ -85,6 +88,7 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLocationClient = new LocationClient(getActivity(), this, this);
+        mGeocoder = new Geocoder(getActivity().getApplicationContext(), Locale.getDefault());
     }
 
     @Override
@@ -116,9 +120,17 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
         setLoading(true);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mGetAddressTask != null)
+            mGetAddressTask.cancel(true);
+    }
+
     public void setRides(List<Ride> rides) {
         mRides = rides;
-        new GetAddressTask(getActivity()).execute(mRides);
+        mGetAddressTask = new GetAddressTask();
+        mGetAddressTask.execute(mRides);
     }
 
     private void refreshList() {
@@ -146,42 +158,40 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
 
     protected class GetAddressTask extends AsyncTask<List<Ride>, Void, List<Ride>> {
 
-        Context localContext;
-
-        public GetAddressTask(Context context) {
+        public GetAddressTask() {
             super();
-            localContext = context;
         }
 
         @Override
         protected List<Ride> doInBackground(List<Ride>... params) {
-            Geocoder geocoder = new Geocoder(localContext, Locale.getDefault());
             List<Ride> rides = params[0];
             List<Ride> nearbyRides = new ArrayList<Ride>();
 
-            for (Ride ride : rides) {
-                String locationName = ride.getDeparturePlace();
-                List<Address> addresses = null;
-                try {
-                    addresses = geocoder.getFromLocationName(locationName, 2);
-                } catch (IOException exception1) {
-                    exception1.printStackTrace();
-                } catch (IllegalArgumentException exception2) {
-                    exception2.printStackTrace();
-                }
-                // If the reverse geocode returned an address
-                if (addresses != null && addresses.size() > 0) {
-                    // Get the first address
-                    Address address = addresses.get(0);
-                    ride.setLatitude(address.getLatitude());
-                    ride.setLongitude(address.getLongitude());
+            if (!isCancelled()) {
+                for (Ride ride : rides) {
+                    String locationName = ride.getDeparturePlace();
+                    List<Address> addresses = null;
+                    try {
+                        addresses = mGeocoder.getFromLocationName(locationName, 2);
+                    } catch (IOException exception1) {
+                        exception1.printStackTrace();
+                    } catch (IllegalArgumentException exception2) {
+                        exception2.printStackTrace();
+                    }
+                    // If the reverse geocode returned an address
+                    if (addresses != null && addresses.size() > 0) {
+                        // Get the first address
+                        Address address = addresses.get(0);
+                        ride.setLatitude(address.getLatitude());
+                        ride.setLongitude(address.getLongitude());
 
-                    if (LocationUtil.haversineDistance(
-                            mCurrentLocation.latitude,
-                            mCurrentLocation.longitude,
-                            ride.getLatitude(),
-                            ride.getLongitude()) < MAX_DISTANCE) {
-                        nearbyRides.add(ride);
+                        if (LocationUtil.haversineDistance(
+                                mCurrentLocation.latitude,
+                                mCurrentLocation.longitude,
+                                ride.getLatitude(),
+                                ride.getLongitude()) < MAX_DISTANCE) {
+                            nearbyRides.add(ride);
+                        }
                     }
                 }
             }

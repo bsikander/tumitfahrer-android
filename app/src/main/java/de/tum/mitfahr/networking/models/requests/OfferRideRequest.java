@@ -11,14 +11,16 @@ public class OfferRideRequest {
     String freeSeats;
     String departureTime;
     int rideType;
+    boolean isDriving;
 
     public OfferRideRequest(String departure, String destination, String meetingPoint,
-                            String freeSeats, String dateTime, int rideType) {
+                            String freeSeats, String dateTime, int rideType,boolean isDriving) {
         this.departurePlace = departure;
         this.destination = destination;
         this.meetingPoint = meetingPoint;
         this.freeSeats = freeSeats;
         this.departureTime = dateTime;
         this.rideType = rideType;
+        this.isDriving = isDriving;
     }
 }

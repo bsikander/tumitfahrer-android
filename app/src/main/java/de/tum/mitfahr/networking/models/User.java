@@ -1,9 +1,11 @@
 package de.tum.mitfahr.networking.models;
 
+import java.io.Serializable;
+
 /**
  * Created by abhijith on 16/05/14.
  */
-public class User {
+public class User implements Serializable{
 
     private int id;
     private String firstName;

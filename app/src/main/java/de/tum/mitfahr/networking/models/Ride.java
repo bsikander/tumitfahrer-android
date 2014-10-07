@@ -16,11 +16,50 @@ public class Ride implements Serializable {
     private double price;
     private String realtimeDepartureTime;
     private double realtimeKm;
-    private User driver;
+    private User rideOwner;
+    private boolean isRideRequest;
     private int rideType;
     private String createdAt;
     private String updatedAt;
     private double latitude;
+
+    public String getCar() {
+        return car;
+    }
+
+    public void setCar(String car) {
+        this.car = car;
+    }
+
+    public User[] getPassengers() {
+        return passengers;
+    }
+
+    public void setPassengers(User[] passengers) {
+        this.passengers = passengers;
+    }
+
+    public RideRequest[] getRequests() {
+        return requests;
+    }
+
+    public void setRequests(RideRequest[] requests) {
+        this.requests = requests;
+    }
+
+    public Conversation[] getConversations() {
+        return conversations;
+    }
+
+    public void setConversations(Conversation[] conversations) {
+        this.conversations = conversations;
+    }
+
+    private String car;
+    private User passengers[];
+    private RideRequest requests[];
+    private Conversation conversations[];
+
 
     private double longitude;
 
@@ -46,7 +85,7 @@ public class Ride implements Serializable {
         this.price = price;
         this.realtimeDepartureTime = realtimeDepartureTime;
         this.realtimeKm = realtimeKm;
-        this.driver = driver;
+        this.rideOwner = driver;
         this.rideType = rideType;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -135,12 +174,12 @@ public class Ride implements Serializable {
         this.realtimeKm = realtimeKm;
     }
 
-    public User getDriver() {
-        return driver;
+    public User getRideOwner() {
+        return rideOwner;
     }
 
-    public void setDriver(User driver) {
-        this.driver = driver;
+    public void setRideOwner(User driver) {
+        this.rideOwner = driver;
     }
 
     public int getRideType() {
@@ -182,4 +221,13 @@ public class Ride implements Serializable {
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
+
+    public boolean isRideRequest() {
+        return isRideRequest;
+    }
+
+    public void setRideRequest(boolean isRideRequest) {
+        this.isRideRequest = isRideRequest;
+    }
+
 }

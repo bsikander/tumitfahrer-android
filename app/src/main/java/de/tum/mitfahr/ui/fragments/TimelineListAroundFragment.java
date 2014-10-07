@@ -79,6 +79,9 @@ public class TimelineListAroundFragment extends Fragment implements SwipeRefresh
         }
     };
 
+    private GetAddressTask mGetAddressTask;
+    private Geocoder mGeocoder;
+
     public static TimelineListAroundFragment newInstance() {
         TimelineListAroundFragment fragment = new TimelineListAroundFragment();
         return fragment;
@@ -91,6 +94,7 @@ public class TimelineListAroundFragment extends Fragment implements SwipeRefresh
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLocationClient = new LocationClient(getActivity(), this, this);
+        mGeocoder = new Geocoder(getActivity().getApplicationContext(), Locale.getDefault());
     }
 
     @Override
@@ -124,7 +128,8 @@ public class TimelineListAroundFragment extends Fragment implements SwipeRefresh
 
     public void setTimelineItems(List<TimelineItem> timelineItems) {
         mTimeline = timelineItems;
-        new GetAddressTask(getActivity()).execute(mTimeline);
+        mGetAddressTask = new GetAddressTask();
+        mGetAddressTask.execute(mTimeline);
     }
 
     private void setLoading(boolean loading) {
@@ -175,42 +180,41 @@ public class TimelineListAroundFragment extends Fragment implements SwipeRefresh
     }
 
     protected class GetAddressTask extends AsyncTask<List<TimelineItem>, Void, List<TimelineItem>> {
-        Context localContext;
 
-        public GetAddressTask(Context context) {
+        public GetAddressTask() {
             super();
-            localContext = context;
         }
 
         @Override
         protected List<TimelineItem> doInBackground(List<TimelineItem>... params) {
-            Geocoder geocoder = new Geocoder(localContext, Locale.getDefault());
             List<TimelineItem> items = params[0];
             List<TimelineItem> nearbyItems = new ArrayList<TimelineItem>();
 
-            for (TimelineItem item : items) {
-                String locationName = item.getDeparture();
-                List<Address> addresses = null;
-                try {
-                    addresses = geocoder.getFromLocationName(locationName, 2);
-                } catch (IOException exception1) {
-                    exception1.printStackTrace();
-                } catch (IllegalArgumentException exception2) {
-                    exception2.printStackTrace();
-                }
-                // If the reverse geocode returned an address
-                if (addresses != null && addresses.size() > 0) {
-                    // Get the first address
-                    Address address = addresses.get(0);
-                    item.setLat(address.getLatitude());
-                    item.setLng(address.getLongitude());
+            if (!isCancelled()) {
+                for (TimelineItem item : items) {
+                    String locationName = item.getDeparture();
+                    List<Address> addresses = null;
+                    try {
+                        addresses = mGeocoder.getFromLocationName(locationName, 2);
+                    } catch (IOException exception1) {
+                        exception1.printStackTrace();
+                    } catch (IllegalArgumentException exception2) {
+                        exception2.printStackTrace();
+                    }
+                    // If the reverse geocode returned an address
+                    if (addresses != null && addresses.size() > 0) {
+                        // Get the first address
+                        Address address = addresses.get(0);
+                        item.setLat(address.getLatitude());
+                        item.setLng(address.getLongitude());
 
-                    if (LocationUtil.haversineDistance(
-                            mCurrentLocation.latitude,
-                            mCurrentLocation.longitude,
-                            item.getLat(),
-                            item.getLng()) < MAX_DISTANCE) {
-                        nearbyItems.add(item);
+                        if (LocationUtil.haversineDistance(
+                                mCurrentLocation.latitude,
+                                mCurrentLocation.longitude,
+                                item.getLat(),
+                                item.getLng()) < MAX_DISTANCE) {
+                            nearbyItems.add(item);
+                        }
                     }
                 }
             }
@@ -242,6 +246,8 @@ public class TimelineListAroundFragment extends Fragment implements SwipeRefresh
     @Override
     public void onPause() {
         super.onPause();
+        if (mGetAddressTask != null)
+            mGetAddressTask.cancel(true);
         BusProvider.getInstance().unregister(this);
     }
 

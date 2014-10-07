@@ -25,8 +25,10 @@ public class TimelineItem implements Comparable<TimelineItem> {
     double lng = 0.0;
     int id;
     Date time;
+    Ride ride = null;
 
     public TimelineItem(Ride ride, TimelineItemType type) {
+        this.ride = ride;
         this.type = type;
         this.departure = ride.getDeparturePlace();
         this.destination = ride.getDestination();
@@ -41,6 +43,7 @@ public class TimelineItem implements Comparable<TimelineItem> {
 
     public TimelineItem(TimelineItemType type, int id, String departure, String destination, String time) {
         this.type = type;
+        this.ride = null;
         this.id = id;
         this.departure = departure;
         this.destination = destination;
@@ -105,6 +108,10 @@ public class TimelineItem implements Comparable<TimelineItem> {
 
     public void setTime(Date time) {
         this.time = time;
+    }
+
+    public Ride getRide() {
+        return this.ride;
     }
 
     @Override

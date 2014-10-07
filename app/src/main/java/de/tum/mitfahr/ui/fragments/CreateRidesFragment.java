@@ -225,7 +225,7 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
                 && freeSeats != "" && dateTime != "") {
             offerRideButton.setProgress(50);// showing working state
             TUMitfahrApplication.getApplication(getActivity()).getRidesService()
-                    .offerRide(departure, destination, meetingPoint, freeSeats, dateTime, rideType);
+                    .offerRide(departure, destination, meetingPoint, freeSeats, dateTime, rideType, driver);
         }
     }
 

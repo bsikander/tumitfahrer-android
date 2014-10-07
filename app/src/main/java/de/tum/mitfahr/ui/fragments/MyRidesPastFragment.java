@@ -39,6 +39,9 @@ public class MyRidesPastFragment extends Fragment implements SwipeRefreshLayout.
     @InjectView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
+    @InjectView(R.id.swipeRefreshLayout_emptyView)
+    SwipeRefreshLayout swipeRefreshLayoutEmptyView;
+
     RideAdapterTest mAdapter;
     List<Ride> mPastRides = new ArrayList<Ride>();
 
@@ -65,6 +68,14 @@ public class MyRidesPastFragment extends Fragment implements SwipeRefreshLayout.
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+
+        swipeRefreshLayoutEmptyView.setOnRefreshListener(this);
+        swipeRefreshLayoutEmptyView.setColorScheme(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+        ridesListView.setEmptyView(swipeRefreshLayoutEmptyView);
         return rootView;
     }
 
@@ -74,6 +85,7 @@ public class MyRidesPastFragment extends Fragment implements SwipeRefreshLayout.
         mAdapter = new RideAdapterTest(getActivity());
         ridesListView.setAdapter(mAdapter);
         fetchRides();
+        setLoading(true);
 
     }
 
@@ -83,6 +95,7 @@ public class MyRidesPastFragment extends Fragment implements SwipeRefreshLayout.
 
     @Subscribe
     public void onGetMyRidesPastResult(MyRidesPastEvent result) {
+        setLoading(false);
         if (result.getType() == MyRidesPastEvent.Type.GET_SUCCESSFUL) {
             mPastRides.addAll(result.getResponse().getRides());
             mAdapter.clear();
@@ -169,5 +182,10 @@ public class MyRidesPastFragment extends Fragment implements SwipeRefreshLayout.
     public void onPause() {
         super.onPause();
         BusProvider.getInstance().unregister(this);
+    }
+
+    private void setLoading(boolean loading) {
+        swipeRefreshLayout.setRefreshing(loading);
+        swipeRefreshLayoutEmptyView.setRefreshing(loading);
     }
 }

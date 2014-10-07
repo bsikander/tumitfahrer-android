@@ -1,7 +1,391 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<de.tum.mitfahr.widget.NotifyingScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/notifyingScrollView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="180dp">
+
+                <ImageView
+                    android:src="@drawable/list_gradient"
+                    android:background="@drawable/list_image_placeholder"
+                    android:layout_width="fill_parent"
+                    android:scaleType="centerCrop"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/ride_location_image" />
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_margin="16dp"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:id="@+id/ride_item_row_three"
+                        android:layout_width="fill_parent"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:id="@+id/details_time_text"
+                            android:text="11.00"
+                            android:drawablePadding="12dp"
+                            android:textColor="@color/white"
+                            android:gravity="center"
+                            android:layout_marginRight="16dp"
+                            android:drawableLeft="@drawable/time_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:id="@+id/details_date_text"
+                            android:layout_toRightOf="@id/details_time_text"
+                            android:text="13.12.2014"
+                            android:drawableLeft="@drawable/calendar_icon"
+                            android:drawablePadding="12dp"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ride_item_row_two"
+                        android:layout_above="@id/ride_item_row_three"
+                        android:layout_width="fill_parent"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginBottom="4dp"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:id="@+id/details_from_text"
+                            android:text="Marienplatz"
+                            android:textColor="@color/white"
+                            android:drawablePadding="12dp"
+                            android:gravity="center"
+                            android:textSize="18sp"
+                            android:layout_marginBottom="4dp"
+                            android:layout_marginRight="10dp"
+                            android:drawableLeft="@drawable/time_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            style=""
+                            android:id="@+id/details_to_text"
+                            android:drawablePadding="12dp"
+                            android:textSize="18sp"
+                            android:layout_marginRight="10dp"
+                            android:drawableLeft="@drawable/time_icon"
+                            android:text="Garching-Forschungzentrum"
+                            android:textColor="@color/white"
+                            android:gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+                    android:id="@+id/details_progress_bar"
+                    android:layout_gravity="bottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    style="@style/GNowProgressBar"
+                    android:indeterminate="true" />
+            </FrameLayout>
+
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:text="Details"
+                android:textColor="@color/white"
+                android:background="@color/blue2"
+                android:drawableLeft="@drawable/placeholder"
+                android:gravity="center_vertical"
+                android:drawablePadding="6dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:textSize="14dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:padding="16dp"
+                android:id="@+id/details_car_container"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:src="@drawable/placeholder"
+                    android:layout_height="30dp" />
+
+                <TextView
+                    android:id="@+id/details_car"
+                    android:layout_width="0dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/gray"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="6dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@color/gray_faded"
+                android:layout_height="2px" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:padding="16dp"
+                android:id="@+id/details_info_container"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:src="@drawable/placeholder"
+                    android:layout_height="30dp" />
+
+                <TextView
+                    android:id="@+id/details_info"
+                    android:layout_width="0dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/gray"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="6dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@color/gray_faded"
+                android:layout_height="2px" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:padding="16dp"
+                android:id="@+id/details_seats_container"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:src="@drawable/placeholder"
+                    android:layout_height="30dp" />
+
+                <TextView
+                    android:id="@+id/details_seats"
+                    android:layout_width="0dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/gray"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="6dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@color/gray_faded"
+                android:layout_height="2px" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ride_owner_layout_container"
+            android:layout_width="fill_parent"
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:text="Ride Owner"
+                android:textColor="@color/white"
+                android:background="@color/blue2"
+                android:drawableLeft="@drawable/placeholder"
+                android:gravity="center_vertical"
+                android:drawablePadding="6dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:textSize="14dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.tum.mitfahr.widget.CircularImageView
+                    android:layout_width="56dp"
+                    android:layout_gravity="center"
+                    android:layout_height="56dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/profile_placeholder"
+                    app:border_color="@color/white"
+                    app:border_width="3dp"
+                    app:shadow="true"
+                    android:id="@+id/details_driver_image_view" />
+
+                <TextView
+                    android:id="@+id/details_ride_owner_name"
+                    android:layout_width="0dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/gray"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="6dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/passengers_layout_container"
+            android:layout_width="fill_parent"
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:text="Passengers"
+                android:textColor="@color/white"
+                android:background="@color/blue2"
+                android:drawableLeft="@drawable/placeholder"
+                android:gravity="center_vertical"
+                android:drawablePadding="6dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:textSize="14dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:id="@+id/passengers_item_container"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/requests_layout_container"
+            android:layout_width="fill_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:text="Requests"
+                android:textColor="@color/white"
+                android:background="@color/blue2"
+                android:drawableLeft="@drawable/placeholder"
+                android:gravity="center_vertical"
+                android:drawablePadding="6dp"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:textSize="14dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:id="@+id/requests_item_container"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.dd.CircularProgressButton
+            android:id="@+id/details_action_button"
+            android:visibility="gone"
+            android:layout_width="fill_parent"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:textColor="@color/white"
+            android:textAllCaps="true"
+            android:textSize="14sp"
+            app:cpb_textComplete="Ride Requested"
+            app:cpb_textError="Error"
+            app:cpb_cornerRadius="2dp"
+            app:cpb_textIdle="Request Ride"
+            app:cpb_selectorIdle="@drawable/button_blue3_idle_state_selector" />
+    </LinearLayout>
+
+</de.tum.mitfahr.widget.NotifyingScrollView>

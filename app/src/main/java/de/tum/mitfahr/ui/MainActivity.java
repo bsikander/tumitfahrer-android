@@ -220,13 +220,6 @@ public class MainActivity extends FragmentActivity
                 mNavigationDrawerFragment.isDrawerOpen());
     }
 
-    public void showRideDetails(Ride ride) {
-        RideDetailsFragment rideDetailsFragment = RideDetailsFragment.newInstance(ride);
-        getFragmentManager().beginTransaction()
-                .replace(R.id.container, rideDetailsFragment)
-                .commit();
-    }
-
     public int getCurrentActionBarColor() {
         return mCurrentActionBarColor;
     }

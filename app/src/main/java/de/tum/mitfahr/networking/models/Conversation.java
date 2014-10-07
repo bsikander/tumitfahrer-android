@@ -1,11 +1,12 @@
 package de.tum.mitfahr.networking.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by amr on 07.07.14.
  */
-public class Conversation {
+public class Conversation implements Serializable{
 
     private int id;
     private int userId;

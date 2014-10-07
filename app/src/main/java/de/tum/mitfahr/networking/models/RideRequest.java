@@ -1,9 +1,11 @@
 package de.tum.mitfahr.networking.models;
 
+import java.io.Serializable;
+
 /**
  * Created by amr on 21/06/14.
  */
-public class RideRequest {
+public class RideRequest implements Serializable {
 
     private int id;
     private int passengerId;

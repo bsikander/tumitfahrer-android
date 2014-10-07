@@ -100,6 +100,10 @@ public class ProfileService {
         }
     }
 
+    public User getUserSynchronous(int userId) {
+        return mProfileRESTClient.getUserSynchronous(userId, userAPIKey);
+    }
+
     public void getUser(int userId) {
         mProfileRESTClient.getSomeUser(userId, userAPIKey);
     }

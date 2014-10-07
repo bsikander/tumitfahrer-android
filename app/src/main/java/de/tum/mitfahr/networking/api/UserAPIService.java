@@ -2,6 +2,7 @@ package de.tum.mitfahr.networking.api;
 
 import org.json.JSONObject;
 
+import de.tum.mitfahr.networking.models.User;
 import de.tum.mitfahr.networking.models.requests.RegisterRequest;
 import de.tum.mitfahr.networking.models.requests.UpdateUserRequest;
 import de.tum.mitfahr.networking.models.response.GetUserResponse;
@@ -39,6 +40,12 @@ public interface UserAPIService {
             @Header("apiKey") String apiKey,
             @Path("id") int userId,
             Callback<GetUserResponse> callback
+    );
+
+    @GET("/users/{id}")
+    public GetUserResponse getUserSynchronous(
+            @Header("apiKey") String apiKey,
+            @Path("id") int userId
     );
 
     @PUT("/users/{id}")

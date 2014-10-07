@@ -14,4 +14,11 @@
     <color name="text_shadow">#7F000000</color>
     <color name="tumitfahr_color">#0076b8</color>
     <color name="float_label_inactive">#AA202020</color>
+
+    <integer-array name="progress_colors">
+        <item>@android:color/holo_blue_bright</item>
+        <item>@android:color/holo_green_light</item>
+        <item>@android:color/holo_orange_light</item>
+        <item>@android:color/holo_red_light</item>
+    </integer-array>
 </resources>
