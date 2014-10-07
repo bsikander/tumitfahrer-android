@@ -43,7 +43,6 @@ public class MainActivity extends FragmentActivity
 
     private static final String TAG_SEARCH_RESULTS_FRAGMENT = "search_results_fragment";
 
-
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private AbstractNavigationFragment mCurrentFragment;
 
@@ -252,6 +251,10 @@ public class MainActivity extends FragmentActivity
     protected void onResume() {
         super.onResume();
         BusProvider.getInstance().register(this);
+    }
+
+    public NavigationDrawerFragment getNavigationDrawerFragment() {
+        return mNavigationDrawerFragment;
     }
 
 }

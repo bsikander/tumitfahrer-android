@@ -25,6 +25,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.networking.models.Ride;
+import de.tum.mitfahr.ui.MainActivity;
 import de.tum.mitfahr.ui.RideDetailsActivity;
 import de.tum.mitfahr.util.TimelineItem;
 import de.tum.mitfahr.widget.FloatingActionButton;
@@ -78,6 +79,12 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
         timelineList.setEmptyView(swipeRefreshLayoutEmptyView);
 
         floatingActionButton.attachToListView(timelineList);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).getNavigationDrawerFragment().selectItem(4);
+            }
+        });
         return rootView;
     }
 
@@ -105,6 +112,8 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
             }
         }
     };
+
+
 
     public void setTimelineItems(List<TimelineItem> timelineItems) {
         setLoading(false);

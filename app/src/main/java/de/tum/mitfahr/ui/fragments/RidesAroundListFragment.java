@@ -1,6 +1,7 @@
 package de.tum.mitfahr.ui.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -34,7 +36,10 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.networking.models.Ride;
+import de.tum.mitfahr.ui.MainActivity;
+import de.tum.mitfahr.ui.RideDetailsActivity;
 import de.tum.mitfahr.util.LocationUtil;
+import de.tum.mitfahr.widget.FloatingActionButton;
 
 /**
  * Authored by abhijith on 21/06/14.
@@ -57,6 +62,9 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
 
     @InjectView(R.id.swipeRefreshLayout_emptyView)
     SwipeRefreshLayout swipeRefreshLayoutEmptyView;
+
+    @InjectView(R.id.button_floating_action)
+    FloatingActionButton floatingActionButton;
 
     private LocationClient mLocationClient;
     private LatLng mCurrentLocation = new LatLng(52.5167, 13.3833);
@@ -109,6 +117,14 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
                 android.R.color.holo_red_light);
 
         ridesList.setEmptyView(swipeRefreshLayoutEmptyView);
+
+        floatingActionButton.attachToListView(ridesList);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).getNavigationDrawerFragment().selectItem(4);
+            }
+        });
         return rootView;
     }
 
@@ -117,8 +133,21 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
         super.onViewCreated(view, savedInstanceState);
         mAdapter = new RideAdapterTest(getActivity());
         ridesList.setAdapter(mAdapter);
+        ridesList.setAdapter(mAdapter);
         setLoading(true);
     }
+
+    private AdapterView.OnItemClickListener mItemClickListener = new android.widget.AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Ride clickedItem = mRides.get(position);
+            if (clickedItem != null) {
+                Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
+                intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, clickedItem);
+                startActivity(intent);
+            }
+        }
+    };
 
     @Override
     public void onPause() {

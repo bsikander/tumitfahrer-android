@@ -70,8 +70,8 @@
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
         android:src="@drawable/placeholder"
-        fab:fab_colorNormal="@color/blue1"
+        fab:fab_colorNormal="@color/blue2"
         fab:fab_shadow="false"
-        fab:fab_colorPressed="@color/blue2" />
+        fab:fab_colorPressed="@color/blue1" />
 
 </FrameLayout>

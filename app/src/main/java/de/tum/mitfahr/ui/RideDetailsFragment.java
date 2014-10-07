@@ -223,6 +223,7 @@ public class RideDetailsFragment extends Fragment {
 
         if (null != mRide.getPassengers() && mRide.getPassengers().length > 0) {
             passengersLayoutContainer.setVisibility(View.VISIBLE);
+            passengersItemContainer.removeAllViews();
             for (User passenger : mRide.getPassengers()) {
                 if (passenger.getId() == mCurrentUser.getId()) {
                     rideActionButton.setVisibility(View.VISIBLE);
@@ -319,30 +320,33 @@ public class RideDetailsFragment extends Fragment {
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
             Iterator it = mRequestUserMap.entrySet().iterator();
-            while (it.hasNext()) {
+            if (mRequestUserMap.size() > 0) {
                 requestsLayoutContainer.setVisibility(View.VISIBLE);
-                Map.Entry pairs = (Map.Entry) it.next();
-                PassengerItemView passengerItem = new PassengerItemView(getActivity());
-                passengerItem.setPassenger((User) pairs.getValue());
-                passengerItem.setItemType(PassengerItemView.TYPE_PENDING);
-                passengerItem.setListener(new PassengerItemView.PassengerItemClickListener() {
-                    @Override
-                    public void onRemoveClicked(User passenger) {
-                        //remove the user
-                    }
+                requestsItemContainer.removeAllViews();
+                while (it.hasNext()) {
+                    Map.Entry pairs = (Map.Entry) it.next();
+                    PassengerItemView passengerItem = new PassengerItemView(getActivity());
+                    passengerItem.setPassenger((User) pairs.getValue());
+                    passengerItem.setItemType(PassengerItemView.TYPE_PENDING);
+                    passengerItem.setListener(new PassengerItemView.PassengerItemClickListener() {
+                        @Override
+                        public void onRemoveClicked(User passenger) {
+                            //remove the user
+                        }
 
-                    @Override
-                    public void onActionClicked(User passenger) {
-                        //do the action... conversation or accept
-                    }
+                        @Override
+                        public void onActionClicked(User passenger) {
+                            //do the action... conversation or accept
+                        }
 
-                    @Override
-                    public void onUserClicked(User passenger) {
-                        //show the userpage
-                    }
-                });
-                requestsItemContainer.addView(passengerItem);
-                it.remove(); // avoids a ConcurrentModificationException
+                        @Override
+                        public void onUserClicked(User passenger) {
+                            //show the userpage
+                        }
+                    });
+                    requestsItemContainer.addView(passengerItem);
+                    it.remove(); // avoids a ConcurrentModificationException
+                }
             }
             progressBar.progressiveStop();
         }

@@ -29,7 +29,9 @@ import butterknife.InjectView;
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.ui.MainActivity;
 import de.tum.mitfahr.util.TimelineItem;
+import de.tum.mitfahr.widget.FloatingActionButton;
 
 /**
  * Authored by abhijith on 21/06/14.
@@ -49,6 +51,9 @@ public class TimelineListNearbyFragment extends Fragment implements SwipeRefresh
 
     @InjectView(R.id.swipeRefreshLayout_emptyView)
     SwipeRefreshLayout swipeRefreshLayoutEmptyView;
+
+    @InjectView(R.id.button_floating_action)
+    FloatingActionButton floatingActionButton;
 
 
     public static TimelineListNearbyFragment newInstance() {
@@ -82,6 +87,14 @@ public class TimelineListNearbyFragment extends Fragment implements SwipeRefresh
                 android.R.color.holo_red_light);
 
         timelineList.setEmptyView(swipeRefreshLayoutEmptyView);
+
+        floatingActionButton.attachToListView(timelineList);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).getNavigationDrawerFragment().selectItem(4);
+            }
+        });
         return rootView;
     }
 
