@@ -121,7 +121,7 @@ public class ActivityRidesFragment extends AbstractNavigationFragment {
             else if (position == 1)
                 return mRidesAroundListFragment;
             else
-                return BlankFragment.newInstance();
+                return CarSharingFragment.newInstance();
         }
     }
 
