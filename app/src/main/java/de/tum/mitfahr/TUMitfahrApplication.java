@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.squareup.otto.Bus;
 
+import de.tum.mitfahr.networking.panoramio.PanoramioService;
 import de.tum.mitfahr.services.ActivitiesService;
 import de.tum.mitfahr.services.ConversationsService;
 import de.tum.mitfahr.services.FeedbackService;
@@ -19,7 +20,8 @@ import de.tum.mitfahr.services.SearchService;
  */
 public class TUMitfahrApplication extends Application {
 
-    private static final String BASE_BACKEND_URL = "http://tumitfahrer-staging.herokuapp.com/api/v2";
+    private static final String BASE_BACKEND_URL = "http://vmkrcmar61.informatik.tu-muenchen.de/api/v2";
+    private static final String PANORAMIO_BACKEND_URL = "http://www.panoramio.com/map/get_panoramas.php?";
 
     private Bus mBus = BusProvider.getInstance();
 
@@ -32,6 +34,7 @@ public class TUMitfahrApplication extends Application {
     private ConversationsService mConversationsService;
     private FeedbackService mFeedbackService;
     private RatingsService mRatingsService;
+    private PanoramioService mPanoramioService;
 
     @Override
     public void onCreate() {
@@ -41,6 +44,7 @@ public class TUMitfahrApplication extends Application {
         mRidesService = new RidesService(this);
         mSearchService = new SearchService(this);
         mActivitiesService = new ActivitiesService(this);
+        mPanoramioService = new PanoramioService(this);
     }
 
     public ProfileService getProfileService() {
@@ -78,6 +82,10 @@ public class TUMitfahrApplication extends Application {
     public String getBaseURLBackend() {
         return BASE_BACKEND_URL;
     }
+    public String getPanoramioURLBackend() {
+        return PANORAMIO_BACKEND_URL;
+    }
+
 
     public static TUMitfahrApplication getApplication(final Context context) {
         return (TUMitfahrApplication) context.getApplicationContext();

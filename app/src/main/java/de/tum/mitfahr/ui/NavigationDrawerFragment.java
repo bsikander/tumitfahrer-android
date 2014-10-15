@@ -10,7 +10,6 @@ import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
@@ -21,8 +20,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.ikimuhendis.ldrawer.ActionBarDrawerToggle;
+import com.ikimuhendis.ldrawer.DrawerArrowDrawable;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -67,6 +70,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private DrawerLayout mDrawerLayout;
+    private DrawerArrowDrawable mDrawerArrow;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
     private View mProfileHeaderView;
@@ -128,13 +132,13 @@ public class NavigationDrawerFragment extends Fragment {
 
         String navTitles[] = getResources().getStringArray(R.array.navigation_drawer_array);
         mAdapter = new DrawerAdapter(getActivity());
-        mAdapter.add(new DrawerItem(navTitles[0], R.drawable.placeholder, DrawerType.TYPE1));// Timeline
-        mAdapter.add(new DrawerItem(navTitles[1], R.drawable.placeholder, DrawerType.TYPE2));// Campus
-        mAdapter.add(new DrawerItem(navTitles[2], R.drawable.placeholder, DrawerType.TYPE2));// Activity
-        mAdapter.add(new DrawerItem(navTitles[3], R.drawable.placeholder, DrawerType.TYPE3));// Create
-        mAdapter.add(new DrawerItem(navTitles[4], R.drawable.placeholder, DrawerType.TYPE3));// Search
-        mAdapter.add(new DrawerItem(navTitles[5], R.drawable.placeholder, DrawerType.TYPE4));// MyRides
-        mAdapter.add(new DrawerItem(navTitles[6], R.drawable.placeholder, DrawerType.TYPE4));// Settings
+        mAdapter.add(new DrawerItem(navTitles[0], R.drawable.ic_timeline, DrawerType.TYPE1));// Timeline
+        mAdapter.add(new DrawerItem(navTitles[1], R.drawable.ic_campus, DrawerType.TYPE2));// Campus
+        mAdapter.add(new DrawerItem(navTitles[2], R.drawable.ic_activity, DrawerType.TYPE2));// Activity
+        mAdapter.add(new DrawerItem(navTitles[3], R.drawable.ic_add, DrawerType.TYPE3));// Create
+        mAdapter.add(new DrawerItem(navTitles[4], R.drawable.ic_search, DrawerType.TYPE3));// Search
+        mAdapter.add(new DrawerItem(navTitles[5], R.drawable.ic_car, DrawerType.TYPE4));// MyRides
+        mAdapter.add(new DrawerItem(navTitles[6], R.drawable.ic_settings, DrawerType.TYPE4));// Settings
 
         mDrawerListView.setAdapter(mAdapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
@@ -210,15 +214,17 @@ public class NavigationDrawerFragment extends Fragment {
             }
             holder.title.setText(item.mTitle);
             holder.title.setTypeface(null, position == selectedItem ? Typeface.BOLD : Typeface.NORMAL);
-            holder.title.setCompoundDrawablesWithIntrinsicBounds(item.mIconResource, 0, 0, 0);
+            holder.icon.setImageResource(item.mIconResource);
             return convertView;
         }
 
         private class ViewHolder {
             public TextView title;
+            public ImageView icon;
 
             public void attach(View v) {
                 title = (TextView) v.findViewById(R.id.menu_title);
+                icon = (ImageView) v.findViewById(R.id.menu_icon);
             }
         }
     }
@@ -257,12 +263,19 @@ public class NavigationDrawerFragment extends Fragment {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
+        mDrawerArrow = new DrawerArrowDrawable(getActivity()) {
+            @Override
+            public boolean isLayoutRtl() {
+                return false;
+            }
+        };
+
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the navigation drawer and the action bar app icon.
         mDrawerToggle = new ActionBarDrawerToggle(
                 getActivity(),                    /* host Activity */
                 mDrawerLayout,                    /* DrawerLayout object */
-                R.drawable.ic_navigation_drawer,             /* nav drawer image to replace 'Up' caret */
+                mDrawerArrow,             /* nav drawer image to replace 'Up' caret */
                 R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
                 R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
         ) {
@@ -295,12 +308,15 @@ public class NavigationDrawerFragment extends Fragment {
                 getActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
         };
+        mDrawerToggle.setAnimateEnabled(true);
+
 
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
         // per the navigation drawer design guidelines.
         if (!mUserLearnedDrawer && !mFromSavedInstanceState) {
             mDrawerLayout.openDrawer(mFragmentContainerView);
         }
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         // Defer code dependent on restoration of previous instance state.
         mDrawerLayout.post(new Runnable() {
@@ -310,7 +326,6 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
     @Override

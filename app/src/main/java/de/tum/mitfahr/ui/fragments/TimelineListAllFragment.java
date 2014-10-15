@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,9 +40,12 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
     private static final String TAG = TimelineListAllFragment.class.getName();
     private List<TimelineItem> mTimeline = new ArrayList<TimelineItem>();
 
-    private TimelineAdapter mAdapter;
+    private TimelineAdapter mTimelineAdapter;
+    private AlphaInAnimationAdapter mAdapter;
+
+
     @InjectView(R.id.rides_listview)
-    ListView timelineList;
+    ListView timelineListView;
 
     @InjectView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -76,13 +81,13 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        timelineList.setEmptyView(swipeRefreshLayoutEmptyView);
+        timelineListView.setEmptyView(swipeRefreshLayoutEmptyView);
 
-        floatingActionButton.attachToListView(timelineList);
+        floatingActionButton.attachToListView(timelineListView);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).getNavigationDrawerFragment().selectItem(4);
+                ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(4);
             }
         });
         return rootView;
@@ -91,9 +96,11 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAdapter = new TimelineAdapter(getActivity());
-        timelineList.setAdapter(mAdapter);
-        timelineList.setOnItemClickListener(mItemClickListener);
+        mTimelineAdapter = new TimelineAdapter(getActivity());
+        mAdapter = new AlphaInAnimationAdapter(mTimelineAdapter);
+        mAdapter.setAbsListView(timelineListView);
+        timelineListView.setAdapter(mAdapter);
+        timelineListView.setOnItemClickListener(mItemClickListener);
         setLoading(true);
     }
 
@@ -113,8 +120,6 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
         }
     };
 
-
-
     public void setTimelineItems(List<TimelineItem> timelineItems) {
         setLoading(false);
         mTimeline = timelineItems;
@@ -124,8 +129,8 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
 
     private void refreshList() {
         Log.e(TAG, "In refresh list");
-        mAdapter.clear();
-        mAdapter.addAll(mTimeline);
+        mTimelineAdapter.clear();
+        mTimelineAdapter.addAll(mTimeline);
         mAdapter.notifyDataSetChanged();
     }
 
@@ -158,15 +163,15 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
             long time = item.getTime().getTime();
             String timeSpanString = DateUtils.getRelativeTimeSpanString(time, now, DateUtils.FORMAT_ABBREV_TIME).toString();
             if (item.getType().equals(TimelineItem.TimelineItemType.RIDE_CREATED)) {
-                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.placeholder);
+                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.ic_driver);
                 ((TextView) view.findViewById(R.id.timeline_activity_text)).setText("New Ride offer to");
 
             } else if (item.getType().equals(TimelineItem.TimelineItemType.RIDE_SEARCHED)) {
-                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.placeholder);
+                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.ic_search);
                 ((TextView) view.findViewById(R.id.timeline_activity_text)).setText("User searched for a Ride to");
 
             } else if (item.getType().equals(TimelineItem.TimelineItemType.RIDE_REQUEST)) {
-                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.placeholder);
+                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.ic_passenger);
                 ((TextView) view.findViewById(R.id.timeline_activity_text)).setText("Request received for a ride to");
 
             }

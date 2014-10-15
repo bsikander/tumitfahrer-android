@@ -38,7 +38,7 @@
 
             <ImageView
                 android:layout_width="30dp"
-                android:src="@drawable/placeholder"
+                android:src="@drawable/ic_send_dark"
                 android:layout_height="30dp" />
 
             <TextView
@@ -65,7 +65,7 @@
 
             <ImageView
                 android:layout_width="30dp"
-                android:src="@drawable/placeholder"
+                android:src="@drawable/ic_report_dark"
                 android:layout_height="30dp" />
 
             <TextView
@@ -110,7 +110,7 @@
 
             <ImageView
                 android:layout_width="30dp"
-                android:src="@drawable/placeholder"
+                android:src="@drawable/ic_lock_dark"
                 android:layout_height="30dp" />
 
             <TextView
@@ -137,7 +137,7 @@
 
             <ImageView
                 android:layout_width="30dp"
-                android:src="@drawable/placeholder"
+                android:src="@drawable/ic_license_dark"
                 android:layout_height="30dp" />
 
             <TextView
@@ -164,7 +164,7 @@
 
             <ImageView
                 android:layout_width="30dp"
-                android:src="@drawable/placeholder"
+                android:src="@drawable/ic_car_dark"
                 android:layout_height="30dp" />
 
             <TextView
@@ -208,7 +208,7 @@
 
             <ImageView
                 android:layout_width="30dp"
-                android:src="@drawable/placeholder"
+                android:src="@drawable/ic_info_dark"
                 android:layout_height="30dp" />
 
             <TextView
@@ -235,7 +235,7 @@
 
             <ImageView
                 android:layout_width="30dp"
-                android:src="@drawable/placeholder"
+                android:src="@drawable/ic_people_dark"
                 android:layout_height="30dp" />
 
             <TextView

@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import de.tum.mitfahr.BusProvider;
 import retrofit.ErrorHandler;
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -36,6 +37,13 @@ public abstract class AbstractRESTClient implements ErrorHandler {
                 .setEndpoint(mBaseBackendURL)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setErrorHandler(this)
+//                .setRequestInterceptor(new RequestInterceptor() {
+//                    @Override
+//                    public void intercept(RequestFacade request) {
+//                        request.addHeader("Content-Type", "application/json;charset=utf-8");
+//                        request.addHeader("Accept","application/json;charset=utf-8");
+//                    }
+//                })
                 .setConverter(getGsonConverter())
                 .build();
     }

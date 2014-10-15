@@ -145,4 +145,12 @@ public interface RidesAPIService {
             @Query("ride_type") int rideType,
             Callback<RidesResponse> callback
     );
+
+    @GET("/rides")
+    public void getRidesPaged(
+            @Header("apiKey") String apiKey,
+            @Query("ride_type") int rideType,
+            @Query("page") int page,
+            Callback<RidesResponse> callback
+    );
 }

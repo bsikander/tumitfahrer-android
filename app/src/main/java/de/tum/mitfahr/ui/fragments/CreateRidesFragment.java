@@ -38,6 +38,7 @@ import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.adapters.LocationAutoCompleteAdapter;
 import de.tum.mitfahr.events.OfferRideEvent;
+import de.tum.mitfahr.networking.models.User;
 import de.tum.mitfahr.util.StringHelper;
 import info.hoang8f.android.segmented.SegmentedGroup;
 
@@ -51,6 +52,8 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
 
     public static final int RIDE_TYPE_CAMPUS = 0;
     public static final int RIDE_TYPE_ACTIVITY = 1;
+
+    private User mCurrentUser;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -122,6 +125,7 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
         mYearOfDeparture = calendar.get(Calendar.YEAR);
         mMonthOfDeparture = calendar.get(Calendar.MONTH);
         mDayOfDeparture = calendar.get(Calendar.DAY_OF_MONTH);
+        mCurrentUser = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getUserFromPreferences();
     }
 
     @Override
@@ -218,14 +222,17 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
         String departure = departureText.getText().toString();
         String destination = destinationText.getText().toString();
         String meetingPoint = meetingText.getText().toString();
-        String freeSeats = seatsText.getText().toString();
+        int freeSeats = 0;
+        if (!StringHelper.isBlank(seatsText.getText().toString()))
+            freeSeats = Integer.parseInt(seatsText.getText().toString());
         String dateTime = getFormattedDate();
         int rideType = rideTypeSpinner.getSelectedItemPosition();
-        if (departure != "" && destination != "" && meetingPoint != ""
-                && freeSeats != "" && dateTime != "") {
+        int isDriver = (driver) ? 1 : 0;
+
+        if (!StringHelper.isBlank(departure) && !StringHelper.isBlank(destination) && !StringHelper.isBlank(meetingPoint) && !StringHelper.isBlank(dateTime)) {
             offerRideButton.setProgress(50);// showing working state
             TUMitfahrApplication.getApplication(getActivity()).getRidesService()
-                    .offerRide(departure, destination, meetingPoint, freeSeats, dateTime, rideType, driver);
+                    .offerRide(departure, destination, meetingPoint, freeSeats, dateTime, rideType, isDriver, mCurrentUser.getCar());
         }
     }
 

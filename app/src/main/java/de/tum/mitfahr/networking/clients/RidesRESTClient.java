@@ -45,13 +45,14 @@ public class RidesRESTClient extends AbstractRESTClient {
     public void offerRide(final String departure,
                           final String destination,
                           final String meetingPoint,
-                          final String freeSeats,
+                          final int freeSeats,
                           final String dateTime,
                           final String userAPIKey,
                           final int rideType,
                           final int userId,
-                          final boolean isDriving) {
-        OfferRideRequest requestData = new OfferRideRequest(departure, destination, meetingPoint, freeSeats, dateTime, rideType, isDriving);
+                          final int isDriving,
+                          final String car) {
+        OfferRideRequest requestData = new OfferRideRequest(departure, destination, meetingPoint, freeSeats, dateTime, rideType, isDriving, car);
         ridesAPIService.offerRide(userAPIKey, userId, requestData, offerRideCallback);
     }
 
@@ -184,6 +185,22 @@ public class RidesRESTClient extends AbstractRESTClient {
         @Override
         public void success(RidesResponse ridesResponse, Response response) {
             mBus.post(new GetRidesDateEvent(GetRidesDateEvent.Type.RESULT, ridesResponse));
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
+            mBus.post(new RequestFailedEvent());
+        }
+    };
+
+    public void getRidesPaged(String userAPIKey, int rideType, int page) {
+        ridesAPIService.getRidesPaged(userAPIKey, rideType, page, getRidePagedCallback);
+    }
+
+    private Callback<RidesResponse> getRidePagedCallback = new Callback<RidesResponse>() {
+        @Override
+        public void success(RidesResponse ridesResponse, Response response) {
+            mBus.post(new GetRidesPageEvent(GetRidesPageEvent.Type.RESULT, ridesResponse));
         }
 
         @Override

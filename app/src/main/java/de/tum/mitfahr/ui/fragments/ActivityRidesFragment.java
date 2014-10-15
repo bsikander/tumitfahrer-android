@@ -23,7 +23,7 @@ import butterknife.InjectView;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.GetRidesDateEvent;
-import de.tum.mitfahr.ui.dummy.BlankFragment;
+import de.tum.mitfahr.events.GetRidesPageEvent;
 
 /**
  * Created by abhijith on 22/05/14.
@@ -83,15 +83,15 @@ public class ActivityRidesFragment extends AbstractNavigationFragment {
         outputFormat.setTimeZone(TimeZone.getDefault());
         String fromDate = outputFormat.format(calendar.getTime());
 
-        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getRides(fromDate, 1);
+        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getRidesPaged(1, 0);
     }
 
     @Subscribe
-    public void onActivityRidesEvent(GetRidesDateEvent result) {
-        if (result.getType() == GetRidesDateEvent.Type.GET_SUCCESSFUL) {
+    public void onActivityRidesEvent(GetRidesPageEvent result) {
+        if (result.getType() == GetRidesPageEvent.Type.GET_SUCCESSFUL) {
             mRidesAllListFragment.setRides(result.getResponse().getRides());
             mRidesAroundListFragment.setRides(result.getResponse().getRides());
-        } else if (result.getType() == GetRidesDateEvent.Type.GET_FAILED) {
+        } else if (result.getType() == GetRidesPageEvent.Type.GET_FAILED) {
             Toast.makeText(getActivity(), "GetFailed", Toast.LENGTH_SHORT).show();
         }
     }

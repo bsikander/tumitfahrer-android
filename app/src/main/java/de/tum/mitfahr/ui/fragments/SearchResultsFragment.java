@@ -1,9 +1,9 @@
 package de.tum.mitfahr.ui.fragments;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,17 +21,13 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.networking.models.Ride;
+import de.tum.mitfahr.ui.SearchResultsActivity;
 import de.tum.mitfahr.util.QuickReturnViewHelper;
 
 /**
  * Authored by abhijith on 20/06/14.
  */
-public class SearchResultsFragment extends AbstractNavigationFragment {
-
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_FROM = "from";
-    private static final String ARG_TO = "to";
-    private static final String ARG_RIDES = "rides";
+public class SearchResultsFragment extends Fragment {
 
     private List<Ride> mRides;
     private String mFrom;
@@ -49,19 +45,12 @@ public class SearchResultsFragment extends AbstractNavigationFragment {
     TextView dateText;
     ImageButton editButton;
 
-
-    private static final String[] songs = {"1983... (A Merman I Should Turn to Be)", "51st Anniversary", "All Along The Watchtower", "Angel", "Are You Experienced?", "Bleeding Heart", "Bold As Love", "Burning Of The Midnight Lamp",
-            "Castles Made Of Sand", "Crash Landing", "Crosstown Traffic", "Dolly Dagger", "Drifting", "Fire", "Foxy Lady", "Gypsy Eyes", "Hear My Train a Comin'", "Hey Joe", "Highway Chile", "House Burning Down", "Izabella", "Let Me Move You",
-            "Little Wing", "Lover Man", "Machine Gun", "Manic Depression", "Mojo Man", "Mr. Bad Luck", "One Rainy Wish", "Purple Haze", "Red House", "She's So Fine", "Ships Passing In The Night", "Somewhere", "Spanish Castle Magic",
-            "Stepping Stone", "Still Raining, Still Dreaming", "Stone Free", "The Wind Cries Mary", "Third Stone From The Sun", "Valleys of Neptune", "Voodoo Child (Slight Return)"};
-
-    public static SearchResultsFragment newInstance(List<Ride> rides, String from, String to, int sectionNumber) {
+    public static SearchResultsFragment newInstance(List<Ride> rides, String from, String to) {
         SearchResultsFragment fragment = new SearchResultsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_FROM, from);
-        args.putString(ARG_TO, to);
-        args.putSerializable(ARG_RIDES, (java.io.Serializable) rides);
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+        args.putString(SearchResultsActivity.SEARCH_RIDE_RESULT_INTENT_FROM, from);
+        args.putString(SearchResultsActivity.SEARCH_RIDE_RESULT_INTENT_TO, to);
+        args.putSerializable(SearchResultsActivity.SEARCH_RIDE_RESULT_INTENT_RIDES, (java.io.Serializable) rides);
         fragment.setArguments(args);
         return fragment;
     }
@@ -78,9 +67,9 @@ public class SearchResultsFragment extends AbstractNavigationFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mRides = (ArrayList<Ride>) getArguments().getSerializable(ARG_RIDES);
-            mFrom = getArguments().getString(ARG_FROM);
-            mTo = getArguments().getString(ARG_TO);
+            mRides = (ArrayList<Ride>) getArguments().getSerializable(SearchResultsActivity.SEARCH_RIDE_RESULT_INTENT_RIDES);
+            mFrom = getArguments().getString(SearchResultsActivity.SEARCH_RIDE_RESULT_INTENT_FROM);
+            mTo = getArguments().getString(SearchResultsActivity.SEARCH_RIDE_RESULT_INTENT_TO);
         }
     }
 
@@ -104,28 +93,23 @@ public class SearchResultsFragment extends AbstractNavigationFragment {
                 //Log.d("SearchResultsFragment", "onScroll");
             }
         });
-        changeActionBarColor(getResources().getColor(R.color.blue3));
         return rootView;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //searchResultsList.addHeaderView(mBlankHeader, null, false);
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_drawer, R.id.menu_title, songs);
         RideAdapterTest adapter = new RideAdapterTest(getActivity());
-        adapter.addAll(songs);
+        adapter.addAll(mRides);
         searchResultsList.setAdapter(adapter);
     }
 
-    class RideAdapterTest extends ArrayAdapter<String> {
+    class RideAdapterTest extends ArrayAdapter<Ride> {
 
         private final LayoutInflater mInflater;
 
         public RideAdapterTest(Context context) {
             super(context, 0);
-
-            final float density = context.getResources().getDisplayMetrics().density;
             mInflater = LayoutInflater.from(getActivity());
         }
 
@@ -138,9 +122,15 @@ public class SearchResultsFragment extends AbstractNavigationFragment {
             } else {
                 view = (ViewGroup) convertView;
             }
-            String text = getItem(position);
+            Ride ride = getItem(position);
+
+            String[] dateTime = ride.getDepartureTime().split("T");
             ((ImageView) view.findViewById(R.id.ride_location_image)).setBackgroundResource(R.drawable.list_image_placeholder);
-            ((TextView) view.findViewById(R.id.rides_to_text)).setText(text);
+            ((TextView) view.findViewById(R.id.rides_from_text)).setText(ride.getDeparturePlace().split(",")[0]);
+            ((TextView) view.findViewById(R.id.rides_to_text)).setText(ride.getDestination().split(",")[0]);
+            ((TextView) view.findViewById(R.id.rides_date_text)).setText(dateTime[0]);
+            ((TextView) view.findViewById(R.id.rides_time_text)).setText(dateTime[1].substring(0, 5));
+
             return view;
         }
     }

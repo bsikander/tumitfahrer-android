@@ -2,7 +2,6 @@ package de.tum.mitfahr.services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -10,6 +9,8 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -35,9 +36,9 @@ import de.tum.mitfahr.networking.models.response.UpdateUserResponse;
  */
 public class ProfileService {
 
-    private static final String AMZ_BUCKET_NAME = "";
-    private static final String AMZ_SECRET_KEY = "";
-    private static final String AMZ_ACCESS_KEY_ID = "";
+    private static final String AMZ_BUCKET_NAME = "tumitfahrer";
+    private static final String AMZ_SECRET_KEY = "fvyTaWgegKsT1esZo5DrXmc65paKfY5So8jcvQAk";
+    private static final String AMZ_ACCESS_KEY_ID = "AKIAIRFGBPO5JUZWRDHA";
     private static final String AMZ_PATH = "users/";
     private static final String AMZ_FILENAME = "/profile_picture.jpg";
 
@@ -190,17 +191,36 @@ public class ProfileService {
     public URL getProfileImageURL() {
         int id = mSharedPreferences.getInt("id", 0);
         String userId = Integer.toString(id);
+        ResponseHeaderOverrides override = new ResponseHeaderOverrides();
+        override.setContentType("image/jpeg");
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(AMZ_BUCKET_NAME, AMZ_PATH + userId + AMZ_FILENAME);
         request.setMethod(HttpMethod.GET);
         request.setExpiration(new Date(System.currentTimeMillis() + (long) 1000 * 3 * 60)); // 3 minutes
+        request.setResponseHeaders(override);
 
         AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(AMZ_ACCESS_KEY_ID, AMZ_SECRET_KEY));
         URL urlForGet = s3Client.generatePresignedUrl(request);
         return urlForGet;
     }
 
-    public boolean uploadImage(Bitmap bitmap) {
+    public URL getProfileImageURL(int userId) {
+        int id = mSharedPreferences.getInt("id", 0);
+        ResponseHeaderOverrides override = new ResponseHeaderOverrides();
+        override.setContentType("image/jpeg");
+        GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(AMZ_BUCKET_NAME, AMZ_PATH + userId + AMZ_FILENAME);
+        request.setMethod(HttpMethod.GET);
+        request.setExpiration(new Date(System.currentTimeMillis() + (long) 1000 * 3 * 60)); // 3 minutes
+        request.setResponseHeaders(override);
 
+        AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(AMZ_ACCESS_KEY_ID, AMZ_SECRET_KEY));
+        URL urlForGet = s3Client.generatePresignedUrl(request);
+        return urlForGet;
+    }
+
+    public boolean uploadImage(String filePath) {
+        AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(AMZ_ACCESS_KEY_ID, AMZ_SECRET_KEY));
+        PutObjectRequest por = new PutObjectRequest(AMZ_BUCKET_NAME, AMZ_PATH + userId + AMZ_FILENAME, new java.io.File(filePath));
+        s3Client.putObject(por);
         return false;
     }
 

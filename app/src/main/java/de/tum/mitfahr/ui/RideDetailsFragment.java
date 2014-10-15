@@ -171,6 +171,7 @@ public class RideDetailsFragment extends Fragment {
     }
 
     private void showData() {
+        final TUMitfahrApplication app = TUMitfahrApplication.getApplication(getActivity());
         fromTextView.setText(mRide.getDeparturePlace());
         toTextView.setText(mRide.getDestination());
         infoTextView.setText(mRide.getMeetingPoint());
@@ -192,12 +193,11 @@ public class RideDetailsFragment extends Fragment {
                 rideActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //Cancel ride
+                        app.getRidesService().deleteRide(mRide.getId());
                     }
                 });
 
                 // We need to show requests
-
             } else if (mRide.isRideRequest()) {
                 //its a ride request...button is offer ride.
                 rideActionButton.setVisibility(View.VISIBLE);
@@ -205,7 +205,7 @@ public class RideDetailsFragment extends Fragment {
                 rideActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //Create a ride.
+                        //TODO:call activity with some args.
                     }
                 });
             } else {
@@ -215,7 +215,7 @@ public class RideDetailsFragment extends Fragment {
                 rideActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //Request the ride.
+                        app.getRidesService().joinRequest(mRide.getId());
                     }
                 });
             }
@@ -224,14 +224,14 @@ public class RideDetailsFragment extends Fragment {
         if (null != mRide.getPassengers() && mRide.getPassengers().length > 0) {
             passengersLayoutContainer.setVisibility(View.VISIBLE);
             passengersItemContainer.removeAllViews();
-            for (User passenger : mRide.getPassengers()) {
+            for (final User passenger : mRide.getPassengers()) {
                 if (passenger.getId() == mCurrentUser.getId()) {
                     rideActionButton.setVisibility(View.VISIBLE);
                     rideActionButton.setText("Leave Ride");
                     rideActionButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //Leave ride.
+
                         }
                     });
                 }
@@ -241,17 +241,19 @@ public class RideDetailsFragment extends Fragment {
                 passengerItem.setListener(new PassengerItemView.PassengerItemClickListener() {
                     @Override
                     public void onRemoveClicked(User passenger) {
-                        //remove the user
+                        app.getRidesService().removePassenger(mRide.getId(), passenger.getId());
                     }
 
                     @Override
                     public void onActionClicked(User passenger) {
                         //do the action... conversation or accept
+                        //TODO: conversations view
                     }
 
                     @Override
                     public void onUserClicked(User passenger) {
                         //show the userpage
+                        //TODO: Users view
                     }
                 });
                 passengerItem.isOwner(userIsOwner);
@@ -266,7 +268,6 @@ public class RideDetailsFragment extends Fragment {
 
             }
         }
-
     }
 
     @Override
@@ -319,12 +320,13 @@ public class RideDetailsFragment extends Fragment {
         @Override
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
+            final TUMitfahrApplication app = TUMitfahrApplication.getApplication(getActivity());
             Iterator it = mRequestUserMap.entrySet().iterator();
             if (mRequestUserMap.size() > 0) {
                 requestsLayoutContainer.setVisibility(View.VISIBLE);
                 requestsItemContainer.removeAllViews();
                 while (it.hasNext()) {
-                    Map.Entry pairs = (Map.Entry) it.next();
+                    final Map.Entry pairs = (Map.Entry) it.next();
                     PassengerItemView passengerItem = new PassengerItemView(getActivity());
                     passengerItem.setPassenger((User) pairs.getValue());
                     passengerItem.setItemType(PassengerItemView.TYPE_PENDING);
@@ -332,11 +334,13 @@ public class RideDetailsFragment extends Fragment {
                         @Override
                         public void onRemoveClicked(User passenger) {
                             //remove the user
+                            app.getRidesService().respondToRequest(mRide.getId(), ((RideRequest) pairs.getKey()).getId(), false);
                         }
 
                         @Override
                         public void onActionClicked(User passenger) {
                             //do the action... conversation or accept
+                            app.getRidesService().respondToRequest(mRide.getId(), ((RideRequest) pairs.getKey()).getId(), true);
                         }
 
                         @Override

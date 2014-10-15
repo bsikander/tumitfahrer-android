@@ -1,6 +1,7 @@
 package de.tum.mitfahr.ui.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,6 +27,7 @@ import org.joda.time.DateTime;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import butterknife.ButterKnife;
@@ -35,6 +37,8 @@ import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.adapters.LocationAutoCompleteAdapter;
 import de.tum.mitfahr.events.SearchEvent;
+import de.tum.mitfahr.networking.models.Ride;
+import de.tum.mitfahr.ui.SearchResultsActivity;
 import de.tum.mitfahr.util.StringHelper;
 import info.hoang8f.android.segmented.SegmentedGroup;
 
@@ -252,12 +256,21 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
     @Subscribe
     public void onSearchResults(SearchEvent event) {
         if (event.getType() == SearchEvent.Type.SEARCH_SUCCESSFUL) {
-            Toast.makeText(getActivity(), "Search Succeeded",
-                    Toast.LENGTH_SHORT).show();
             String from = fromText.getText().toString().trim();
             String to = toText.getText().toString().trim();
             searchButton.setProgress(100);
-            // BusProvider.getInstance().post(new DisplaySearchEvent(event.getResponse().getRides(), from, to));
+
+            List<Ride> rideResults = event.getResponse().getRides();
+            if (rideResults.size() > 0) {
+                Intent intent = new Intent(getActivity(), SearchResultsActivity.class);
+                intent.putExtra(SearchResultsActivity.SEARCH_RIDE_RESULT_INTENT_RIDES, (java.io.Serializable) rideResults);
+                intent.putExtra(SearchResultsActivity.SEARCH_RIDE_RESULT_INTENT_FROM, from);
+                intent.putExtra(SearchResultsActivity.SEARCH_RIDE_RESULT_INTENT_TO, to);
+                startActivity(intent);
+            } else {
+                Toast.makeText(getActivity(), "No results found!", Toast.LENGTH_SHORT).show();
+            }
+
         } else if (event.getType() == SearchEvent.Type.SEARCH_FAILED) {
             searchButton.setProgress(-1);
         }

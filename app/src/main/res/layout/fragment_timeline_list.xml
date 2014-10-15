@@ -44,7 +44,7 @@
                     android:layout_height="wrap_content"
                     android:scaleType="centerInside"
                     android:layout_gravity="center"
-                    android:src="@drawable/profile_placeholder" />
+                    android:src="@drawable/ic_empty" />
 
                 <TextView
                     android:id="@+id/empty_view_text"
@@ -69,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
-        android:src="@drawable/placeholder"
+        android:src="@drawable/ic_action_add"
         fab:fab_colorNormal="@color/blue1"
         fab:fab_shadow="false"
         fab:fab_colorPressed="@color/blue2" />

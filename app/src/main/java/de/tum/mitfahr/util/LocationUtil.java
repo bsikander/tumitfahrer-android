@@ -28,6 +28,4 @@ public class LocationUtil {
         double c = 2 * Math.asin(Math.sqrt(a));
         return EARTH_RADIUS * c;
     }
-
-
 }

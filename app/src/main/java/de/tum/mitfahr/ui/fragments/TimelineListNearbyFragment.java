@@ -1,6 +1,7 @@
 package de.tum.mitfahr.ui.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -10,12 +11,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,10 +28,11 @@ import java.util.TimeZone;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.ui.MainActivity;
+import de.tum.mitfahr.ui.RideDetailsActivity;
 import de.tum.mitfahr.util.TimelineItem;
 import de.tum.mitfahr.widget.FloatingActionButton;
 
@@ -42,7 +45,9 @@ public class TimelineListNearbyFragment extends Fragment implements SwipeRefresh
 
     private List<TimelineItem> mTimeline = new ArrayList<TimelineItem>();
 
-    private TimelineAdapter mAdapter;
+    private TimelineAdapter mTimelineAdapter;
+    private AlphaInAnimationAdapter mAdapter;
+
     @InjectView(R.id.rides_listview)
     ListView timelineList;
 
@@ -92,7 +97,7 @@ public class TimelineListNearbyFragment extends Fragment implements SwipeRefresh
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).getNavigationDrawerFragment().selectItem(4);
+                ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(4);
             }
         });
         return rootView;
@@ -108,12 +113,31 @@ public class TimelineListNearbyFragment extends Fragment implements SwipeRefresh
         outputFormat.setTimeZone(TimeZone.getDefault());
         String fromDate = outputFormat.format(calendar.getTime());
 
-        mAdapter = new TimelineAdapter(getActivity());
+        mTimelineAdapter = new TimelineAdapter(getActivity());
+        mAdapter = new AlphaInAnimationAdapter(mTimelineAdapter);
+        mAdapter.setAbsListView(timelineList);
         timelineList.setAdapter(mAdapter);
+        timelineList.setOnItemClickListener(mItemClickListener);
 
         TUMitfahrApplication.getApplication(getActivity()).getActivitiesService().getActivities();
         setLoading(true);
     }
+
+    private AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            TimelineItem clickedItem = mTimeline.get(position);
+
+            if (!TimelineItem.TimelineItemType.RIDE_SEARCHED.equals(clickedItem.getType())) {
+                Ride ride = clickedItem.getRide();
+                if (ride != null) {
+                    Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
+                    intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, ride);
+                    startActivity(intent);
+                }
+            }
+        }
+    };
 
     public void setTimelineItems(List<TimelineItem> timelineItems) {
         setLoading(false);
@@ -124,8 +148,8 @@ public class TimelineListNearbyFragment extends Fragment implements SwipeRefresh
 
     private void refreshList() {
         Log.e(TAG, "In refresh list");
-        mAdapter.clear();
-        mAdapter.addAll(mTimeline);
+        mTimelineAdapter.clear();
+        mTimelineAdapter.addAll(mTimeline);
         mAdapter.notifyDataSetChanged();
     }
 

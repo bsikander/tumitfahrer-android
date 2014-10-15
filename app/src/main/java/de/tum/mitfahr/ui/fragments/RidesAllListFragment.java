@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 
 import java.util.Comparator;
 import java.util.List;
@@ -38,10 +39,11 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
     private static final String TAG = RidesAllListFragment.class.getName();
 
     private List<Ride> mRides;
-    private RideAdapterTest mAdapter;
+    private AlphaInAnimationAdapter mAdapter;
+    private RideAdapter mRidesAdapter;
 
     @InjectView(R.id.rides_listview)
-    ListView ridesList;
+    ListView ridesListView;
 
     @InjectView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -91,9 +93,9 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        ridesList.setEmptyView(swipeRefreshLayoutEmptyView);
+        ridesListView.setEmptyView(swipeRefreshLayoutEmptyView);
 
-        floatingActionButton.attachToListView(ridesList);
+        floatingActionButton.attachToListView(ridesListView);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,9 +109,12 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAdapter = new RideAdapterTest(getActivity());
-        ridesList.setAdapter(mAdapter);
-        ridesList.setOnItemClickListener(mItemClickListener);
+        mRidesAdapter = new RideAdapter(getActivity());
+        mAdapter = new AlphaInAnimationAdapter(mRidesAdapter);
+        mAdapter.setAbsListView(ridesListView);
+        ridesListView.setAdapter(mAdapter);
+        ridesListView.setAdapter(mAdapter);
+        ridesListView.setOnItemClickListener(mItemClickListener);
         setLoading(true);
     }
 
@@ -145,8 +150,8 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
 
     private void refreshList() {
         Log.e(TAG, "In refresh list");
-        mAdapter.clear();
-        mAdapter.addAll(mRides);
+        mRidesAdapter.clear();
+        mRidesAdapter.addAll(mRides);
         mAdapter.notifyDataSetChanged();
     }
 
@@ -155,11 +160,11 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
         swipeRefreshLayoutEmptyView.setRefreshing(loading);
     }
 
-    class RideAdapterTest extends ArrayAdapter<Ride> {
+    class RideAdapter extends ArrayAdapter<Ride> {
 
         private final LayoutInflater mInflater;
 
-        public RideAdapterTest(Context context) {
+        public RideAdapter(Context context) {
             super(context, 0);
             mInflater = LayoutInflater.from(getActivity());
         }
@@ -181,6 +186,15 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
             ((TextView) view.findViewById(R.id.rides_to_text)).setText(ride.getDestination().split(",")[0]);
             ((TextView) view.findViewById(R.id.rides_date_text)).setText(dateTime[0]);
             ((TextView) view.findViewById(R.id.rides_time_text)).setText(dateTime[1].substring(0, 5));
+            if (!ride.isRideRequest()) {
+                ((TextView) view.findViewById(R.id.ride_seats_text)).setVisibility(View.VISIBLE);
+                ((TextView) view.findViewById(R.id.ride_seats_text)).setText(ride.getFreeSeats() + " seats available");
+                ((ImageView) view.findViewById(R.id.ride_type_image)).setImageResource(R.drawable.ic_driver);
+            } else {
+                ((ImageView) view.findViewById(R.id.ride_type_image)).setImageResource(R.drawable.ic_passenger);
+                ((TextView) view.findViewById(R.id.ride_seats_text)).setVisibility(View.GONE);
+            }
+
 
             return view;
         }

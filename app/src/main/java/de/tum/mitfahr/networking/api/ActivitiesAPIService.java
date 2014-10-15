@@ -12,7 +12,7 @@ import retrofit.http.Path;
  */
 public interface ActivitiesAPIService {
 
-    @GET("/activities")
+    @GET("/activities/")
     public void getActivities(
             @Header("apiKey") String apiKey,
             Callback<ActivitiesResponse> callback

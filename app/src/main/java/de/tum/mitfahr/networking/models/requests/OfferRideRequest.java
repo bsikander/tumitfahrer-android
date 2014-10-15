@@ -5,22 +5,10 @@ package de.tum.mitfahr.networking.models.requests;
  */
 public class OfferRideRequest {
 
-    String departurePlace;
-    String destination;
-    String meetingPoint;
-    String freeSeats;
-    String departureTime;
-    int rideType;
-    boolean isDriving;
+    CreateRideRequest ride;
 
     public OfferRideRequest(String departure, String destination, String meetingPoint,
-                            String freeSeats, String dateTime, int rideType,boolean isDriving) {
-        this.departurePlace = departure;
-        this.destination = destination;
-        this.meetingPoint = meetingPoint;
-        this.freeSeats = freeSeats;
-        this.departureTime = dateTime;
-        this.rideType = rideType;
-        this.isDriving = isDriving;
+                            int freeSeats, String dateTime, int rideType, int isDriving, String car) {
+        ride = new CreateRideRequest(departure, destination, meetingPoint, freeSeats, dateTime, rideType, isDriving, car);
     }
 }

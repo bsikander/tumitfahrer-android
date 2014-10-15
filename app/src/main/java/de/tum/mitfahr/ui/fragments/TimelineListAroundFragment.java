@@ -1,6 +1,7 @@
 package de.tum.mitfahr.ui.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -24,6 +26,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,7 +40,9 @@ import butterknife.InjectView;
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.networking.models.Activities;
+import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.ui.MainActivity;
+import de.tum.mitfahr.ui.RideDetailsActivity;
 import de.tum.mitfahr.util.LocationUtil;
 import de.tum.mitfahr.util.TimelineItem;
 import de.tum.mitfahr.widget.FloatingActionButton;
@@ -56,9 +61,12 @@ public class TimelineListAroundFragment extends Fragment implements SwipeRefresh
 
     private List<TimelineItem> mTimeline = new ArrayList<TimelineItem>();
 
-    private TimelineAdapter mAdapter;
+    private TimelineAdapter mTimelineAdapter;
+    private AlphaInAnimationAdapter mAdapter;
+
+
     @InjectView(R.id.rides_listview)
-    ListView timelineList;
+    ListView timelineListView;
 
     @InjectView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -119,13 +127,13 @@ public class TimelineListAroundFragment extends Fragment implements SwipeRefresh
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        timelineList.setEmptyView(swipeRefreshLayoutEmptyView);
-        floatingActionButton.attachToListView(timelineList);
+        timelineListView.setEmptyView(swipeRefreshLayoutEmptyView);
+        floatingActionButton.attachToListView(timelineListView);
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).getNavigationDrawerFragment().selectItem(4);
+                ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(4);
             }
         });
         return rootView;
@@ -134,8 +142,11 @@ public class TimelineListAroundFragment extends Fragment implements SwipeRefresh
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAdapter = new TimelineAdapter(getActivity());
-        timelineList.setAdapter(mAdapter);
+        mTimelineAdapter = new TimelineAdapter(getActivity());
+        mAdapter = new AlphaInAnimationAdapter(mTimelineAdapter);
+        mAdapter.setAbsListView(timelineListView);
+        timelineListView.setAdapter(mAdapter);
+        timelineListView.setOnItemClickListener(mItemClickListener);
         setLoading(true);
     }
 
@@ -245,10 +256,26 @@ public class TimelineListAroundFragment extends Fragment implements SwipeRefresh
 
     private void refreshList() {
         Log.e(TAG, "In refresh list");
-        mAdapter.clear();
-        mAdapter.addAll(mTimeline);
+        mTimelineAdapter.clear();
+        mTimelineAdapter.addAll(mTimeline);
         mAdapter.notifyDataSetChanged();
     }
+
+    private AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            TimelineItem clickedItem = mTimeline.get(position);
+
+            if (!TimelineItem.TimelineItemType.RIDE_SEARCHED.equals(clickedItem.getType())) {
+                Ride ride = clickedItem.getRide();
+                if (ride != null) {
+                    Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
+                    intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, ride);
+                    startActivity(intent);
+                }
+            }
+        }
+    };
 
     @Override
     public void onResume() {

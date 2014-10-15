@@ -122,7 +122,7 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).getNavigationDrawerFragment().selectItem(4);
+                ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(4);
             }
         });
         return rootView;
@@ -249,7 +249,6 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewGroup view = null;
-
             if (convertView == null) {
                 view = (ViewGroup) mInflater.inflate(R.layout.list_item_rides, parent, false);
             } else {
@@ -263,7 +262,14 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
             ((TextView) view.findViewById(R.id.rides_to_text)).setText(ride.getDestination().split(",")[0]);
             ((TextView) view.findViewById(R.id.rides_date_text)).setText(dateTime[0]);
             ((TextView) view.findViewById(R.id.rides_time_text)).setText(dateTime[1].substring(0, 5));
-
+            if (!ride.isRideRequest()) {
+                ((TextView) view.findViewById(R.id.ride_seats_text)).setVisibility(View.VISIBLE);
+                ((TextView) view.findViewById(R.id.ride_seats_text)).setText(ride.getFreeSeats() + " seats");
+                ((ImageView) view.findViewById(R.id.ride_type_image)).setImageResource(R.drawable.ic_driver);
+            } else {
+                ((ImageView) view.findViewById(R.id.ride_type_image)).setImageResource(R.drawable.ic_passenger);
+                ((TextView) view.findViewById(R.id.ride_seats_text)).setVisibility(View.VISIBLE);
+            }
             return view;
         }
     }

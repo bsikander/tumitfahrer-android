@@ -127,7 +127,6 @@ public class ProfileFragment extends AbstractNavigationFragment {
         profileDepartmentText.setText(department);
 
         URL profileImageUrl = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getProfileImageURL();
-        Log.e("URL", profileImageUrl.toString());
         Picasso.with(getActivity())
                 .load(profileImageUrl.toString())
                 .placeholder(R.drawable.profile_placeholder)

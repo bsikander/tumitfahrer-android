@@ -54,8 +54,8 @@ public class RidesService {
         userAPIKey = mSharedPreferences.getString("api_key", null);
     }
 
-    public void offerRide(String departure, String destination, String meetingPoint, String freeSeats, String dateTime, int rideType,boolean isDriving) {
-        mRidesRESTClient.offerRide(departure, destination, meetingPoint, freeSeats, dateTime, userAPIKey, rideType, userId, isDriving);
+    public void offerRide(String departure, String destination, String meetingPoint, int freeSeats, String dateTime, int rideType, int isDriving, String car) {
+        mRidesRESTClient.offerRide(departure, destination, meetingPoint, freeSeats, dateTime, userAPIKey, rideType, userId, isDriving, car);
     }
 
     @Subscribe
@@ -183,6 +183,22 @@ public class RidesService {
                 mBus.post(new GetRidesDateEvent(GetRidesDateEvent.Type.GET_FAILED, response));
             } else {
                 mBus.post(new GetRidesDateEvent(GetRidesDateEvent.Type.GET_SUCCESSFUL, response));
+            }
+        }
+    }
+
+    public void getRidesPaged(int rideType, int page) {
+        mRidesRESTClient.getRidesPaged(userAPIKey, rideType, page);
+    }
+
+    @Subscribe
+    public void onGetRidesPagedResult(GetRidesPageEvent result) {
+        if (result.getType() == GetRidesPageEvent.Type.RESULT) {
+            RidesResponse response = result.getResponse();
+            if (null == response.getRides()) {
+                mBus.post(new GetRidesPageEvent(GetRidesPageEvent.Type.GET_FAILED, response));
+            } else {
+                mBus.post(new GetRidesPageEvent(GetRidesPageEvent.Type.GET_SUCCESSFUL, response));
             }
         }
     }

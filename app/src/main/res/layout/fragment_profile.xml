@@ -110,7 +110,7 @@
 
             <ImageView
                 android:layout_width="30dp"
-                android:src="@drawable/placeholder"
+                android:src="@drawable/ic_email_dark"
                 android:layout_height="30dp" />
 
             <TextView
@@ -142,7 +142,7 @@
 
             <ImageView
                 android:layout_width="30dp"
-                android:src="@drawable/placeholder"
+                android:src="@drawable/ic_lock_dark"
                 android:layout_height="30dp" />
 
             <TextView
@@ -166,7 +166,7 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 android:background="@color/transparent"
-                android:src="@drawable/placeholder"
+                android:src="@drawable/ic_action_create"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:layout_height="fill_parent" />
@@ -187,7 +187,7 @@
 
             <ImageView
                 android:layout_width="30dp"
-                android:src="@drawable/placeholder"
+                android:src="@drawable/ic_phone_dark"
                 android:layout_height="30dp" />
 
             <TextView
@@ -219,7 +219,7 @@
 
             <ImageView
                 android:layout_width="30dp"
-                android:src="@drawable/placeholder"
+                android:src="@drawable/ic_car_dark"
                 android:layout_height="30dp" />
 
             <TextView
@@ -251,7 +251,7 @@
 
             <ImageView
                 android:layout_width="30dp"
-                android:src="@drawable/placeholder"
+                android:src="@drawable/ic_school_dark"
                 android:layout_height="30dp" />
 
             <TextView

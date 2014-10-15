@@ -16,7 +16,6 @@ import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.DisplaySearchEvent;
 import de.tum.mitfahr.events.SearchClickedEvent;
-import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.ui.fragments.AbstractNavigationFragment;
 import de.tum.mitfahr.ui.fragments.ActivityRidesFragment;
 import de.tum.mitfahr.ui.fragments.CampusRidesFragment;
@@ -116,6 +115,7 @@ public class MainActivity extends FragmentActivity
             case 0:
                 mCurrentFragment = ProfileFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_TIMELINE_FRAGMENT)
                         .commit();
                 break;
@@ -123,12 +123,14 @@ public class MainActivity extends FragmentActivity
             case 1:
                 mCurrentFragment = TimelineFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_TIMELINE_FRAGMENT)
                         .commit();
                 break;
             case 2:
                 mCurrentFragment = CampusRidesFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_CAMPUS_RIDES_FRAGMENT)
                         .commit();
                 break;
@@ -136,6 +138,7 @@ public class MainActivity extends FragmentActivity
             case 3:
                 mCurrentFragment = ActivityRidesFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_ACTIVITY_RIDES_FRAGMENT)
                         .commit();
                 break;
@@ -143,6 +146,7 @@ public class MainActivity extends FragmentActivity
             case 4:
                 mCurrentFragment = CreateRidesFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_CREATE_RIDE_FRAGMENT)
                         .commit();
                 break;
@@ -150,6 +154,7 @@ public class MainActivity extends FragmentActivity
             case 5:
                 mCurrentFragment = SearchFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_SEARCH_FRAGMENT)
                         .commit();
                 break;
@@ -157,6 +162,7 @@ public class MainActivity extends FragmentActivity
             case 6:
                 mCurrentFragment = MyRidesFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_MY_RIDES_FRAGMENT)
                         .commit();
                 break;
@@ -164,6 +170,7 @@ public class MainActivity extends FragmentActivity
             case 7:
                 mCurrentFragment = SettingsFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_SETTINGS_FRAGMENT)
                         .commit();
                 break;
@@ -221,24 +228,6 @@ public class MainActivity extends FragmentActivity
 
     public int getCurrentActionBarColor() {
         return mCurrentActionBarColor;
-    }
-
-    @Subscribe
-    public void onDisplaySearch(DisplaySearchEvent event) {
-        SearchResultsFragment fragment = SearchResultsFragment.newInstance(event.getRides(), event.getFromLocation(), event.getToLocation(), 6);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment, TAG_SEARCH_RESULTS_FRAGMENT)
-                .addToBackStack(SearchResultsFragment.class.getName())
-                .commit();
-    }
-
-    @Subscribe
-    public void onSearchClicked(SearchClickedEvent event) {
-        SearchResultsFragment fragment = SearchResultsFragment.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment, TAG_SEARCH_RESULTS_FRAGMENT)
-                .addToBackStack(SearchResultsFragment.class.getName())
-                .commit();
     }
 
     @Override
