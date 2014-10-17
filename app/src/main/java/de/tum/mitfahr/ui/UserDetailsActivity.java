@@ -32,9 +32,6 @@ public class UserDetailsActivity extends Activity {
 
     public static final String USER_INTENT_EXTRA = "selected_user";
 
-    @InjectView(R.id.profile_big_blurred)
-    ImageView blurredProfileImage;
-
     @InjectView(R.id.profile_image)
     CircularImageView profileImage;
 
@@ -113,58 +110,4 @@ public class UserDetailsActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (rs != null) {
-            rs.destroy();
-            rs = null;
-        }
-    }
-
-    private RenderScript getRs() {
-        if (rs == null) {
-            rs = RenderScript.create(this);
-        }
-        return rs;
-    }
-
-    public class BlurTask extends AsyncTask<Void, Void, Bitmap> {
-
-        Bitmap originalBitmap;
-
-        public BlurTask(Bitmap originalBitmap) {
-            this.originalBitmap = originalBitmap;
-        }
-
-        @Override
-        protected Bitmap doInBackground(Void... params) {
-            Bitmap sampledBitmap = null;
-            if (originalBitmap != null) {
-
-                final BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = 100;
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                originalBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byte[] byteArray = stream.toByteArray();
-                // sampledBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, options);
-                sampledBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.profile_placeholder);
-            }
-            Bitmap blurredBitmap = null;
-            try {
-                blurredBitmap = new RSGaussianBlur(getRs()).blur(16, sampledBitmap);
-            } catch (Exception e) {
-                Log.e("BlurTask", "Cannot blur\n" + e);
-            }
-            return blurredBitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            if (bitmap != null) {
-                blurredProfileImage.setImageBitmap(bitmap);
-            }
-            super.onPostExecute(bitmap);
-        }
-    }
 }

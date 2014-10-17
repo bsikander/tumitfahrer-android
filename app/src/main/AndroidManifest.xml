@@ -25,7 +25,6 @@
         <activity
             android:name=".ui.LoginRegisterActivity"
             android:label="@string/title_activity_login_register"
-            android:noHistory="true"
             android:theme="@style/NoActionBarTheme" />
         <activity
             android:name=".ui.RideDetailsActivity"
@@ -39,6 +38,7 @@
 
         <activity
             android:name=".ui.AboutActivity"
+            android:theme="@style/NoActionBarTheme"
             android:label="@string/title_activity_about" >
         </activity>
         <activity
@@ -59,7 +59,11 @@
         </activity>
         <activity
             android:name=".ui.CarSharingActivity"
-            android:label="@string/title_activity_terms_of_use" >
+            android:label="@string/title_car_sharing" >
+        </activity>
+        <activity
+            android:name=".ui.EditProfileActivity"
+            android:label="@string/title_activity_edit_profile" >
         </activity>
     </application>
 

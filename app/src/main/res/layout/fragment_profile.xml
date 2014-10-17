@@ -19,7 +19,8 @@
                 android:layout_width="fill_parent"
                 android:scaleType="centerCrop"
                 android:id="@+id/profile_big_blurred"
-                android:paddingTop="?android:attr/actionBarSize"
+                android:background="@drawable/list_image_placeholder"
+                android:src="@color/transparent_black"
                 android:layout_height="fill_parent" />
 
             <LinearLayout
@@ -34,7 +35,8 @@
                     android:layout_gravity="center"
                     android:layout_margin="12dp"
                     android:layout_height="75dp"
-                    android:src="@drawable/profile_placeholder"
+                    android:src="@drawable/ic_account_dark"
+                    android:scaleType="fitCenter"
                     app:border_color="@color/white"
                     app:border_width="3dp"
                     app:shadow="true"

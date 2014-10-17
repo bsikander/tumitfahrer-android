@@ -179,11 +179,8 @@ public class ProfileService {
         prefEditor.putInt("rating_average", user.getRatingAverage());
         prefEditor.putString("created_at", user.getCreatedAt());
         prefEditor.putString("updated_at", user.getUpdatedAt());
-
         String deptString = user.getDepartment();
         String deptIndex = deptString.replaceAll("[^0-9]", "");
-        Log.e("DeptIndex", deptIndex);
-
         prefEditor.putString("department", deptIndex);
         prefEditor.commit();
     }

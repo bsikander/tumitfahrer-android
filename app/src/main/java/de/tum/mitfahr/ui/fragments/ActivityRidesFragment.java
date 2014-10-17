@@ -7,6 +7,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -24,6 +27,7 @@ import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.GetRidesDateEvent;
 import de.tum.mitfahr.events.GetRidesPageEvent;
+import de.tum.mitfahr.ui.MainActivity;
 
 /**
  * Created by abhijith on 22/05/14.
@@ -62,6 +66,7 @@ public class ActivityRidesFragment extends AbstractNavigationFragment {
         ButterKnife.inject(this, rootView);
         adapter = new ActivityRidesPagerAdapter(getChildFragmentManager());
         pager.setAdapter(adapter);
+        pager.setOffscreenPageLimit(3);
         tabs.setViewPager(pager);
         changeActionBarColor(getResources().getColor(R.color.blue2));
         return rootView;
@@ -123,6 +128,20 @@ public class ActivityRidesFragment extends AbstractNavigationFragment {
             else
                 return CarSharingFragment.newInstance();
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_search, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_search){
+            ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(5);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

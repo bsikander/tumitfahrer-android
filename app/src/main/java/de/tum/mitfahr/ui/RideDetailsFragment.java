@@ -2,11 +2,14 @@ package de.tum.mitfahr.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dd.CircularProgressButton;
 import com.squareup.otto.Subscribe;
@@ -31,7 +33,9 @@ import butterknife.InjectView;
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.DeleteRideEvent;
 import de.tum.mitfahr.events.GetRideEvent;
+import de.tum.mitfahr.events.JoinRequestEvent;
 import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.RideRequest;
 import de.tum.mitfahr.networking.models.User;
@@ -100,12 +104,23 @@ public class RideDetailsFragment extends Fragment {
     @InjectView(R.id.details_progress_bar)
     SmoothProgressBar progressBar;
 
+    private ProgressDialog mProgressDialog;
+
     private Ride mRide;
     private User mCurrentUser;
     private boolean userIsOwner;
     private Map<RideRequest, User> mRequestUserMap = new HashMap<RideRequest, User>();
 
     private Drawable mActionBarBackgroundDrawable;
+
+    private Handler mActionButtonHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            rideActionButton.setProgress(0);
+            rideActionButton.setClickable(true);
+            TUMitfahrApplication.getApplication(getActivity()).getRidesService().getRide(mRide.getId());
+        }
+    };
 
 
     public static RideDetailsFragment newInstance(Ride ride) {
@@ -143,6 +158,14 @@ public class RideDetailsFragment extends Fragment {
             mActionBarBackgroundDrawable.setCallback(mDrawableCallback);
         }
         notifyingScrollView.setOnScrollChangedListener(mOnScrollChangedListener);
+
+        rideActionButton.setIndeterminateProgressMode(true);
+
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setMessage("Processing...");
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setIndeterminate(true);
+
         return view;
     }
 
@@ -165,10 +188,58 @@ public class RideDetailsFragment extends Fragment {
             showData();
         } else if (result.getType() == GetRideEvent.Type.GET_FAILED) {
             Log.e("GET", "Failure");
-            Toast.makeText(getActivity(), "Failed to get Ride", Toast.LENGTH_SHORT).show();
             getActivity().finish();
         }
     }
+
+    @Subscribe
+    public void onDeleteResult(DeleteRideEvent result) {
+        if (result.getType() == DeleteRideEvent.Type.DELETE_SUCCESSFUL) {
+            rideActionButton.setProgress(100);
+            rideActionButton.setText("Delete Success");
+
+        } else {
+            rideActionButton.setProgress(-1);
+            rideActionButton.setText("Delete Failed");
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                    mActionButtonHandler.sendEmptyMessage(0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+    }
+
+    @Subscribe
+    public void onRideRequestResult(JoinRequestEvent result) {
+        if (result.getType() == JoinRequestEvent.Type.REQUEST_SENT) {
+            rideActionButton.setProgress(100);
+            rideActionButton.setText("Request Sent");
+        } else {
+            rideActionButton.setProgress(-1);
+            rideActionButton.setText("Request Failed");
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                    mActionButtonHandler.sendEmptyMessage(0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
 
     private void showData() {
         final TUMitfahrApplication app = TUMitfahrApplication.getApplication(getActivity());
@@ -189,10 +260,12 @@ public class RideDetailsFragment extends Fragment {
             if (mCurrentUser.getId() == mRide.getRideOwner().getId()) {
                 userIsOwner = true;
                 rideActionButton.setVisibility(View.VISIBLE);
-                rideActionButton.setText("Remove Ride");
+                rideActionButton.setText("Delete Ride");
                 rideActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        rideActionButton.setProgress(50);
+                        rideActionButton.setClickable(false);
                         app.getRidesService().deleteRide(mRide.getId());
                     }
                 });
@@ -211,10 +284,12 @@ public class RideDetailsFragment extends Fragment {
             } else {
                 //not a ride request...button is request ride.
                 rideActionButton.setVisibility(View.VISIBLE);
-                rideActionButton.setText("Request ride");
+                rideActionButton.setText("Request Ride");
                 rideActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        rideActionButton.setProgress(50);
+                        rideActionButton.setClickable(false);
                         app.getRidesService().joinRequest(mRide.getId());
                     }
                 });
@@ -231,7 +306,7 @@ public class RideDetailsFragment extends Fragment {
                     rideActionButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
+                            //TODO: cancel ride request.
                         }
                     });
                 }
@@ -380,5 +455,6 @@ public class RideDetailsFragment extends Fragment {
         }
     };
 
-
 }
+
+

@@ -15,7 +15,7 @@
         android:layout_marginBottom="6dp"
         android:scaleType="center"
         android:id="@+id/my_rides_location_image"
-        android:src="@drawable/profile_placeholder"
+        android:src="@drawable/ic_account_dark"
         android:layout_height="80dp" />
 
     <LinearLayout

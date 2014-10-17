@@ -10,8 +10,11 @@ import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.tum.mitfahr.R;
+import de.tum.mitfahr.ui.AboutActivity;
 import de.tum.mitfahr.ui.CarSharingActivity;
 import de.tum.mitfahr.ui.LicensesActivity;
+import de.tum.mitfahr.ui.TeamActivity;
+import de.tum.mitfahr.ui.TermsOfUseActivity;
 
 /**
  * Created by abhijith on 22/05/14.
@@ -51,13 +54,13 @@ public class SettingsFragment extends AbstractNavigationFragment {
 
     @OnClick(R.id.settings_about)
     public void onAboutClicked() {
-        Intent intent = new Intent(getActivity(), LicensesActivity.class);
+        Intent intent = new Intent(getActivity(), AboutActivity.class);
         startActivity(intent);
     }
 
     @OnClick(R.id.settings_team)
     public void onTeamClicked() {
-        Intent intent = new Intent(getActivity(), LicensesActivity.class);
+        Intent intent = new Intent(getActivity(), TeamActivity.class);
         startActivity(intent);
     }
 
@@ -75,7 +78,7 @@ public class SettingsFragment extends AbstractNavigationFragment {
 
     @OnClick(R.id.settings_terms_of_use)
     public void onTermsOfUseClicked() {
-        Intent intent = new Intent(getActivity(), LicensesActivity.class);
+        Intent intent = new Intent(getActivity(), TermsOfUseActivity.class);
         startActivity(intent);
     }
 

@@ -26,6 +26,9 @@ import android.widget.TextView;
 
 import com.ikimuhendis.ldrawer.ActionBarDrawerToggle;
 import com.ikimuhendis.ldrawer.DrawerArrowDrawable;
+import com.squareup.picasso.Picasso;
+
+import java.net.URL;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -112,6 +115,12 @@ public class NavigationDrawerFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
         selectItem(mCurrentSelectedPosition);
+        URL profileImageUrl = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getProfileImageURL();
+        Picasso.with(getActivity())
+                .load(profileImageUrl.toString())
+                .placeholder(R.drawable.ic_account_dark)
+                .error(R.drawable.placeholder)
+                .into(mProfileImageView);
     }
 
 
@@ -362,7 +371,6 @@ public class NavigationDrawerFragment extends Fragment {
         // If the drawer is open, show the global app actions in the action bar. See also
         // showGlobalContextActionBar, which controls the top-left area of the action bar.
         if (mDrawerLayout != null && isDrawerOpen()) {
-            inflater.inflate(R.menu.global, menu);
             showGlobalContextActionBar();
         }
         super.onCreateOptionsMenu(menu, inflater);

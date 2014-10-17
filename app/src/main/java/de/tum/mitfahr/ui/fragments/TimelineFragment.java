@@ -10,6 +10,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -29,6 +32,7 @@ import de.tum.mitfahr.networking.models.Activities;
 import de.tum.mitfahr.networking.models.ActivitiesRideRequest;
 import de.tum.mitfahr.networking.models.ActivitiesRideSearch;
 import de.tum.mitfahr.networking.models.Ride;
+import de.tum.mitfahr.ui.MainActivity;
 import de.tum.mitfahr.util.TimelineItem;
 import retrofit.RetrofitError;
 
@@ -71,6 +75,7 @@ public class TimelineFragment extends AbstractNavigationFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -183,6 +188,20 @@ public class TimelineFragment extends AbstractNavigationFragment {
             mTimelineAroundFragment.setTimelineItems(timelineItems);
             mTimelineNearbyFragment.setTimelineItems(timelineItems);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_search, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_search){
+            ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(5);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

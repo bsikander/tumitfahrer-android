@@ -63,10 +63,77 @@
     </string-array>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_about">AboutActivity</string>
+    <string name="title_activity_about">About</string>
     <string name="hello_world">Hello world!</string>
-    <string name="title_activity_team">TeamActivity</string>
-    <string name="title_activity_licenses">LicensesActivity</string>
-    <string name="title_activity_terms_of_use">TermsOfUseActivity</string>
+    <string name="title_activity_team">Team</string>
+    <string name="title_activity_licenses">Licenses</string>
+    <string name="title_activity_terms_of_use">Terms Of Use</string>
+    <string name="title_activity_edit_profile">Edit Profile</string>
+
+    <!-- About -->
+    <string name="abhijith_name">Abhijith Srivatsav</string>
+    <string name="abhijith_role">Lead Android Developer</string>
+    <string name="abhijith_motto">There is no spoon.</string>
+    <string name="abhijith_description">TUMitfahrer is my IDP, for which I’m responsible for the Android application. I’m the resident Android evangelist and the go-to guy for everything Android. I particularly like this project as it affords me the opportunity to exercise my skills and experiment with application building techniques.</string>
+
+    <string name="amr_name">Amr Arafat</string>
+    <string name="amr_role">Android Developer</string>
+    <string name="amr_motto">It’s not a Bug, It’s a feature *evil smile*</string>
+    <string name="amr_description">TUMitfahrer is an exciting project.  I learned a lot of stuff and had a lot of fun. I was on the Android team and I really enjoyed working on the project.
+</string>
+
+    <string name="michael_name">Michael Schermann</string>
+    <string name="michael_role">Creative Director</string>
+    <string name="michael_motto">When in danger, when in doubt, run in circles, scream, and shout.</string>
+    <string name="michael_description">I took this project as IDP. I learned new things like how to use websockets for chat and how to develop responsive web application.</string>
+
+    <string name="pawel_name">Pawel Kwiecien</string>
+    <string name="pawel_role">iOS and Backend Developer</string>
+    <string name="pawel_motto">Life begins at the end of your comfort zone.</string>
+    <string name="pawel_description">TUMitfahrer was for me the final project for my Master Thesis. I developed complete iOS application and backend using Ruby on Rails. My research included innovative product development processes.</string>
+
+    <string name="behroz_name">Behroz Sikander</string>
+    <string name="behroz_role">Backend / VisioM Developer</string>
+    <string name="behroz_motto">After this project, I like Ruby more than Natalie Portman</string>
+    <string name="behroz_description">TUMitfahrer was an awesome project that gave me the chance to work on multiple platforms. I learnt ROR, Android, iPhone, Java and C++ in a single project.</string>
+
+    <string name="hafiz_name">Hafiz Saqib Javed</string>
+    <string name="hafiz_role">Notification Engine/Pebble Smartwatch Developer</string>
+    <string name="hafiz_motto">Whaa! you didn’t get notification??? Probably thunder in the cloud!</string>
+    <string name="hafiz_description">Getting an opportunity to work on a real time project with collaborative environment and multiple technologies, couldn’t get anything better. I took it as an IDP and really enjoyed working on Pebble and RoR.</string>
+
+    <string name="anuradha_name">Anuradha Ganapathi</string>
+    <string name="anuradha_role">Web Application Developer</string>
+    <string name="anuradha_motto">Ruby is better than diamond.</string>
+    <string name="anuradha_description">I took this project as my IDP and it is an awesome experience and opportunity to learn new language like Ruby on Rails.</string>
+
+    <string name="shahid_name">Muhammad Shahid Aslam</string>
+    <string name="shahid_role">Backend and Web Application Developer</string>
+    <string name="shahid_motto">Failure is not an option, it comes bundled with the software.</string>
+    <string name="shahid_description">I took this project as IDP. I learned new things like how to use websockets for chat and how to develop responsive web application.</string>
+
+    <string name="dansen_name">Dansen Zhou</string>
+    <string name="dansen_role">iOS, Android, Web Application tester</string>
+    <string name="dansen_motto">Test is a procedure of making everything ruined and starting  beauty</string>
+    <string name="dansen_description">I took this project as my IDP. In this awesome project, I take charge of all the tests including unit test, ui automatic test, integration test, etc. It is both excited and painful to join all the different platforms with different environments, different programme languages.</string>
+
+    <string name="lukas_name">Lukasz Kwiatkowski</string>
+    <string name="lukas_role">UI/UX Designer, Photography, Marketing</string>
+    <string name="lukas_motto">Creativity is doing something out of nothing</string>
+    <string name="lukas_description">I took this project as my IDP. Personally i enjoyed that project because i could use my slightly artistic background in real application, to design something which students could enjoy.</string>
+    <string name="title_car_sharing">Car Sharing</string>
+
+    <string name="about_heading1">Need a ride to the university?</string>
+    <string name="about_description1">Search for a ride to your campus and join fellow students going to the uni by car. Travel in a nice student atmosphere.</string>
+
+    <string name="about_heading2">Looking for weekend ideas?</string>
+    <string name="about_description2">Join activity rides and enjoy cool trip to IKEA, nearby lake or a hiking trip in the mountains.</string>
+
+    <string name="about_heading3">Have free seats in your car?</string>
+    <string name="about_description3">Create a ride and share travel expenses between all people.</string>
+
+    <string name="about_heading4">Don\'t have a car?</string>
+    <string name="about_description4">Request a ride offer. Fellow students will pick you up. Enjoy the car ride.</string>
+
 
 </resources>

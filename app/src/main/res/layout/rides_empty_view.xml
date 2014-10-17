@@ -14,7 +14,7 @@
         android:scaleType="centerInside"
         android:layout_marginTop="80dp"
         android:layout_gravity="center"
-        android:src="@drawable/profile_placeholder" />
+        android:src="@drawable/ic_empty" />
 
     <TextView
         android:id="@+id/empty_view_text"

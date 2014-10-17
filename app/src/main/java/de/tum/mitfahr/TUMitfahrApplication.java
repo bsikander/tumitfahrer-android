@@ -82,10 +82,10 @@ public class TUMitfahrApplication extends Application {
     public String getBaseURLBackend() {
         return BASE_BACKEND_URL;
     }
+
     public String getPanoramioURLBackend() {
         return PANORAMIO_BACKEND_URL;
     }
-
 
     public static TUMitfahrApplication getApplication(final Context context) {
         return (TUMitfahrApplication) context.getApplicationContext();

@@ -194,8 +194,6 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
                 ((ImageView) view.findViewById(R.id.ride_type_image)).setImageResource(R.drawable.ic_passenger);
                 ((TextView) view.findViewById(R.id.ride_seats_text)).setVisibility(View.GONE);
             }
-
-
             return view;
         }
     }
