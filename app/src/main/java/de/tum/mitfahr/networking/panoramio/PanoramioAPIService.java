@@ -8,11 +8,16 @@ import retrofit.http.Query;
  */
 public interface PanoramioAPIService {
 
-    @GET("")
+    @GET("/get_panoramas.php")
     public PanoramioResponse getPhotos(
+            @Query("set") String set,
+            @Query("from") int from,
+            @Query("to") int to,
             @Query("minx") int minx,
             @Query("miny") int miny,
             @Query("maxx") int maxx,
-            @Query("maxy") int maxy
+            @Query("maxy") int maxy,
+            @Query("size") String medium,
+            @Query("mapfilter") boolean mapfilter
     );
 }

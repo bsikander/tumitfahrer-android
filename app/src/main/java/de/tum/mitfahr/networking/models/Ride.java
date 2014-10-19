@@ -22,6 +22,7 @@ public class Ride implements Serializable {
     private String createdAt;
     private String updatedAt;
     private double latitude;
+    private String rideImageUrl;
 
     public String getCar() {
         return car;
@@ -228,6 +229,14 @@ public class Ride implements Serializable {
 
     public void setRideRequest(boolean isRideRequest) {
         this.isRideRequest = isRideRequest;
+    }
+
+    public String getRideImageUrl() {
+        return rideImageUrl;
+    }
+
+    public void setRideImageUrl(String rideImageUrl) {
+        this.rideImageUrl = rideImageUrl;
     }
 
 }

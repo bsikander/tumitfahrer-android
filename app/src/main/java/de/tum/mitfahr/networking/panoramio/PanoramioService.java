@@ -15,14 +15,12 @@ import de.tum.mitfahr.networking.clients.PanoramioRESTClient;
  */
 public class PanoramioService {
 
-    private static final String PANORAMIO_PARAMS = "set=public&from=0&to=20&size=medium&mapfilter=true";
-
     private SharedPreferences mSharedPreferences;
     private PanoramioRESTClient mPanoramioRESTClient;
     private Bus mBus;
 
     public PanoramioService(Context context) {
-        String baseURL = TUMitfahrApplication.getApplication(context).getPanoramioURLBackend() + PANORAMIO_PARAMS;
+        String baseURL = TUMitfahrApplication.getApplication(context).getPanoramioURLBackend();
         mBus = BusProvider.getInstance();
         mBus.register(this);
         mPanoramioRESTClient = new PanoramioRESTClient(baseURL);

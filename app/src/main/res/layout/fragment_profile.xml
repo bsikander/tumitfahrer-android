@@ -30,7 +30,7 @@
                 android:layout_gravity="bottom"
                 android:layout_height="wrap_content">
 
-                <de.tum.mitfahr.widget.CircularImageView
+                <com.pkmmte.view.CircularImageView
                     android:layout_width="75dp"
                     android:layout_gravity="center"
                     android:layout_margin="12dp"
@@ -39,6 +39,7 @@
                     android:scaleType="fitCenter"
                     app:border_color="@color/white"
                     app:border_width="3dp"
+                    app:border="true"
                     app:shadow="true"
                     android:id="@+id/profile_image" />
 

@@ -10,7 +10,7 @@
     <color name="white_faded">#AAFFFFFF</color>
     <color name="transparent">#00000000</color>
     <color name="window_background">#FFE5E5E5</color>
-    <color name="gradient_main">#7F000000</color>
+    <color name="list_item_color_filter">#5F000000</color>
     <color name="text_shadow">#7F000000</color>
     <color name="tumitfahr_color">#0076b8</color>
     <color name="float_label_inactive">#AA202020</color>

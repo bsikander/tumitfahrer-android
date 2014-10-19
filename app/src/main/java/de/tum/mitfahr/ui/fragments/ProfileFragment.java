@@ -2,7 +2,6 @@ package de.tum.mitfahr.ui.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v8.renderscript.RenderScript;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.pkmmte.view.CircularImageView;
 import com.squareup.picasso.Picasso;
 
 import java.net.URL;
@@ -23,7 +23,6 @@ import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.networking.models.User;
 import de.tum.mitfahr.ui.EditProfileActivity;
 import de.tum.mitfahr.util.StringHelper;
-import de.tum.mitfahr.widget.CircularImageView;
 
 /**
  * Created by abhijith on 22/05/14.
@@ -105,7 +104,7 @@ public class ProfileFragment extends AbstractNavigationFragment {
 
         profileDepartmentText.setText(department);
 
-        URL profileImageUrl = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getProfileImageURL();
+        String profileImageUrl = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getProfileImageURL(getActivity());
         Picasso.with(getActivity())
                 .load(profileImageUrl.toString())
                 .placeholder(R.drawable.ic_account_dark)

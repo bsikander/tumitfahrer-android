@@ -324,7 +324,9 @@ public class TimelineListAroundFragment extends Fragment implements SwipeRefresh
     @Override
     public void onConnected(Bundle bundle) {
         Location location = mLocationClient.getLastLocation();
-        mCurrentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        if (location != null) {
+            mCurrentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        }
     }
 
     @Override

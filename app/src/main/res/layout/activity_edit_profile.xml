@@ -63,13 +63,18 @@
 
             </LinearLayout>
 
-            <ImageView
-                android:layout_width="80dp"
+            <com.pkmmte.view.CircularImageView
+                android:layout_width="75dp"
                 android:layout_gravity="center"
-                android:layout_marginLeft="16dp"
-                android:background="@drawable/ic_account_dark"
-                android:id="@+id/edit_profile_image"
-                android:layout_height="80dp" />
+                android:layout_margin="12dp"
+                android:layout_height="75dp"
+                android:src="@drawable/ic_account_dark"
+                android:scaleType="fitCenter"
+                app:border_color="@color/white"
+                app:border_width="3dp"
+                app:border="true"
+                app:shadow="true"
+                android:id="@+id/edit_profile_image" />
         </LinearLayout>
 
         <de.tum.mitfahr.widget.FloatLabelLayout

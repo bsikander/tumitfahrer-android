@@ -21,7 +21,7 @@ import de.tum.mitfahr.services.SearchService;
 public class TUMitfahrApplication extends Application {
 
     private static final String BASE_BACKEND_URL = "http://vmkrcmar61.informatik.tu-muenchen.de/api/v2";
-    private static final String PANORAMIO_BACKEND_URL = "http://www.panoramio.com/map/get_panoramas.php?";
+    private static final String PANORAMIO_BACKEND_URL = "http://www.panoramio.com/map";
 
     private Bus mBus = BusProvider.getInstance();
 
@@ -77,6 +77,10 @@ public class TUMitfahrApplication extends Application {
 
     public RatingsService getRatingsService(){
         return mRatingsService;
+    }
+
+    public PanoramioService getmPanoramioService() {
+        return mPanoramioService;
     }
 
     public String getBaseURLBackend() {

@@ -22,8 +22,7 @@
                 android:layout_height="180dp">
 
                 <ImageView
-                    android:src="@drawable/list_gradient"
-                    android:background="@drawable/list_image_placeholder"
+                    android:src="@drawable/list_image_placeholder"
                     android:layout_width="fill_parent"
                     android:scaleType="centerCrop"
                     android:layout_height="fill_parent"
@@ -266,7 +265,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <de.tum.mitfahr.widget.CircularImageView
+                <com.pkmmte.view.CircularImageView
                     android:layout_width="56dp"
                     android:layout_gravity="center"
                     android:layout_height="56dp"
@@ -275,6 +274,7 @@
                     app:border_color="@color/white"
                     app:border_width="3dp"
                     app:shadow="true"
+                    app:border="true"
                     android:id="@+id/details_driver_image_view" />
 
                 <TextView

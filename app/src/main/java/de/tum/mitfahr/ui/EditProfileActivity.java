@@ -73,9 +73,9 @@ public class EditProfileActivity extends Activity {
         departmentSpinner.setAdapter(mDepartmentAdapter);
         int deptIndex = Integer.parseInt(mCurrentUser.getDepartment());
         departmentSpinner.setSelection(deptIndex);
-        URL profileImageUrl = TUMitfahrApplication.getApplication(this).getProfileService().getProfileImageURL();
+        String profileImageUrl = TUMitfahrApplication.getApplication(this).getProfileService().getProfileImageURL(this);
         Picasso.with(this)
-                .load(profileImageUrl.toString())
+                .load(profileImageUrl)
                 .placeholder(R.drawable.ic_account_dark)
                 .error(R.drawable.ic_account_dark)
                 .into(userImageView);

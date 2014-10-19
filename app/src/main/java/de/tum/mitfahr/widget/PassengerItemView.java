@@ -8,6 +8,8 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.pkmmte.view.CircularImageView;
+
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.networking.models.User;
 

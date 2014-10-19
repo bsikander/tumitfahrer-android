@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <de.tum.mitfahr.widget.CircularImageView
+        <com.pkmmte.view.CircularImageView
             android:layout_width="56dp"
             android:layout_gravity="center"
             android:layout_height="56dp"
@@ -24,6 +24,7 @@
             app:border_color="@color/white"
             app:border_width="3dp"
             app:shadow="true"
+
             android:id="@+id/passenger_image_view" />
 
         <TextView

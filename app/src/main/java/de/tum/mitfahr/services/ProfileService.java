@@ -2,6 +2,9 @@ package de.tum.mitfahr.services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -13,7 +16,12 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 
@@ -37,8 +45,8 @@ import de.tum.mitfahr.networking.models.response.UpdateUserResponse;
 public class ProfileService {
 
     private static final String AMZ_BUCKET_NAME = "tumitfahrer";
-    private static final String AMZ_SECRET_KEY = "fvyTaWgegKsT1esZo5DrXmc65paKfY5So8jcvQAk";
-    private static final String AMZ_ACCESS_KEY_ID = "AKIAIRFGBPO5JUZWRDHA";
+    private static final String AMZ_SECRET_KEY = "";
+    private static final String AMZ_ACCESS_KEY_ID = "";
     private static final String AMZ_PATH = "users/";
     private static final String AMZ_FILENAME = "/profile_picture.jpg";
 
@@ -185,7 +193,7 @@ public class ProfileService {
         prefEditor.commit();
     }
 
-    public URL getProfileImageURL() {
+    private String getAmazonImageURL() {
         int id = mSharedPreferences.getInt("id", 0);
         String userId = Integer.toString(id);
         ResponseHeaderOverrides override = new ResponseHeaderOverrides();
@@ -197,11 +205,20 @@ public class ProfileService {
 
         AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(AMZ_ACCESS_KEY_ID, AMZ_SECRET_KEY));
         URL urlForGet = s3Client.generatePresignedUrl(request);
-        return urlForGet;
+        return urlForGet.toString();
+    }
+
+    public String getProfileImageURL(Context context) {
+        if (getCachedProfileImage() != null) {
+            Log.e("Profile Image:", "cached");
+            return getCachedProfileImage();
+        } else {
+            Log.e("Profile Image:", "online");
+            return getProfileImageAndCache(context);
+        }
     }
 
     public URL getProfileImageURL(int userId) {
-        int id = mSharedPreferences.getInt("id", 0);
         ResponseHeaderOverrides override = new ResponseHeaderOverrides();
         override.setContentType("image/jpeg");
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(AMZ_BUCKET_NAME, AMZ_PATH + userId + AMZ_FILENAME);
@@ -213,6 +230,54 @@ public class ProfileService {
         URL urlForGet = s3Client.generatePresignedUrl(request);
         return urlForGet;
     }
+
+    private String getCachedProfileImage() {
+        File path = Environment.getExternalStorageDirectory();
+        File dirFile = new File(path, "/" + "tumitfahr");
+        dirFile.mkdirs();
+        File imageFile = new File(dirFile, "profile_image.png");
+        if (imageFile.exists())
+            return imageFile.toURI().toString();
+        return null;
+    }
+
+    private String getProfileImageAndCache(Context context) {
+        String profileImageURL = getAmazonImageURL();
+        Picasso.with(context).load(profileImageURL).into(target);
+        return profileImageURL;
+    }
+
+    private Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+
+            File path = Environment.getExternalStorageDirectory();
+            File dirFile = new File(path, "/" + "tumitfahr");
+            File imageFile = new File(dirFile, "profile_image.png");
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(imageFile);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (out != null)
+                        out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+        }
+    };
 
     public boolean uploadImage(String filePath) {
         AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(AMZ_ACCESS_KEY_ID, AMZ_SECRET_KEY));

@@ -26,16 +26,14 @@ import android.widget.TextView;
 
 import com.ikimuhendis.ldrawer.ActionBarDrawerToggle;
 import com.ikimuhendis.ldrawer.DrawerArrowDrawable;
+import com.pkmmte.view.CircularImageView;
 import com.squareup.picasso.Picasso;
-
-import java.net.URL;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.networking.models.User;
-import de.tum.mitfahr.widget.CircularImageView;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -115,11 +113,11 @@ public class NavigationDrawerFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
         selectItem(mCurrentSelectedPosition);
-        URL profileImageUrl = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getProfileImageURL();
+
+        String profileImageUrl = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getProfileImageURL(getActivity());
         Picasso.with(getActivity())
-                .load(profileImageUrl.toString())
+                .load(profileImageUrl)
                 .placeholder(R.drawable.ic_account_dark)
-                .error(R.drawable.placeholder)
                 .into(mProfileImageView);
     }
 

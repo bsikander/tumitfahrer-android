@@ -17,7 +17,8 @@ public class PanoramioRESTClient extends AbstractRESTClient {
     }
 
     public PanoramioPhoto getPhoto(int minx, int miny, int maxx, int maxy) {
-        PanoramioResponse response = panoramioAPIService.getPhotos(minx, miny, maxx, maxy);
+        PanoramioResponse response = panoramioAPIService.getPhotos
+                ("public", 0, 20, minx, miny, maxx, maxy, "medium", true);
         if (response != null) {
             if (response.getCount() > 0) {
                 return response.getPhotos()[0];
@@ -27,6 +28,5 @@ public class PanoramioRESTClient extends AbstractRESTClient {
         }
         return null;
     }
-
 
 }

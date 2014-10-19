@@ -10,8 +10,7 @@
     android:layout_height="170dp">
 
     <ImageView
-        android:src="@drawable/list_gradient"
-        android:background="@drawable/list_image_placeholder"
+        android:src="@drawable/list_image_placeholder"
         android:layout_width="fill_parent"
         android:scaleType="centerCrop"
         android:layout_height="fill_parent"

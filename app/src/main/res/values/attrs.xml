@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="CircularImageView">
-        <attr name="border" format="boolean"></attr>
-        <attr name="border_width" format="dimension"></attr>
-        <attr name="border_color" format="color"></attr>
-        <attr name="shadow" format="boolean"></attr>
-    </declare-styleable>
-
     <declare-styleable name="FontTextView">
         <attr name="font" />
     </declare-styleable>
@@ -18,10 +11,6 @@
         <enum name="roboto_condensed_bold" value="4" />
         <enum name="roboto_slab" value="5" />
     </attr>
-
-    <declare-styleable name="Theme">
-        <attr name="circularImageViewStyle" format="reference"></attr>
-    </declare-styleable>
 
     <declare-styleable name="FloatLabelLayout">
         <attr name="floatLabelTextAppearance" format="reference" />

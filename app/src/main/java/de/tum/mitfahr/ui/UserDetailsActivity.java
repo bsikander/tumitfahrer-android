@@ -2,28 +2,20 @@ package de.tum.mitfahr.ui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v8.renderscript.RenderScript;
-import android.util.Log;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.ByteArrayOutputStream;
+import com.pkmmte.view.CircularImageView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.networking.models.User;
-import de.tum.mitfahr.util.RSGaussianBlur;
-import de.tum.mitfahr.widget.CircularImageView;
 
 /**
  * Created by abhijith on 02/10/14.
@@ -54,7 +46,6 @@ public class UserDetailsActivity extends Activity {
     TextView profilePasswordText;
 
     private User mCurrentUser;
-    private RenderScript rs;
     private Handler mHandler = new Handler();
 
     @Override
