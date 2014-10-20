@@ -99,11 +99,6 @@ public class ProfileFragment extends AbstractNavigationFragment {
         if (!StringHelper.isBlank(mCurrentUser.getCar()))
             profilePhoneText.setText(mCurrentUser.getCar());
 
-        int deptIndex = Integer.parseInt(mCurrentUser.getDepartment());
-        String department = getResources().getStringArray(R.array.department_array)[deptIndex];
-
-        profileDepartmentText.setText(department);
-
         String profileImageUrl = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getProfileImageURL(getActivity());
         Picasso.with(getActivity())
                 .load(profileImageUrl.toString())

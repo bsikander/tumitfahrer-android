@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +15,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
+import com.dd.CircularProgressButton;
+import com.flaviofaria.kenburnsview.KenBurnsView;
+import com.flaviofaria.kenburnsview.Transition;
 import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
@@ -23,12 +29,15 @@ import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.RegisterEvent;
+import de.tum.mitfahr.util.StringHelper;
 
-public class RegisterFragment extends Fragment {
+public class RegisterFragment extends Fragment implements KenBurnsView.TransitionListener {
 
     private RegistrationFinishedListener mListener;
     private Context mContext;
     private String mDepartment = "departmentNo(0)";
+    private static final int BG_TINT = 0x7F000000;
+
 
     @InjectView(R.id.emailEditText)
     EditText emailText;
@@ -43,7 +52,25 @@ public class RegisterFragment extends Fragment {
     Spinner departmentSpinner;
 
     @InjectView(R.id.registerButton)
-    Button registerButton;
+    CircularProgressButton registerButton;
+
+    @InjectView(R.id.img1)
+    KenBurnsView heroBg1;
+
+    @InjectView(R.id.img2)
+    KenBurnsView heroBg2;
+
+    @InjectView(R.id.img3)
+    KenBurnsView heroBg3;
+
+    @InjectView(R.id.img4)
+    KenBurnsView heroBg4;
+
+    @InjectView(R.id.viewFlipper)
+    ViewFlipper viewFlipper;
+
+    private int mTransitionsCount = 0;
+
 
     private ArrayAdapter<CharSequence> mDepartmentAdapter;
 
@@ -62,6 +89,15 @@ public class RegisterFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_register, container, false);
         ButterKnife.inject(this, view);
+        registerButton.setIndeterminateProgressMode(true);
+        heroBg1.setColorFilter(BG_TINT);
+        heroBg1.setTransitionListener(this);
+        heroBg2.setColorFilter(BG_TINT);
+        heroBg2.setTransitionListener(this);
+        heroBg3.setColorFilter(BG_TINT);
+        heroBg3.setTransitionListener(this);
+        heroBg4.setColorFilter(BG_TINT);
+        heroBg4.setTransitionListener(this);
         return view;
     }
 
@@ -88,26 +124,75 @@ public class RegisterFragment extends Fragment {
     @OnClick(R.id.registerButton)
     public void onRegisterPressed(Button button) {
 
-        if (emailText.getText().toString() != ""
-                && firstNameText.getText().toString() != ""
-                && lastNameText.getText().toString() != "") {
+        if (!StringHelper.isBlank(emailText.getText().toString())
+                && !StringHelper.isBlank(firstNameText.getText().toString())
+                && !StringHelper.isBlank(lastNameText.getText().toString())) {
+            registerButton.setClickable(false);
+            registerButton.setProgress(50);
             String email = emailText.getText().toString();
             String firstName = firstNameText.getText().toString();
             String lastName = lastNameText.getText().toString();
             String department = "departmentNo(" + departmentSpinner.getSelectedItemPosition() + ")";
-
             TUMitfahrApplication.getApplication(mContext).getProfileService().register(email, firstName, lastName, department);
-
+        } else {
+            Toast.makeText(getActivity(), "Please fill all the required fields to continue", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Subscribe
     public void onRegister(RegisterEvent event) {
         if (event.getType() == RegisterEvent.Type.REGISTER_SUCCESSFUL && mListener != null) {
-            if (emailText.getText().toString() != "")
-                mListener.onRegistrationFinished(emailText.getText().toString());
-        } else if (event.getType() == RegisterEvent.Type.REGISTER_FAILED)
-            Toast.makeText(mContext, "Registration failed! Please check credentials and try again.", Toast.LENGTH_SHORT).show();
+            registerButton.setProgress(100);
+            if (!StringHelper.isBlank(emailText.getText().toString())) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(1500);
+                            mRegisterationSuccessHandler.sendEmptyMessage(0);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+        } else if (event.getType() == RegisterEvent.Type.REGISTER_FAILED) {
+            registerButton.setProgress(-1);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(2000);
+                        mRegisterButtonHandler.sendEmptyMessage(0);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
+        }
+    }
+
+    private Handler mRegisterButtonHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            registerButton.setProgress(0);
+            registerButton.setClickable(true);
+        }
+    };
+
+    private Handler mRegisterationSuccessHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            registerButton.setProgress(0);
+            registerButton.setClickable(true);
+            mListener.onRegistrationFinished(emailText.getText().toString());
+        }
+    };
+
+    @OnClick(R.id.cancelButton)
+    public void onCancelClicked() {
+        mListener.onRegistrationFinished("");
     }
 
     @Override
@@ -137,6 +222,20 @@ public class RegisterFragment extends Fragment {
     public void onPause() {
         super.onPause();
         BusProvider.getInstance().unregister(this);
+    }
+
+    @Override
+    public void onTransitionStart(Transition transition) {
+
+    }
+
+    @Override
+    public void onTransitionEnd(Transition transition) {
+        mTransitionsCount++;
+        if (mTransitionsCount == 3) {
+            viewFlipper.showNext();
+            mTransitionsCount = 0;
+        }
     }
 
     public interface RegistrationFinishedListener {

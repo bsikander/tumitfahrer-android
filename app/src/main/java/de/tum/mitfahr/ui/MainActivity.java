@@ -2,20 +2,18 @@ package de.tum.mitfahr.ui;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.squareup.otto.Subscribe;
-
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
-import de.tum.mitfahr.events.DisplaySearchEvent;
-import de.tum.mitfahr.events.SearchClickedEvent;
 import de.tum.mitfahr.ui.fragments.AbstractNavigationFragment;
 import de.tum.mitfahr.ui.fragments.ActivityRidesFragment;
 import de.tum.mitfahr.ui.fragments.CampusRidesFragment;
@@ -23,7 +21,6 @@ import de.tum.mitfahr.ui.fragments.CreateRidesFragment;
 import de.tum.mitfahr.ui.fragments.MyRidesFragment;
 import de.tum.mitfahr.ui.fragments.ProfileFragment;
 import de.tum.mitfahr.ui.fragments.SearchFragment;
-import de.tum.mitfahr.ui.fragments.SearchResultsFragment;
 import de.tum.mitfahr.ui.fragments.SettingsFragment;
 import de.tum.mitfahr.ui.fragments.TimelineFragment;
 import de.tum.mitfahr.util.ActionBarColorChangeListener;
@@ -63,6 +60,14 @@ public class MainActivity extends FragmentActivity
             startActivity(intent);
             finish();
         }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.getBoolean("first_run", true)) {
+            prefs.edit().putBoolean("first_run", false).commit();
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
+        }
+
         mTitle = getTitle();
 
         setContentView(R.layout.activity_main);
@@ -115,7 +120,7 @@ public class MainActivity extends FragmentActivity
             case 0:
                 mCurrentFragment = ProfileFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
-                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
+                        .setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_TIMELINE_FRAGMENT)
                         .commit();
                 break;
@@ -123,14 +128,14 @@ public class MainActivity extends FragmentActivity
             case 1:
                 mCurrentFragment = TimelineFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
-                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
+                        .setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_TIMELINE_FRAGMENT)
                         .commit();
                 break;
             case 2:
                 mCurrentFragment = CampusRidesFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
-                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
+                        .setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_CAMPUS_RIDES_FRAGMENT)
                         .commit();
                 break;
@@ -138,7 +143,7 @@ public class MainActivity extends FragmentActivity
             case 3:
                 mCurrentFragment = ActivityRidesFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
-                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
+                        .setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_ACTIVITY_RIDES_FRAGMENT)
                         .commit();
                 break;
@@ -146,7 +151,7 @@ public class MainActivity extends FragmentActivity
             case 4:
                 mCurrentFragment = CreateRidesFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
-                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
+                        .setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_CREATE_RIDE_FRAGMENT)
                         .commit();
                 break;
@@ -154,7 +159,7 @@ public class MainActivity extends FragmentActivity
             case 5:
                 mCurrentFragment = SearchFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
-                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
+                        .setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_SEARCH_FRAGMENT)
                         .commit();
                 break;
@@ -162,7 +167,7 @@ public class MainActivity extends FragmentActivity
             case 6:
                 mCurrentFragment = MyRidesFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
-                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
+                        .setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_MY_RIDES_FRAGMENT)
                         .commit();
                 break;
@@ -170,7 +175,7 @@ public class MainActivity extends FragmentActivity
             case 7:
                 mCurrentFragment = SettingsFragment.newInstance(position + 1);
                 fragmentManager.beginTransaction()
-                        .setCustomAnimations(R.anim.fade_enter,R.anim.fade_exit)
+                        .setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_SETTINGS_FRAGMENT)
                         .commit();
                 break;

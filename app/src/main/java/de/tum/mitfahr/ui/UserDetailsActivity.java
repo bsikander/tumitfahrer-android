@@ -11,11 +11,14 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.pkmmte.view.CircularImageView;
+import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.tum.mitfahr.R;
+import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.networking.models.User;
+import de.tum.mitfahr.util.StringHelper;
 
 /**
  * Created by abhijith on 02/10/14.
@@ -42,9 +45,6 @@ public class UserDetailsActivity extends Activity {
     @InjectView(R.id.profile_department)
     TextView profileDepartmentText;
 
-    @InjectView(R.id.profile_password)
-    TextView profilePasswordText;
-
     private User mCurrentUser;
     private Handler mHandler = new Handler();
 
@@ -62,6 +62,26 @@ public class UserDetailsActivity extends Activity {
         } else {
             finish();
         }
+
+        showData();
+
+    }
+
+    private void showData() {
+        profileNameText.setText(mCurrentUser.getFirstName() + " " + mCurrentUser.getLastName());
+        profileEmailText.setText(mCurrentUser.getEmail());
+
+        if (!StringHelper.isBlank(mCurrentUser.getPhoneNumber()))
+            profilePhoneText.setText(mCurrentUser.getPhoneNumber());
+        if (!StringHelper.isBlank(mCurrentUser.getCar()))
+            profilePhoneText.setText(mCurrentUser.getCar());
+
+        String profileImageUrl = TUMitfahrApplication.getApplication(this).getProfileService().getProfileImageURL(mCurrentUser.getId());
+        Picasso.with(this)
+                .load(profileImageUrl)
+                .placeholder(R.drawable.ic_account_dark)
+                .error(R.drawable.ic_account_dark)
+                .into(profileImage);
     }
 
     public void changeActionBarColor(int newColor) {

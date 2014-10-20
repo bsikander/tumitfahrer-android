@@ -1,26 +1,22 @@
 package de.tum.mitfahr.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.widget.ArrayAdapter;
+import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Spinner;
 
 import com.dd.CircularProgressButton;
+import com.pkmmte.view.CircularImageView;
 import com.squareup.picasso.Picasso;
-
-import java.net.URL;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.networking.models.User;
@@ -41,23 +37,22 @@ public class EditProfileActivity extends Activity {
     @InjectView(R.id.edit_profile_car)
     EditText carEditText;
 
-    @InjectView(R.id.edit_profile_department)
-    Spinner departmentSpinner;
-
     @InjectView(R.id.edit_profile_image)
-    ImageView userImageView;
+    CircularImageView userImageView;
 
     @InjectView(R.id.edit_profile_button)
     CircularProgressButton editProfileButton;
 
-    private boolean changed;
+    private boolean detailsChanged;
+    private boolean imageChanged;
+    private String changedImageUri;
     private User mCurrentUser;
-    private ArrayAdapter<CharSequence> mDepartmentAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.inject(this);
         mCurrentUser = TUMitfahrApplication.getApplication(this).getProfileService().getUserFromPreferences();
         populateTheFields();
@@ -68,11 +63,6 @@ public class EditProfileActivity extends Activity {
         lastNameEditText.setText(mCurrentUser.getLastName());
         carEditText.setText(mCurrentUser.getCar());
         phoneNumberEditText.setText(mCurrentUser.getPhoneNumber());
-        mDepartmentAdapter = ArrayAdapter.createFromResource(this,
-                R.array.department_array, R.layout.spinner_item_white);
-        departmentSpinner.setAdapter(mDepartmentAdapter);
-        int deptIndex = Integer.parseInt(mCurrentUser.getDepartment());
-        departmentSpinner.setSelection(deptIndex);
         String profileImageUrl = TUMitfahrApplication.getApplication(this).getProfileService().getProfileImageURL(this);
         Picasso.with(this)
                 .load(profileImageUrl)
@@ -97,19 +87,44 @@ public class EditProfileActivity extends Activity {
                 && null != data) {
 
             Uri selectedImage = data.getData();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-            Cursor cursor = getContentResolver().query(selectedImage,
-                    filePathColumn, null, null, null);
-            cursor.moveToFirst();
-
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
-
-            Bitmap bitmap = BitmapFactory.decodeFile(picturePath);
-            userImageView.setImageBitmap(bitmap);
-
+            Picasso.with(this)
+                    .load(selectedImage.toString())
+                    .placeholder(R.drawable.ic_account_dark)
+                    .error(R.drawable.placeholder)
+                    .into(userImageView);
+            imageChanged = true;
+            changedImageUri = selectedImage.toString();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                if (detailsChanged || imageChanged) {
+                    AlertDialog dialog = new AlertDialog.Builder(this).
+                            setTitle("Discard Changes?").
+                            setMessage("Are you sure you want to discard changes?").
+                            setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    finish();
+                                }
+                            }).
+                            setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }).create();
+                    dialog.show();
+                } else {
+                    finish();
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

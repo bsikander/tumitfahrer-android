@@ -10,6 +10,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="16dp"
+        android:paddingTop="16dp"
         android:animateLayoutChanges="true"
         android:layout_height="wrap_content">
 
@@ -112,12 +113,6 @@
                 android:nextFocusDown="@+id/edit_profile_department"
                 android:hint="Car" />
         </de.tum.mitfahr.widget.FloatLabelLayout>
-
-        <Spinner
-            android:layout_marginTop="8dp"
-            android:layout_width="fill_parent"
-            android:id="@+id/edit_profile_department"
-            android:layout_height="wrap_content"/>
 
         <com.dd.CircularProgressButton
             android:id="@+id/edit_profile_button"

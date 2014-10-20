@@ -45,8 +45,8 @@ import de.tum.mitfahr.networking.models.response.UpdateUserResponse;
 public class ProfileService {
 
     private static final String AMZ_BUCKET_NAME = "tumitfahrer";
-    private static final String AMZ_SECRET_KEY = "";
-    private static final String AMZ_ACCESS_KEY_ID = "";
+    private static final String AMZ_SECRET_KEY = "fvyTaWgegKsT1esZo5DrXmc65paKfY5So8jcvQAk";
+    private static final String AMZ_ACCESS_KEY_ID = "AKIAIRFGBPO5JUZWRDHA";
     private static final String AMZ_PATH = "users/";
     private static final String AMZ_FILENAME = "/profile_picture.jpg";
 
@@ -218,7 +218,7 @@ public class ProfileService {
         }
     }
 
-    public URL getProfileImageURL(int userId) {
+    public String getProfileImageURL(int userId) {
         ResponseHeaderOverrides override = new ResponseHeaderOverrides();
         override.setContentType("image/jpeg");
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(AMZ_BUCKET_NAME, AMZ_PATH + userId + AMZ_FILENAME);
@@ -228,7 +228,7 @@ public class ProfileService {
 
         AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(AMZ_ACCESS_KEY_ID, AMZ_SECRET_KEY));
         URL urlForGet = s3Client.generatePresignedUrl(request);
-        return urlForGet;
+        return urlForGet.toString();
     }
 
     private String getCachedProfileImage() {
