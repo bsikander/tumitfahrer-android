@@ -10,10 +10,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import java.io.IOException;
 
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.gcm.PushNotificationHelper;
+import de.tum.mitfahr.gcm.PushNotificationInterface;
 import de.tum.mitfahr.ui.fragments.AbstractNavigationFragment;
 import de.tum.mitfahr.ui.fragments.ActivityRidesFragment;
 import de.tum.mitfahr.ui.fragments.CampusRidesFragment;
@@ -27,7 +32,7 @@ import de.tum.mitfahr.util.ActionBarColorChangeListener;
 
 public class MainActivity extends FragmentActivity
         implements ActionBarColorChangeListener,
-        NavigationDrawerFragment.NavigationDrawerCallbacks {
+        NavigationDrawerFragment.NavigationDrawerCallbacks,PushNotificationInterface{
     private static final String TAG_TIMELINE_FRAGMENT = "timeline_fragment";
     private static final String TAG_ACTIVITY_RIDES_FRAGMENT = "activity_rides_fragment";
     private static final String TAG_CAMPUS_RIDES_FRAGMENT = "campus_rides_fragment";
@@ -77,6 +82,13 @@ public class MainActivity extends FragmentActivity
             mTitle = savedInstanceState.getCharSequence("title");
             restoreActionBar();
             findAndAddFragment();
+        }
+
+        PushNotificationHelper helper = new PushNotificationHelper();
+        try {
+            helper.getRegistrationID(this);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -238,6 +250,17 @@ public class MainActivity extends FragmentActivity
 
     public NavigationDrawerFragment getNavigationDrawerFragment() {
         return mNavigationDrawerFragment;
+    }
+
+    @Override
+    public void onPlayServiceRegistrationComplete(String id) {
+        if(id == null){
+            Toast.makeText(this, "There is some problem with registration. Please try again!", Toast.LENGTH_LONG).show();
+        }else{
+            // Use this id for your purposes
+            //Toast.makeText(this, id, Toast.LENGTH_LONG).show();
+        }
+
     }
 
 }

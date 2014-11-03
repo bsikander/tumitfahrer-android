@@ -5,14 +5,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.otto.Bus;
 
-import java.io.IOException;
-
 import de.tum.mitfahr.BusProvider;
 import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
-import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 
 /**
@@ -37,13 +34,14 @@ public abstract class AbstractRESTClient implements ErrorHandler {
                 .setEndpoint(mBaseBackendURL)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setErrorHandler(this)
-//                .setRequestInterceptor(new RequestInterceptor() {
-//                    @Override
-//                    public void intercept(RequestFacade request) {
-//                        request.addHeader("Content-Type", "application/json;charset=utf-8");
-//                        request.addHeader("Accept","application/json;charset=utf-8");
-//                    }
-//                })
+                .setRequestInterceptor(new RequestInterceptor() {
+                    @Override
+                    public void intercept(RequestFacade request) {
+                        request.addHeader("Content-Type", "application/json;charset=utf-8");
+                        request.addHeader("Accept", "application/json;charset=utf-8");
+                        request.addHeader("Accept-Language", "en");
+                    }
+                })
                 .setConverter(getGsonConverter())
                 .build();
     }

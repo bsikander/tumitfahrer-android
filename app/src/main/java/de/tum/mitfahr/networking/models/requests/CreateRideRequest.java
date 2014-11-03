@@ -32,5 +32,7 @@ public class CreateRideRequest {
         this.departureLongitude = 0.0;
         this.destinationLatitude = 0.0;
         this.destinationLongitude = 0.0;
+        this.repeatDates = new String[1];
+        this.repeatDates[0] = dateTime;
     }
 }

@@ -19,12 +19,12 @@
             android:layout_width="56dp"
             android:layout_gravity="center"
             android:layout_height="56dp"
-            android:scaleType="centerCrop"
+            android:scaleType="fitCenter"
             android:src="@drawable/ic_account_dark"
             app:border_color="@color/white"
             app:border_width="3dp"
             app:shadow="true"
-
+            app:border="true"
             android:id="@+id/passenger_image_view" />
 
         <TextView
@@ -44,19 +44,19 @@
     <ImageButton
         android:id="@+id/remove_image_button"
         android:background="@color/blue3"
-        android:layout_width="56dp"
+        android:layout_width="48dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_gravity="center"
         android:src="@drawable/placeholder"
-        android:layout_height="48dp" />
+        android:layout_height="36dp" />
 
     <ImageButton
         android:id="@+id/action_image_button"
         android:background="@color/blue2"
         android:layout_gravity="center"
-        android:layout_width="56dp"
+        android:layout_width="48dp"
         android:src="@drawable/placeholder"
-        android:layout_height="48dp" />
+        android:layout_height="36dp" />
 
 </LinearLayout>

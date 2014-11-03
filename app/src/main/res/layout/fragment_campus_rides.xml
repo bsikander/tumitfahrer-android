@@ -13,8 +13,9 @@
         android:visibility="visible"
         android:background="@color/blue2"
         app:pstsUnderlineColor="@color/blue2"
+        app:pstsIndicatorHeight="6dp"
         app:pstsIndicatorColor="@color/white"
-        android:layout_height="48dp" />
+        android:layout_height="56dp" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"

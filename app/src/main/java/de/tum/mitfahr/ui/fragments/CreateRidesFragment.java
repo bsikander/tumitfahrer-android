@@ -1,6 +1,7 @@
 package de.tum.mitfahr.ui.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -39,11 +40,12 @@ import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.adapters.LocationAutoCompleteAdapter;
 import de.tum.mitfahr.events.OfferRideEvent;
 import de.tum.mitfahr.networking.models.User;
+import de.tum.mitfahr.ui.RideDetailsActivity;
 import de.tum.mitfahr.util.StringHelper;
 import info.hoang8f.android.segmented.SegmentedGroup;
 
 /**
- * Created by abhijith on 22/05/14.
+ * Created by Abhijith on 22/05/14.
  */
 public class CreateRidesFragment extends AbstractNavigationFragment implements CalendarDatePickerDialog.OnDateSetListener, RadialTimePickerDialog.OnTimeSetListener {
 
@@ -230,9 +232,12 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
         int isDriver = (driver) ? 1 : 0;
 
         if (!StringHelper.isBlank(departure) && !StringHelper.isBlank(destination) && !StringHelper.isBlank(meetingPoint) && !StringHelper.isBlank(dateTime)) {
-            offerRideButton.setProgress(50);// showing working state
+            offerRideButton.setProgress(50);
+
             TUMitfahrApplication.getApplication(getActivity()).getRidesService()
-                    .offerRide(departure, destination, meetingPoint, freeSeats, dateTime, rideType, isDriver, mCurrentUser.getCar());
+                    .offerRide(departure, destination, meetingPoint,
+                            freeSeats, dateTime, rideType,
+                            isDriver, mCurrentUser.getCar());
         }
     }
 
@@ -280,6 +285,11 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
         if (event.getType() == OfferRideEvent.Type.RIDE_ADDED) {
             Toast.makeText(getActivity(), "Ride Created", Toast.LENGTH_SHORT).show();
             offerRideButton.setProgress(100);
+            if (event.getRide() != null) {
+                Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
+                intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, event.getRide());
+                startActivity(intent);
+            }
         } else if (event.getType() == OfferRideEvent.Type.OFFER_RIDE_FAILED) {
             Toast.makeText(getActivity(), "Offering Ride Failed! Please check credentials and try again.",
                     Toast.LENGTH_SHORT).show();

@@ -64,7 +64,6 @@ public class LoginFragment extends Fragment implements KenBurnsView.TransitionLi
 
     private int mTransitionsCount = 0;
 
-
     public static LoginFragment newInstance(String email) {
         LoginFragment fragment = new LoginFragment();
         Bundle args = new Bundle();
@@ -176,6 +175,7 @@ public class LoginFragment extends Fragment implements KenBurnsView.TransitionLi
             loginButton.setClickable(true);
             Intent intent = new Intent(getActivity(), MainActivity.class);
             startActivity(intent);
+            getActivity().finish();
         }
     };
 

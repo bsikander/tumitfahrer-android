@@ -1,6 +1,7 @@
 package de.tum.mitfahr.ui.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -8,8 +9,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,7 @@ import de.tum.mitfahr.events.GetUserRequestsEvent;
 import de.tum.mitfahr.events.MyRidesAsDriverEvent;
 import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.RideRequest;
+import de.tum.mitfahr.ui.RideDetailsActivity;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -43,7 +45,6 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
 
     @InjectView(R.id.swipeRefreshLayout_emptyView)
     SwipeRefreshLayout swipeRefreshLayoutEmptyView;
-
 
 
     public static MyRidesCreatedFragment newInstance() {
@@ -88,9 +89,26 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
         super.onViewCreated(view, savedInstanceState);
         mAdapter = new RideAdapterTest(getActivity());
         ridesListView.setAdapter(mAdapter);
+        ridesListView.setOnItemClickListener(mItemClickListener);
         fetchRides();
         setLoading(true);
     }
+
+    private AdapterView.OnItemClickListener mItemClickListener = new android.widget.AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            MyCreatedRide clickedItem = mAdapter.getItem(position);
+            if (clickedItem.ride != null) {
+                Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
+                intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, clickedItem.ride);
+                startActivity(intent);
+            } else if (clickedItem.request.getRide() != null) {
+                Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
+                intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, clickedItem.request.getRide());
+                startActivity(intent);
+            }
+        }
+    };
 
     private void fetchRides() {
         TUMitfahrApplication.getApplication(getActivity()).getRidesService().getMyRidesAsDriver();
@@ -164,12 +182,20 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
                 view = (ViewGroup) convertView;
             }
             MyCreatedRide createdRide = getItem(position);
-            Ride ride = createdRide.ride;
+            Ride ride = null;
+            if (createdRide.type == MyRideType.MY_RIDES_AS_DRIVER) {
+                ride = createdRide.ride;
+            } else {
+                ride = createdRide.request.getRide();
+            }
 
-            ((ImageView) view.findViewById(R.id.my_rides_location_image)).setImageResource(R.drawable.list_image_placeholder);
+            String[] dateTime = ride.getDepartureTime().split("T");
+
             ((TextView) view.findViewById(R.id.my_rides_from_text)).setText(ride.getDeparturePlace());
             ((TextView) view.findViewById(R.id.my_rides_to_text)).setText(ride.getDestination());
-            ((TextView) view.findViewById(R.id.my_rides_time_text)).setText(ride.getDepartureTime());
+            ((TextView) view.findViewById(R.id.my_rides_time_text)).setText(dateTime[1].substring(0, 5));
+            ((TextView) view.findViewById(R.id.my_rides_date_text)).setText(dateTime[0]);
+
             return view;
         }
 
@@ -185,8 +211,11 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
                 holder = (HeaderViewHolder) convertView.getTag();
             }
             //set header text as first char in name
-            String headerText = getItem(position).type.name();
-            holder.text.setText(headerText);
+            if (getItem(position).type == MyRideType.MY_RIDES_AS_DRIVER) {
+                holder.text.setText("Rides as Driver");
+            } else {
+                holder.text.setText("Ride Requests");
+            }
             return convertView;
         }
 

@@ -1,6 +1,7 @@
 package de.tum.mitfahr.networking.models;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Created by amr on 18/05/14.
@@ -239,4 +240,30 @@ public class Ride implements Serializable {
         this.rideImageUrl = rideImageUrl;
     }
 
+    @Override
+    public String toString() {
+        return "Ride{" +
+                "id=" + id +
+                ", departurePlace='" + departurePlace + '\'' +
+                ", destination='" + destination + '\'' +
+                ", meetingPoint='" + meetingPoint + '\'' +
+                ", freeSeats=" + freeSeats +
+                ", departureTime='" + departureTime + '\'' +
+                ", price=" + price +
+                ", realtimeDepartureTime='" + realtimeDepartureTime + '\'' +
+                ", realtimeKm=" + realtimeKm +
+                ", rideOwner=" + rideOwner +
+                ", isRideRequest=" + isRideRequest +
+                ", rideType=" + rideType +
+                ", createdAt='" + createdAt + '\'' +
+                ", updatedAt='" + updatedAt + '\'' +
+                ", latitude=" + latitude +
+                ", rideImageUrl='" + rideImageUrl + '\'' +
+                ", car='" + car + '\'' +
+                ", passengers=" + Arrays.toString(passengers) +
+                ", requests=" + Arrays.toString(requests) +
+                ", conversations=" + Arrays.toString(conversations) +
+                ", longitude=" + longitude +
+                '}';
+    }
 }

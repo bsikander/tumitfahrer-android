@@ -3,7 +3,6 @@ package de.tum.mitfahr.ui.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.format.DateUtils;
@@ -11,12 +10,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.melnykov.fab.FloatingActionButton;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 
 import java.util.ArrayList;
@@ -26,11 +27,11 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.tum.mitfahr.R;
+import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.ui.MainActivity;
 import de.tum.mitfahr.ui.RideDetailsActivity;
 import de.tum.mitfahr.util.TimelineItem;
-import de.tum.mitfahr.widget.FloatingActionButton;
 
 /**
  * Authored by abhijith on 21/06/14.
@@ -40,9 +41,9 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
     private static final String TAG = TimelineListAllFragment.class.getName();
     private List<TimelineItem> mTimeline = new ArrayList<TimelineItem>();
 
+
     private TimelineAdapter mTimelineAdapter;
     private AlphaInAnimationAdapter mAdapter;
-
 
     @InjectView(R.id.rides_listview)
     ListView timelineListView;
@@ -167,7 +168,7 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
                 ((TextView) view.findViewById(R.id.timeline_activity_text)).setText("New Ride offer to");
 
             } else if (item.getType().equals(TimelineItem.TimelineItemType.RIDE_SEARCHED)) {
-                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.ic_search);
+                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.ic_search_white_24dp);
                 ((TextView) view.findViewById(R.id.timeline_activity_text)).setText("User searched for a Ride to");
 
             } else if (item.getType().equals(TimelineItem.TimelineItemType.RIDE_REQUEST)) {
@@ -183,12 +184,8 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
 
     @Override
     public void onRefresh() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setLoading(false);
-            }
-        }, 5000);
+        setLoading(true);
+        TUMitfahrApplication.getApplication(getActivity()).getActivitiesService().getActivities();
     }
 
     private void dump(List<TimelineItem> list) {

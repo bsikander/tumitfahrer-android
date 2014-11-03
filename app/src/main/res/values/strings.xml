@@ -66,6 +66,7 @@
     <string name="title_activity_about">About</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_team">Team</string>
+    <string name="title_activity_search_results">Search Result</string>
     <string name="title_activity_licenses">Licenses</string>
     <string name="title_activity_terms_of_use">Terms Of Use</string>
     <string name="title_activity_edit_profile">Edit Profile</string>
@@ -135,5 +136,11 @@
     <string name="about_heading4">Don\'t have a car?</string>
     <string name="about_description4">Request a ride offer. Fellow students will pick you up. Enjoy the car ride.</string>
 
+    <!-- Push Notification / Pebble Contants -->
+    <string name="deviceNotSupported">This device is not supported.</string>
+    <string name="googlePlayServiceNotFound">No valid Google Play Services APK found.</string>
+
+    <!-- Notification Engine Strings -->
+    <string name="messageTitle">TUMitfahrer</string>
 
 </resources>

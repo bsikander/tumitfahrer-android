@@ -1,10 +1,15 @@
 package de.tum.mitfahr.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,12 +25,17 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.dd.CircularProgressButton;
+import com.pkmmte.view.CircularImageView;
 import com.squareup.otto.Subscribe;
+import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import butterknife.ButterKnife;
@@ -39,6 +49,7 @@ import de.tum.mitfahr.events.JoinRequestEvent;
 import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.RideRequest;
 import de.tum.mitfahr.networking.models.User;
+import de.tum.mitfahr.networking.panoramio.PanoramioPhoto;
 import de.tum.mitfahr.util.StringHelper;
 import de.tum.mitfahr.widget.NotifyingScrollView;
 import de.tum.mitfahr.widget.PassengerItemView;
@@ -48,9 +59,13 @@ import retrofit.RetrofitError;
 public class RideDetailsFragment extends Fragment {
 
     private static final String RIDE = "ride";
+    private static final int IMAGE_COLOR_FILTER = 0x5F000000;
 
     @InjectView(R.id.notifyingScrollView)
     NotifyingScrollView notifyingScrollView;
+
+    @InjectView(R.id.details_driver_image_view)
+    CircularImageView ownerImageView;
 
     @InjectView(R.id.details_from_text)
     TextView fromTextView;
@@ -109,9 +124,15 @@ public class RideDetailsFragment extends Fragment {
     private Ride mRide;
     private User mCurrentUser;
     private boolean userIsOwner;
-    private Map<RideRequest, User> mRequestUserMap = new HashMap<RideRequest, User>();
+    private List<RideRequest> mRideRequests = new ArrayList<RideRequest>();
+    private Map<Integer, User> mRequestUserMap = new HashMap<Integer, User>();
+    private Geocoder mGeocoder;
+
 
     private Drawable mActionBarBackgroundDrawable;
+
+    private TUMitfahrApplication mApp;
+
 
     private Handler mActionButtonHandler = new Handler() {
         @Override
@@ -121,6 +142,15 @@ public class RideDetailsFragment extends Fragment {
             TUMitfahrApplication.getApplication(getActivity()).getRidesService().getRide(mRide.getId());
         }
     };
+    private int mPendingRequestId;
+
+    private enum ActionButtonState {
+        REQUEST_RIDE,
+        LEAVE_RIDE,
+        PENDING_RIDE,
+        DELETE_RIDE,
+        OFFER_RIDE,
+    }
 
 
     public static RideDetailsFragment newInstance(Ride ride) {
@@ -141,6 +171,8 @@ public class RideDetailsFragment extends Fragment {
         if (getArguments() != null) {
             mRide = (Ride) getArguments().getSerializable(RIDE);
         }
+        mApp = TUMitfahrApplication.getApplication(getActivity());
+        mGeocoder = new Geocoder(getActivity().getApplicationContext(), Locale.getDefault());
         setRetainInstance(true);
     }
 
@@ -151,6 +183,7 @@ public class RideDetailsFragment extends Fragment {
         ButterKnife.inject(this, view);
         mActionBarBackgroundDrawable = getResources().getDrawable(R.color.blue2);
         mActionBarBackgroundDrawable.setAlpha(0);
+        rideLocationImage.setColorFilter(IMAGE_COLOR_FILTER);
 
         getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
 
@@ -174,8 +207,8 @@ public class RideDetailsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         TUMitfahrApplication.getApplication(getActivity()).getRidesService().getRide(mRide.getId());
-        mCurrentUser = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getUserFromPreferences();
         progressBar.progressiveStart();
+        mCurrentUser = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getUserFromPreferences();
         showData();
     }
 
@@ -183,11 +216,9 @@ public class RideDetailsFragment extends Fragment {
     public void onGetRide(GetRideEvent result) {
         progressBar.progressiveStop();
         if (result.getType() == GetRideEvent.Type.GET_SUCCESSFUL) {
-            Log.e("GET", "Success");
             mRide = result.getResponse().getRide();
             showData();
         } else if (result.getType() == GetRideEvent.Type.GET_FAILED) {
-            Log.e("GET", "Failure");
             getActivity().finish();
         }
     }
@@ -242,7 +273,6 @@ public class RideDetailsFragment extends Fragment {
 
 
     private void showData() {
-        final TUMitfahrApplication app = TUMitfahrApplication.getApplication(getActivity());
         fromTextView.setText(mRide.getDeparturePlace());
         toTextView.setText(mRide.getDestination());
         infoTextView.setText(mRide.getMeetingPoint());
@@ -253,70 +283,84 @@ public class RideDetailsFragment extends Fragment {
         }
         seatsTextView.setText(Integer.toString(mRide.getFreeSeats()));
 
+        if (mRide.getRideImageUrl() != null) {
+            Picasso.with(getActivity())
+                    .load(mRide.getRideImageUrl())
+                    .placeholder(R.drawable.list_image_placeholder)
+                    .error(R.drawable.list_image_placeholder)
+                    .into(rideLocationImage);
+        } else {
+            new PanoramioTask().execute(mRide);
+        }
+
         if (null != mRide.getRideOwner()) {
+            String profileUrl = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getProfileImageURL(mRide.getRideOwner().getId());
+            Picasso.with(getActivity())
+                    .load(profileUrl)
+                    .placeholder(R.drawable.list_image_placeholder)
+                    .error(R.drawable.list_image_placeholder)
+                    .into(ownerImageView);
+            setActionButtonState(ActionButtonState.LEAVE_RIDE);
+
             rideOwnerLayoutContainer.setVisibility(View.VISIBLE);
             driverNameTextView.setText(mRide.getRideOwner()
                     .getFirstName() + " " + mRide.getRideOwner().getLastName());
-            if (mCurrentUser.getId() == mRide.getRideOwner().getId()) {
-                userIsOwner = true;
-                rideActionButton.setVisibility(View.VISIBLE);
-                rideActionButton.setText("Delete Ride");
-                rideActionButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        rideActionButton.setProgress(50);
-                        rideActionButton.setClickable(false);
-                        app.getRidesService().deleteRide(mRide.getId());
-                    }
-                });
 
-                // We need to show requests
-            } else if (mRide.isRideRequest()) {
-                //its a ride request...button is offer ride.
-                rideActionButton.setVisibility(View.VISIBLE);
-                rideActionButton.setText("Offer Ride");
-                rideActionButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //TODO:call activity with some args.
-                    }
-                });
-            } else {
-                //not a ride request...button is request ride.
-                rideActionButton.setVisibility(View.VISIBLE);
-                rideActionButton.setText("Request Ride");
-                rideActionButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        rideActionButton.setProgress(50);
-                        rideActionButton.setClickable(false);
-                        app.getRidesService().joinRequest(mRide.getId());
-                    }
-                });
-            }
+            if (mCurrentUser.getId() == mRide.getRideOwner().getId() && !mRide.isRideRequest())
+                showDataAsOwnerDriver();
+            else if (mCurrentUser.getId() == mRide.getRideOwner().getId())
+                showDataAsOwnerRequest();
+            else if (isUserPassenger())
+                showDataAsPassengerAccepted();
+            else if (isUserRequestPending())
+                showDataAsPassengerPending();
+            else if (mRide.isRideRequest())
+                showDataAsRideRequest();
+            else
+                showDataAsPassenger();
         }
 
+    }
+
+    private boolean isUserRequestPending() {
+        if (mRide.getRequests().length == 0)
+            return false;
+        mRideRequests = Arrays.asList(mRide.getRequests());
+        for (RideRequest request : mRideRequests) {
+            if (request.getPassengerId() == mCurrentUser.getId()) {
+                mPendingRequestId = request.getId();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isUserPassenger() {
+        if (null != mRide.getPassengers() && mRide.getPassengers().length > 0) {
+            for (User user : mRide.getPassengers()) {
+                if (user.getId() == mCurrentUser.getId())
+                    return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    private void showDataAsPassenger() {
+        Log.e("Details", "Showing as Passenger");
+
+        userIsOwner = false;
+        setActionButtonState(ActionButtonState.REQUEST_RIDE);
         if (null != mRide.getPassengers() && mRide.getPassengers().length > 0) {
             passengersLayoutContainer.setVisibility(View.VISIBLE);
             passengersItemContainer.removeAllViews();
             for (final User passenger : mRide.getPassengers()) {
-                if (passenger.getId() == mCurrentUser.getId()) {
-                    rideActionButton.setVisibility(View.VISIBLE);
-                    rideActionButton.setText("Leave Ride");
-                    rideActionButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            //TODO: cancel ride request.
-                        }
-                    });
-                }
                 PassengerItemView passengerItem = new PassengerItemView(getActivity());
                 passengerItem.setPassenger(passenger);
-                passengerItem.setItemType(PassengerItemView.TYPE_ACCEPTED);
                 passengerItem.setListener(new PassengerItemView.PassengerItemClickListener() {
                     @Override
                     public void onRemoveClicked(User passenger) {
-                        app.getRidesService().removePassenger(mRide.getId(), passenger.getId());
+                        mApp.getRidesService().removePassenger(mRide.getId(), passenger.getId());
                     }
 
                     @Override
@@ -331,17 +375,198 @@ public class RideDetailsFragment extends Fragment {
                         //TODO: Users view
                     }
                 });
-                passengerItem.isOwner(userIsOwner);
+                passengerItem.setItemType(PassengerItemView.TYPE_NONE);
                 passengersItemContainer.addView(passengerItem);
             }
         }
-        if (userIsOwner) {
-            if (mRide.getRequests() != null && mRide.getRequests().length > 0) {
-                List<RideRequest> rideRequests = Arrays.asList(mRide.getRequests());
-                progressBar.progressiveStart();
-                new GetUserFromRequestsTask(getActivity()).execute(rideRequests);
+    }
 
+    private void showDataAsRideRequest() {
+        Log.e("Details", "Showing as Ride request");
+        setActionButtonState(ActionButtonState.OFFER_RIDE);
+    }
+
+    private void showDataAsPassengerPending() {
+        Log.e("Details", "Showing as Passenger pending");
+        setActionButtonState(ActionButtonState.PENDING_RIDE);
+
+        requestsLayoutContainer.setVisibility(View.VISIBLE);
+        requestsItemContainer.removeAllViews();
+
+        PassengerItemView passengerPendingItem = new PassengerItemView(getActivity());
+        passengerPendingItem.setPassenger(mCurrentUser);
+        passengerPendingItem.setItemType(PassengerItemView.TYPE_NONE);
+
+        requestsItemContainer.addView(passengerPendingItem);
+    }
+
+    private void showDataAsPassengerAccepted() {
+        Log.e("Details", "Showing as Passenger accepted");
+
+        if (null != mRide.getPassengers() && mRide.getPassengers().length > 0) {
+            passengersLayoutContainer.setVisibility(View.VISIBLE);
+            passengersItemContainer.removeAllViews();
+            for (final User passenger : mRide.getPassengers()) {
+                PassengerItemView passengerItem = new PassengerItemView(getActivity());
+                passengerItem.setPassenger(passenger);
+                passengerItem.setItemType(PassengerItemView.TYPE_NONE);
+                passengerItem.setListener(new PassengerItemView.PassengerItemClickListener() {
+                    @Override
+                    public void onRemoveClicked(User passenger) {
+                        mApp.getRidesService().removePassenger(mRide.getId(), passenger.getId());
+                    }
+
+                    @Override
+                    public void onActionClicked(User passenger) {
+                        //do the action... conversation or accept
+                        //TODO: conversations view
+                    }
+
+                    @Override
+                    public void onUserClicked(User passenger) {
+                        //show the userpage
+                        //TODO: Users view
+                    }
+                });
+                passengersItemContainer.addView(passengerItem);
             }
+        }
+
+    }
+
+    private void showDataAsOwnerRequest() {
+        Log.e("Details", "Showing as Driver request");
+        String profileUrl = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getProfileImageURL(getActivity());
+        Picasso.with(getActivity())
+                .load(profileUrl)
+                .placeholder(R.drawable.list_image_placeholder)
+                .error(R.drawable.list_image_placeholder)
+                .into(ownerImageView);
+        setActionButtonState(ActionButtonState.DELETE_RIDE);
+    }
+
+    private void showDataAsOwnerDriver() {
+        String profileUrl = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getProfileImageURL(getActivity());
+        Picasso.with(getActivity())
+                .load(profileUrl)
+                .placeholder(R.drawable.list_image_placeholder)
+                .error(R.drawable.list_image_placeholder)
+                .into(ownerImageView);
+        Log.e("Details", "Showing as Driver owner");
+        userIsOwner = true;
+        setActionButtonState(ActionButtonState.DELETE_RIDE);
+        //We show all the passenger details and request details
+
+        if (null != mRide.getPassengers() && mRide.getPassengers().length > 0) {
+            passengersLayoutContainer.setVisibility(View.VISIBLE);
+            passengersItemContainer.removeAllViews();
+            for (final User passenger : mRide.getPassengers()) {
+                PassengerItemView passengerItem = new PassengerItemView(getActivity());
+                passengerItem.setPassenger(passenger);
+                passengerItem.setItemType(PassengerItemView.TYPE_PASSENGER);
+                passengerItem.setListener(new PassengerItemView.PassengerItemClickListener() {
+                    @Override
+                    public void onRemoveClicked(User passenger) {
+                        mApp.getRidesService().removePassenger(mRide.getId(), passenger.getId());
+                    }
+
+                    @Override
+                    public void onActionClicked(User passenger) {
+                        //do the action... conversation or accept
+                        //TODO: conversations view
+                    }
+
+                    @Override
+                    public void onUserClicked(User passenger) {
+                        //show the userpage
+                        Intent intent = new Intent(getActivity(), UserDetailsActivity.class);
+                        intent.putExtra(UserDetailsActivity.USER_INTENT_EXTRA, passenger);
+                        startActivity(intent);
+                    }
+                });
+                passengersItemContainer.addView(passengerItem);
+            }
+        }
+
+        if (mRide.getRequests() != null && mRide.getRequests().length > 0) {
+            Log.e("Details", "Has Requests");
+            mRideRequests = Arrays.asList(mRide.getRequests());
+            progressBar.progressiveStart();
+            new GetUserFromRequestsTask(getActivity()).execute(mRideRequests);
+
+        }
+    }
+
+    public void setActionButtonState(ActionButtonState state) {
+        rideActionButton.setVisibility(View.VISIBLE);
+        switch (state) {
+
+            case REQUEST_RIDE:
+                rideActionButton.setText("Request Ride");
+                rideActionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        rideActionButton.setProgress(50);
+                        rideActionButton.setClickable(false);
+                        mApp.getRidesService().joinRequest(mRide.getId());
+                    }
+                });
+                break;
+            case LEAVE_RIDE:
+                rideActionButton.setText("Leave Ride");
+                rideActionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        rideActionButton.setProgress(50);
+                        rideActionButton.setClickable(false);
+                        mApp.getRidesService().joinRequest(mRide.getId());
+                    }
+                });
+                break;
+            case PENDING_RIDE:
+                rideActionButton.setText("Cancel Request");
+                rideActionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setMessage("Cancel Ride request?")
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        if (mPendingRequestId != 0)
+                                            mApp.getRidesService().deleteRideRequest(mRide.getId(), mPendingRequestId);
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        // Create the AlertDialog object and return it
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                });
+                break;
+            case DELETE_RIDE:
+                rideActionButton.setText("Delete Ride");
+                rideActionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        rideActionButton.setProgress(50);
+                        rideActionButton.setClickable(false);
+                        mApp.getRidesService().deleteRide(mRide.getId());
+                    }
+                });
+                break;
+            case OFFER_RIDE:
+                rideActionButton.setText("Offer Ride");
+                rideActionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+                break;
         }
     }
 
@@ -378,12 +603,12 @@ public class RideDetailsFragment extends Fragment {
         @Override
         protected Boolean doInBackground(List<RideRequest>... params) {
             List<RideRequest> rideRequests = params[0];
-
             for (RideRequest rideRequest : rideRequests) {
                 try {
                     User passenger = TUMitfahrApplication.getApplication(localContext).getProfileService().getUserSynchronous(rideRequest.getPassengerId());
                     if (null != passenger) {
-                        mRequestUserMap.put(rideRequest, passenger);
+                        Log.e("Details", "Got user as ride requestor");
+                        mRequestUserMap.put(rideRequest.getId(), passenger);
                     }
                 } catch (RetrofitError e) {
                     e.printStackTrace();
@@ -395,7 +620,7 @@ public class RideDetailsFragment extends Fragment {
         @Override
         protected void onPostExecute(Boolean b) {
             super.onPostExecute(b);
-            final TUMitfahrApplication app = TUMitfahrApplication.getApplication(getActivity());
+            final TUMitfahrApplication app = TUMitfahrApplication.getApplication(localContext);
             Iterator it = mRequestUserMap.entrySet().iterator();
             if (mRequestUserMap.size() > 0) {
                 requestsLayoutContainer.setVisibility(View.VISIBLE);
@@ -404,23 +629,27 @@ public class RideDetailsFragment extends Fragment {
                     final Map.Entry pairs = (Map.Entry) it.next();
                     PassengerItemView passengerItem = new PassengerItemView(getActivity());
                     passengerItem.setPassenger((User) pairs.getValue());
-                    passengerItem.setItemType(PassengerItemView.TYPE_PENDING);
+                    final int requestId = (Integer) pairs.getKey();
+                    passengerItem.setItemType(PassengerItemView.TYPE_REQUEST);
                     passengerItem.setListener(new PassengerItemView.PassengerItemClickListener() {
                         @Override
                         public void onRemoveClicked(User passenger) {
                             //remove the user
-                            app.getRidesService().respondToRequest(mRide.getId(), ((RideRequest) pairs.getKey()).getId(), false);
+                            app.getRidesService().respondToRequest(mRide.getId(), requestId, false);
                         }
 
                         @Override
                         public void onActionClicked(User passenger) {
                             //do the action... conversation or accept
-                            app.getRidesService().respondToRequest(mRide.getId(), ((RideRequest) pairs.getKey()).getId(), true);
+                            app.getRidesService().respondToRequest(mRide.getId(), requestId, true);
                         }
 
                         @Override
                         public void onUserClicked(User passenger) {
                             //show the userpage
+                            Intent intent = new Intent(getActivity(), UserDetailsActivity.class);
+                            intent.putExtra(UserDetailsActivity.USER_INTENT_EXTRA, passenger);
+                            startActivity(intent);
                         }
                     });
                     requestsItemContainer.addView(passengerItem);
@@ -454,6 +683,62 @@ public class RideDetailsFragment extends Fragment {
             mActionBarBackgroundDrawable.setAlpha(newAlpha);
         }
     };
+
+    private class PanoramioTask extends AsyncTask<Ride, Void, Ride> {
+
+        public PanoramioTask() {
+            super();
+        }
+
+        private int PHOTO_AREA = 5;
+
+        @Override
+        protected Ride doInBackground(Ride... params) {
+
+            Ride ride = params[0];
+            if (!isCancelled()) {
+                String locationName = ride.getDestination();
+                List<Address> addresses = null;
+                try {
+                    addresses = mGeocoder.getFromLocationName(locationName, 2);
+                } catch (IOException exception1) {
+                    exception1.printStackTrace();
+                } catch (IllegalArgumentException exception2) {
+                    exception2.printStackTrace();
+                }
+                // If the reverse geocode returned an address
+                if (addresses != null && addresses.size() > 0) {
+                    // Get the first address
+                    Address address = addresses.get(0);
+                    ride.setLatitude(address.getLatitude());
+                    ride.setLongitude(address.getLongitude());
+                    Long longValue = Math.round(address.getLatitude());
+                    int lat = Integer.valueOf(longValue.intValue());
+                    longValue = Math.round(address.getLongitude());
+                    int lng = Integer.valueOf(longValue.intValue());
+                    try {
+                        PanoramioPhoto photo = TUMitfahrApplication.getApplication(getActivity()).getPanoramioService().getPhoto(lng - PHOTO_AREA, lat - PHOTO_AREA, lng + PHOTO_AREA, lat + PHOTO_AREA);
+                        if (photo != null) {
+                            ride.setRideImageUrl(photo.getPhotoFileUrl());
+                            publishProgress();
+                        }
+                    } catch (Exception e) {
+                        return null;
+                    }
+                }
+            }
+            return ride;
+        }
+
+        @Override
+        protected void onPostExecute(Ride result) {
+            Picasso.with(getActivity())
+                    .load(mRide.getRideImageUrl())
+                    .placeholder(R.drawable.list_image_placeholder)
+                    .error(R.drawable.list_image_placeholder)
+                    .into(rideLocationImage);
+        }
+    }
 
 }
 

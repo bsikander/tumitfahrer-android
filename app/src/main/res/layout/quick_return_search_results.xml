@@ -50,6 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="5dp">
 
@@ -70,15 +71,6 @@
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </TableRow>
 
-            <TextView
-                android:id="@+id/quick_return_time_text"
-                android:layout_margin="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center|left"
-                android:text="12:30pm 12/3/2014"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
         </TableLayout>
 
         <View
@@ -89,13 +81,6 @@
             android:layout_marginRight="3dp"
             android:background="@color/gray_faded"
             android:layout_height="fill_parent" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            style="?android:attr/buttonBarButtonStyle"
-            android:src="@drawable/ic_check_light"
-            android:layout_height="fill_parent"
-            android:id="@+id/quick_return_edit_button" />
 
     </LinearLayout>
 

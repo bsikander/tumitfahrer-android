@@ -67,7 +67,7 @@ public class TimelineFragment extends AbstractNavigationFragment {
     private TimelinePagerAdapter adapter;
     private TimelineListAllFragment mTimelineAllFragment;
     private TimelineListAroundFragment mTimelineAroundFragment;
-    private TimelineListNearbyFragment mTimelineNearbyFragment;
+    private TimelineListLastMinuteFragment mTimelineNearbyFragment;
 
     public TimelineFragment() {
     }
@@ -97,7 +97,7 @@ public class TimelineFragment extends AbstractNavigationFragment {
 
         mTimelineAllFragment = TimelineListAllFragment.newInstance();
         mTimelineAroundFragment = TimelineListAroundFragment.newInstance();
-        mTimelineNearbyFragment = TimelineListNearbyFragment.newInstance();
+        mTimelineNearbyFragment = TimelineListLastMinuteFragment.newInstance();
     }
 
     @Override

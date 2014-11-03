@@ -152,7 +152,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:drawableLeft="@drawable/placeholder"
+                android:drawableLeft="@drawable/ic_access_time_black_18dp"
                 android:text="@string/pick_time" />
 
             <View
@@ -169,7 +169,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/placeholder"
+                android:drawableLeft="@drawable/ic_today_black_18dp"
                 android:text="@string/pick_date" />
         </LinearLayout>
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -158,7 +159,7 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        DateFormat dateFormat = new SimpleDateFormat("dd:MM:yyyy, hh:mm a");
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy, hh:mm a");
         String dateTimeString = dateFormat.format(Calendar.getInstance().getTime());
 
         String[] dateTime = dateTimeString.split(",");
@@ -302,6 +303,7 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
         mYearOfDeparture = year;
         mMonthOfDeparture = monthOfYear + 1;
         mDayOfDeparture = dayOfMonth;
+        Log.e("MONTH:", String.valueOf(mMonthOfDeparture));
         String date = String.format("%02d/%02d/" + year, dayOfMonth, monthOfYear + 1);
         pickDateButton.setText(date);
     }

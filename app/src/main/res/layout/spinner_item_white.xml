@@ -6,5 +6,5 @@
     android:layout_height="wrap_content"
     android:drawablePadding="16dp"
     android:gravity="center_vertical"
-    android:drawableLeft="@drawable/placeholder"
+    android:drawableLeft="@drawable/ic_school_white_24dp"
     android:textColor="@android:color/white" />

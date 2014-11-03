@@ -1,6 +1,7 @@
 package de.tum.mitfahr.ui.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -8,8 +9,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.MyRidesPastEvent;
 import de.tum.mitfahr.networking.models.Ride;
+import de.tum.mitfahr.ui.RideDetailsActivity;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -84,10 +86,22 @@ public class MyRidesPastFragment extends Fragment implements SwipeRefreshLayout.
         super.onViewCreated(view, savedInstanceState);
         mAdapter = new RideAdapterTest(getActivity());
         ridesListView.setAdapter(mAdapter);
+        ridesListView.setOnItemClickListener(mItemClickListener);
         fetchRides();
         setLoading(true);
-
     }
+
+    private AdapterView.OnItemClickListener mItemClickListener = new android.widget.AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Ride clickedItem = mAdapter.getItem(position);
+            if (clickedItem != null) {
+                Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
+                intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, clickedItem);
+                startActivity(intent);
+            }
+        }
+    };
 
     private void fetchRides() {
         TUMitfahrApplication.getApplication(getActivity()).getRidesService().getMyRidesPast();
@@ -137,11 +151,12 @@ public class MyRidesPastFragment extends Fragment implements SwipeRefreshLayout.
                 view = (ViewGroup) convertView;
             }
             Ride ride = getItem(position);
+            String[] dateTime = ride.getDepartureTime().split("T");
 
-            ((ImageView) view.findViewById(R.id.my_rides_location_image)).setImageResource(R.drawable.list_image_placeholder);
             ((TextView) view.findViewById(R.id.my_rides_from_text)).setText(ride.getDeparturePlace());
             ((TextView) view.findViewById(R.id.my_rides_to_text)).setText(ride.getDestination());
-            ((TextView) view.findViewById(R.id.my_rides_time_text)).setText(ride.getDepartureTime());
+            ((TextView) view.findViewById(R.id.my_rides_time_text)).setText(dateTime[1].substring(0, 5));
+            ((TextView) view.findViewById(R.id.my_rides_date_text)).setText(dateTime[0]);
             return view;
         }
 
@@ -157,7 +172,7 @@ public class MyRidesPastFragment extends Fragment implements SwipeRefreshLayout.
                 holder = (HeaderViewHolder) convertView.getTag();
             }
             //set header text as first char in name
-            String headerText = "All My Past Rides";
+            String headerText = "My Past Rides";
             holder.text.setText(headerText);
             return convertView;
         }

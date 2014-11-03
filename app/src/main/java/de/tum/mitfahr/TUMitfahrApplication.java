@@ -79,7 +79,7 @@ public class TUMitfahrApplication extends Application {
         return mRatingsService;
     }
 
-    public PanoramioService getmPanoramioService() {
+    public PanoramioService getPanoramioService() {
         return mPanoramioService;
     }
 

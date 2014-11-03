@@ -9,8 +9,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.pkmmte.view.CircularImageView;
+import com.squareup.picasso.Picasso;
 
 import de.tum.mitfahr.R;
+import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.networking.models.User;
 
 /**
@@ -18,17 +20,19 @@ import de.tum.mitfahr.networking.models.User;
  */
 public class PassengerItemView extends RelativeLayout implements View.OnClickListener {
 
-    public static final int TYPE_ACCEPTED = 0;
-    public static final int TYPE_PENDING = 1;
+    public static final int TYPE_PASSENGER = 0;
+    public static final int TYPE_REQUEST = 1;
+    public static final int TYPE_NONE = 2;
+
 
     private final CircularImageView mProfileImage;
     private final TextView mPassengerName;
     private final ImageButton mRemoveButton;
     private final ImageButton mActionButton;
-    private int mItemType = TYPE_ACCEPTED;
+    private final Context mContext;
+    private int mItemType = TYPE_NONE;
 
     private User mPassenger;
-    private boolean owner;
 
     private PassengerItemClickListener mListener;
 
@@ -51,6 +55,7 @@ public class PassengerItemView extends RelativeLayout implements View.OnClickLis
 
     public PassengerItemView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mContext = context;
         LayoutInflater.from(context).inflate(R.layout.details_passenger_composite_view, this, true);
         mProfileImage = (CircularImageView) findViewById(R.id.passenger_image_view);
         mPassengerName = (TextView) findViewById(R.id.passenger_name);
@@ -60,10 +65,10 @@ public class PassengerItemView extends RelativeLayout implements View.OnClickLis
         mListener = sDummyListener;
 
         mActionButton.setBackgroundResource(android.R.color.holo_green_light);
-        //mActionButton.setImageResource(R.drawable.placeholder);
+        mActionButton.setImageResource(R.drawable.ic_check_white_24dp);
 
         mRemoveButton.setBackgroundResource(android.R.color.holo_red_light);
-        //mRemoveButton.setImageResource(R.drawable.placeholder);
+        mRemoveButton.setImageResource(R.drawable.ic_cancel_white_24dp);
 
         mRemoveButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -78,28 +83,34 @@ public class PassengerItemView extends RelativeLayout implements View.OnClickLis
                 mListener.onActionClicked(mPassenger);
             }
         });
-        showHideActionButtons();
+
+        this.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onUserClicked(mPassenger);
+            }
+        });
+        setItemType(TYPE_NONE);
 
     }
 
-    private void showHideActionButtons() {
-        if (!owner) {
-            mActionButton.setVisibility(GONE);
-            mRemoveButton.setVisibility(GONE);
-        } else {
+    private void showButtons(boolean action, boolean remove) {
+        if (action) {
             mActionButton.setVisibility(VISIBLE);
+        } else {
+            mActionButton.setVisibility(GONE);
+        }
+        if (remove) {
             mRemoveButton.setVisibility(VISIBLE);
+        } else {
+            mRemoveButton.setVisibility(GONE);
         }
     }
+
 
     public void setPassenger(User passenger) {
         this.mPassenger = passenger;
         updateView();
-    }
-
-    public void isOwner(boolean owner){
-        this.owner = owner;
-        showHideActionButtons();
     }
 
     public void setListener(PassengerItemClickListener listener) {
@@ -108,23 +119,30 @@ public class PassengerItemView extends RelativeLayout implements View.OnClickLis
 
     private void updateView() {
         mPassengerName.setText(mPassenger.getFirstName() + " " + mPassenger.getLastName());
-        if (mItemType == TYPE_PENDING) {
-            mActionButton.setBackgroundResource(android.R.color.holo_green_light);
-            // mActionButton.setImageResource(R.drawable.placeholder);
-        } else {
-            mActionButton.setBackgroundResource(android.R.color.holo_orange_light);
-            // mActionButton.setImageResource(R.drawable.placeholder);
-        }
+        String profileImageUrl = TUMitfahrApplication.getApplication(mContext).getProfileService().getProfileImageURL(mPassenger.getId());
+        Picasso.with(mContext)
+                .load(profileImageUrl)
+                .placeholder(R.drawable.ic_account_dark)
+                .error(R.drawable.ic_account_dark)
+                .into(mProfileImage);
     }
 
     public void setItemType(int type) {
         this.mItemType = type;
+        if (mItemType == TYPE_PASSENGER) {
+            showButtons(false, true);
+        } else if (mItemType == TYPE_REQUEST) {
+            showButtons(true, true);
+        } else {
+            showButtons(false, false);
+        }
     }
 
     @Override
     public void onClick(View v) {
 
     }
+
 
     @Override
     public boolean shouldDelayChildPressedState() {

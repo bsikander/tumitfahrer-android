@@ -58,7 +58,7 @@
         <EditText
             android:id="@+id/emailEditText"
             style="@style/BorderedTextBox"
-            android:drawableLeft="@drawable/placeholder"
+            android:drawableLeft="@drawable/ic_email_white_24dp"
             android:drawablePadding="16dp"
             android:layout_marginTop="16dp"
             android:inputType="textEmailAddress"
@@ -68,7 +68,7 @@
 
         <EditText
             style="@style/BorderedTextBox"
-            android:drawableLeft="@drawable/placeholder"
+            android:drawableLeft="@drawable/ic_lock_white_24dp"
             android:drawablePadding="16dp"
             android:id="@+id/passwordEditText"
             android:layout_marginTop="16dp"

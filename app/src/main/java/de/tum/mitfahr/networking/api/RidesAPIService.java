@@ -1,7 +1,9 @@
 package de.tum.mitfahr.networking.api;
 
 import de.tum.mitfahr.networking.models.Ride;
+import de.tum.mitfahr.networking.models.requests.JoinRideReqest;
 import de.tum.mitfahr.networking.models.requests.OfferRideRequest;
+import de.tum.mitfahr.networking.models.requests.RespondRideReqest;
 import de.tum.mitfahr.networking.models.response.DeleteRideResponse;
 import de.tum.mitfahr.networking.models.response.JoinRequestResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
@@ -74,12 +76,12 @@ public interface RidesAPIService {
             Callback<RidesResponse> callback
     );
 
-    @PUT("/users/{userId}/rides/{rideId}?removed_passenger={removedPassengerId}")
+    @PUT("/users/{userId}/rides/{rideId}removed_passenger")
     public void removePassenger(
             @Header("apiKey") String apiKey,
             @Path("userId") int userId,
             @Path("rideId") int rideId,
-            @Path("removedPassengerId") int removedPassengerId,
+            @Query("removed_passenger") int removedPassengerId,
             Callback<RideResponse> callback
     );
 
@@ -94,20 +96,28 @@ public interface RidesAPIService {
     @POST("/rides/{rideId}/requests")
     public void joinRequest(
             @Header("apiKey") String apiKey,
-            @Path("rideId") int userId,
-            @Body int passengerId,
+            @Path("rideId") int rideId,
+            @Body JoinRideReqest request,
             Callback<JoinRequestResponse> callback
     );
 
     @PUT("/rides/{rideId}/requests/{requestId}")
-    public void respondToRequest(
+    public void acceptRideRequest(
             @Header("apiKey") String apiKey,
-            @Path("rideId") int userId,
+            @Path("rideId") int rideId,
             @Path("requestId") int requestId,
-            @Body int passengerId,
-            @Body boolean confirmed,
+            @Query("passenger_id") int passengerId,
             Callback<JoinRequestResponse> callback
     );
+
+    @DELETE("/rides/{rideId}/requests/{requestId}")
+    public void rejectRideRequest(
+            @Header("apiKey") String apiKey,
+            @Path("rideId") int rideId,
+            @Path("requestId") int requestId,
+            Callback<JoinRequestResponse> callback
+    );
+
 
     @GET("/rides/{rideId}/requests")
     public void getRideRequests(
@@ -142,6 +152,13 @@ public interface RidesAPIService {
     public void getRides(
             @Header("apiKey") String apiKey,
             @Query("from_date") String fromDate,
+            @Query("ride_type") int rideType,
+            Callback<RidesResponse> callback
+    );
+
+    @GET("/rides")
+    public void getRides(
+            @Header("apiKey") String apiKey,
             @Query("ride_type") int rideType,
             Callback<RidesResponse> callback
     );

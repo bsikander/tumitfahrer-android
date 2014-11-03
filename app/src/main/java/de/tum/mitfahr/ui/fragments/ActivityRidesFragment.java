@@ -25,8 +25,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
-import de.tum.mitfahr.events.GetRidesDateEvent;
-import de.tum.mitfahr.events.GetRidesPageEvent;
+import de.tum.mitfahr.events.GetRidesEvent;
 import de.tum.mitfahr.ui.MainActivity;
 
 /**
@@ -60,6 +59,12 @@ public class ActivityRidesFragment extends AbstractNavigationFragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_activity_rides, container, false);
@@ -75,8 +80,8 @@ public class ActivityRidesFragment extends AbstractNavigationFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRidesAllListFragment = RidesAllListFragment.newInstance();
-        mRidesAroundListFragment = RidesAroundListFragment.newInstance();
+        mRidesAllListFragment = RidesAllListFragment.newInstance(1);
+        mRidesAroundListFragment = RidesAroundListFragment.newInstance(1);
     }
 
     @Override
@@ -88,16 +93,16 @@ public class ActivityRidesFragment extends AbstractNavigationFragment {
         outputFormat.setTimeZone(TimeZone.getDefault());
         String fromDate = outputFormat.format(calendar.getTime());
 
-        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getRidesPaged(1, 0);
+        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getAllRides(1);
     }
 
     @Subscribe
-    public void onActivityRidesEvent(GetRidesPageEvent result) {
-        if (result.getType() == GetRidesPageEvent.Type.GET_SUCCESSFUL) {
+    public void onActivityRidesEvent(GetRidesEvent result) {
+        if (result.getType() == GetRidesEvent.Type.GET_SUCCESSFUL) {
             mRidesAllListFragment.setRides(result.getResponse().getRides());
             mRidesAroundListFragment.setRides(result.getResponse().getRides());
-        } else if (result.getType() == GetRidesPageEvent.Type.GET_FAILED) {
-            Toast.makeText(getActivity(), "GetFailed", Toast.LENGTH_SHORT).show();
+        } else if (result.getType() == GetRidesEvent.Type.GET_FAILED) {
+            Toast.makeText(getActivity(), "Fetching Rides Failed", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -133,12 +138,12 @@ public class ActivityRidesFragment extends AbstractNavigationFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_search, menu);
-        super.onCreateOptionsMenu(menu,inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_search){
+        if (item.getItemId() == R.id.action_search) {
             ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(5);
         }
         return super.onOptionsItemSelected(item);

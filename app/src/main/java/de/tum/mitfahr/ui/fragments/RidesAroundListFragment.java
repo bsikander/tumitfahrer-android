@@ -7,7 +7,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -25,21 +24,31 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
+import com.melnykov.fab.FloatingActionButton;
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
+import com.squareup.otto.Subscribe;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
+import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.GetRidesDateEvent;
 import de.tum.mitfahr.networking.models.Ride;
+import de.tum.mitfahr.networking.panoramio.PanoramioPhoto;
 import de.tum.mitfahr.ui.MainActivity;
 import de.tum.mitfahr.ui.RideDetailsActivity;
 import de.tum.mitfahr.util.LocationUtil;
-import de.tum.mitfahr.widget.FloatingActionButton;
 
 /**
  * Authored by abhijith on 21/06/14.
@@ -50,12 +59,15 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
 
     private static final String TAG = RidesAroundListFragment.class.getName();
     private static final int MAX_DISTANCE = 5; //kilometers
+    private static final int LIST_ITEM_COLOR_FILTER = 0x5F000000;
 
-    private List<Ride> mRides;
-    private RideAdapterTest mAdapter;
+    private List<Ride> mRides = new ArrayList<Ride>();
+    private AlphaInAnimationAdapter mAdapter;
+    private RideAdapter mRidesAdapter;
+    private int mRideType;
 
     @InjectView(R.id.rides_listview)
-    ListView ridesList;
+    ListView ridesListView;
 
     @InjectView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -84,8 +96,11 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
     private GetAddressTask mGetAddressTask;
     private Geocoder mGeocoder;
 
-    public static RidesAroundListFragment newInstance() {
+    public static RidesAroundListFragment newInstance(int rideType) {
         RidesAroundListFragment fragment = new RidesAroundListFragment();
+        Bundle args = new Bundle();
+        args.putInt("ride_type", rideType);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -95,6 +110,7 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mRideType = getArguments() != null ? getArguments().getInt("ride_type") : 0;
         mLocationClient = new LocationClient(getActivity(), this, this);
         mGeocoder = new Geocoder(getActivity().getApplicationContext(), Locale.getDefault());
     }
@@ -116,9 +132,9 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        ridesList.setEmptyView(swipeRefreshLayoutEmptyView);
+        ridesListView.setEmptyView(swipeRefreshLayoutEmptyView);
 
-        floatingActionButton.attachToListView(ridesList);
+        floatingActionButton.attachToListView(ridesListView);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,9 +147,11 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAdapter = new RideAdapterTest(getActivity());
-        ridesList.setAdapter(mAdapter);
-        ridesList.setAdapter(mAdapter);
+        mRidesAdapter = new RideAdapter(getActivity());
+        mAdapter = new AlphaInAnimationAdapter(mRidesAdapter);
+        mAdapter.setAbsListView(ridesListView);
+        ridesListView.setAdapter(mAdapter);
+        ridesListView.setOnItemClickListener(mItemClickListener);
         setLoading(true);
     }
 
@@ -152,6 +170,7 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onPause() {
         super.onPause();
+        BusProvider.getInstance().unregister(this);
         if (mGetAddressTask != null)
             mGetAddressTask.cancel(true);
     }
@@ -162,10 +181,18 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
         mGetAddressTask.execute(mRides);
     }
 
+    public void setRefreshedRides(List<Ride> rides) {
+        setLoading(false);
+        mRides.addAll(0, rides);
+        new GetAddressTask().execute(rides);
+        refreshList();
+    }
+
     private void refreshList() {
         Log.e(TAG, "In refresh list");
-        mAdapter.clear();
-        mAdapter.addAll(mRides);
+        mRidesAdapter.clear();
+        if (mRides != null)
+            mRidesAdapter.addAll(mRides);
         mAdapter.notifyDataSetChanged();
     }
 
@@ -176,16 +203,31 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
 
     @Override
     public void onRefresh() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(false);
-                swipeRefreshLayoutEmptyView.setRefreshing(false);
+        setLoading(true);
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        String time = outputFormat.format(calendar.getTime());
+        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getRides(time, mRideType);
+    }
+
+    @Subscribe
+    public void onGetDateResult(GetRidesDateEvent result) {
+        setLoading(false);
+        if (result.getType() == GetRidesDateEvent.Type.GET_SUCCESSFUL) {
+            List<Ride> refreshedRides = result.getResponse().getRides();
+            if (refreshedRides == null || refreshedRides.size() > 1) {
+                Toast.makeText(getActivity(), "No new rides", Toast.LENGTH_SHORT).show();
+            } else {
+                mRides.addAll(refreshedRides);
+                setRides(mRides);
             }
-        }, 5000);
+        } else if (result.getType() == GetRidesDateEvent.Type.GET_FAILED) {
+            Toast.makeText(getActivity(), "Get new rides failed", Toast.LENGTH_SHORT).show();
+        }
     }
 
     protected class GetAddressTask extends AsyncTask<List<Ride>, Void, List<Ride>> {
+        private int PHOTO_AREA = 5;
 
         public GetAddressTask() {
             super();
@@ -219,29 +261,40 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
                                 mCurrentLocation.longitude,
                                 ride.getLatitude(),
                                 ride.getLongitude()) < MAX_DISTANCE) {
+                            Long longValue = Math.round(address.getLatitude());
+                            int lat = Integer.valueOf(longValue.intValue());
+                            longValue = Math.round(address.getLongitude());
+                            int lng = Integer.valueOf(longValue.intValue());
+                            try {
+                                PanoramioPhoto photo = TUMitfahrApplication.getApplication(getActivity()).getPanoramioService().getPhoto(lng - PHOTO_AREA, lat - PHOTO_AREA, lng + PHOTO_AREA, lat + PHOTO_AREA);
+                                if (photo != null) {
+                                    ride.setRideImageUrl(photo.getPhotoFileUrl());
+                                }
+                            } catch (Exception e) {
+                                return null;
+                            }
                             nearbyRides.add(ride);
                         }
                     }
                 }
             }
-            // If there aren't any addresses, post a message
             return nearbyRides;
         }
 
         @Override
         protected void onPostExecute(List<Ride> result) {
             setLoading(false);
+            mRides.clear();
             mRides = result;
-//            Collections.sort(mRides);
+            Collections.reverse(mRides);
             refreshList();
         }
     }
 
-    class RideAdapterTest extends ArrayAdapter<Ride> {
-
+    class RideAdapter extends ArrayAdapter<Ride> {
         private final LayoutInflater mInflater;
 
-        public RideAdapterTest(Context context) {
+        public RideAdapter(Context context) {
             super(context, 0);
             mInflater = LayoutInflater.from(getActivity());
         }
@@ -264,12 +317,21 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
             ((TextView) view.findViewById(R.id.rides_time_text)).setText(dateTime[1].substring(0, 5));
             if (!ride.isRideRequest()) {
                 ((TextView) view.findViewById(R.id.ride_seats_text)).setVisibility(View.VISIBLE);
-                ((TextView) view.findViewById(R.id.ride_seats_text)).setText(ride.getFreeSeats() + " seats");
+                ((TextView) view.findViewById(R.id.ride_seats_text)).setText(ride.getFreeSeats() + " seats free");
                 ((ImageView) view.findViewById(R.id.ride_type_image)).setImageResource(R.drawable.ic_driver);
             } else {
                 ((ImageView) view.findViewById(R.id.ride_type_image)).setImageResource(R.drawable.ic_passenger);
                 ((TextView) view.findViewById(R.id.ride_seats_text)).setVisibility(View.VISIBLE);
             }
+
+            ImageView locationImage = ((ImageView) view.findViewById(R.id.ride_location_image));
+            locationImage.setColorFilter(LIST_ITEM_COLOR_FILTER);
+            Picasso.with(getActivity())
+                    .load(ride.getRideImageUrl())
+                    .placeholder(R.drawable.list_image_placeholder)
+                    .error(R.drawable.list_image_placeholder)
+                    .into(locationImage);
+
             return view;
         }
     }
@@ -302,6 +364,12 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
         if (mLocationClient != null)
             mLocationClient.disconnect();
         super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
     }
 
 }

@@ -14,6 +14,7 @@ import de.tum.mitfahr.events.DeleteRideRequestEvent;
 import de.tum.mitfahr.events.GetRideEvent;
 import de.tum.mitfahr.events.GetRideRequestsEvent;
 import de.tum.mitfahr.events.GetRidesDateEvent;
+import de.tum.mitfahr.events.GetRidesEvent;
 import de.tum.mitfahr.events.GetRidesPageEvent;
 import de.tum.mitfahr.events.GetUserRequestsEvent;
 import de.tum.mitfahr.events.JoinRequestEvent;
@@ -26,7 +27,6 @@ import de.tum.mitfahr.events.RespondToRequestEvent;
 import de.tum.mitfahr.events.UpdateRideEvent;
 import de.tum.mitfahr.networking.clients.RidesRESTClient;
 import de.tum.mitfahr.networking.models.Ride;
-import de.tum.mitfahr.networking.models.response.JoinRequestResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
 import de.tum.mitfahr.networking.models.response.RequestsResponse;
 import de.tum.mitfahr.networking.models.response.RideResponse;
@@ -203,6 +203,22 @@ public class RidesService {
         }
     }
 
+    public void getAllRides(int rideType) {
+        mRidesRESTClient.getAllRides(userAPIKey, rideType);
+    }
+
+    @Subscribe
+    public void onGetRidesResult(GetRidesEvent result) {
+        if (result.getType() == GetRidesEvent.Type.RESULT) {
+            RidesResponse response = result.getResponse();
+            if (null == response.getRides()) {
+                mBus.post(new GetRidesEvent(GetRidesEvent.Type.GET_FAILED, response));
+            } else {
+                mBus.post(new GetRidesEvent(GetRidesEvent.Type.GET_SUCCESSFUL, response));
+            }
+        }
+    }
+
     public void removePassenger(int rideId, int removedPassengerId) {
         mRidesRESTClient.removePassenger(userAPIKey, userId, rideId, removedPassengerId);
     }
@@ -242,15 +258,17 @@ public class RidesService {
     @Subscribe
     public void onRideRequestResult(JoinRequestEvent result) {
         if (result.getType() == JoinRequestEvent.Type.RESULT) {
-            JoinRequestResponse joinRequestResponse = result.getJoinRequestResponse();
-            if (null == joinRequestResponse.getRideRequest()) {
-                mBus.post(new JoinRequestEvent(JoinRequestEvent.Type.REQUEST_FAILED,
-                        joinRequestResponse, result.getRetrofitResponse()));
-            } else {
+            Response retrofitResponse = result.getRetrofitResponse();
+
+            if (201 == retrofitResponse.getStatus() || 200 == retrofitResponse.getStatus()) {
                 mBus.post(new JoinRequestEvent(JoinRequestEvent.Type.REQUEST_SENT,
-                        joinRequestResponse, result.getRetrofitResponse()));
+                        result.getJoinRequestResponse(), result.getRetrofitResponse()));
+            } else {
+                mBus.post(new JoinRequestEvent(JoinRequestEvent.Type.REQUEST_FAILED,
+                        result.getJoinRequestResponse(), result.getRetrofitResponse()));
             }
         }
+
     }
 
     public void respondToRequest(int rideId, int requestId, boolean confirmed) {

@@ -7,6 +7,15 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <permission
+        android:name="com.tumitfahrer_pushnotification.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.tumitfahrer_pushnotification.permission.C2D_MESSAGE" />
+
 
     <application
         android:name=".TUMitfahrApplication"
@@ -31,6 +40,9 @@
             android:name=".ui.RideDetailsActivity"
             android:label=""
             android:noHistory="true"></activity>
+        <activity
+            android:name=".ui.SearchResultsActivity"
+            android:label="@string/title_activity_search_results"></activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -51,13 +63,25 @@
             android:label="@string/title_activity_terms_of_use"></activity>
         <activity
             android:name=".ui.UserDetailsActivity"
-            android:label="@string/title_activity_terms_of_use"></activity>
+            android:label=""></activity>
         <activity
             android:name=".ui.CarSharingActivity"
             android:label="@string/title_car_sharing"></activity>
         <activity
             android:name=".ui.EditProfileActivity"
             android:label="@string/title_activity_edit_profile"></activity>
+
+        <receiver
+            android:name="de.tum.mitfahr.gcm.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.tumitfahrer_pushnotification" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="de.tum.mitfahr.gcm.GcmIntentService" />
+
     </application>
 
 </manifest>

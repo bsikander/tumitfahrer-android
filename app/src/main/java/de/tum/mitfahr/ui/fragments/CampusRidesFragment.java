@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,13 +20,16 @@ import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
-import de.tum.mitfahr.events.GetRidesPageEvent;
+import de.tum.mitfahr.events.GetRidesDateEvent;
+import de.tum.mitfahr.events.GetRidesEvent;
+import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.ui.MainActivity;
 
 /**
@@ -80,8 +84,8 @@ public class CampusRidesFragment extends AbstractNavigationFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRidesAllListFragment = RidesAllListFragment.newInstance();
-        mRidesAroundListFragment = RidesAroundListFragment.newInstance();
+        mRidesAllListFragment = RidesAllListFragment.newInstance(0);
+        mRidesAroundListFragment = RidesAroundListFragment.newInstance(0);
     }
 
     @Override
@@ -92,18 +96,32 @@ public class CampusRidesFragment extends AbstractNavigationFragment {
         SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
         outputFormat.setTimeZone(TimeZone.getDefault());
         String fromDate = outputFormat.format(calendar.getTime());
-
-        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getRidesPaged(0, 0);
+        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getAllRides(0);
     }
 
     @Subscribe
-    public void onCampusRidesEvent(GetRidesPageEvent result) {
-        if (result.getType() == GetRidesPageEvent.Type.GET_SUCCESSFUL) {
+    public void onCampusRidesEvent(GetRidesEvent result) {
+        Log.e("Got event", "Event!");
+        if (result.getType() == GetRidesEvent.Type.GET_SUCCESSFUL) {
             mRidesAllListFragment.setRides(result.getResponse().getRides());
             mRidesAroundListFragment.setRides(result.getResponse().getRides());
-        } else if (result.getType() == GetRidesPageEvent.Type.GET_FAILED) {
-            Toast.makeText(getActivity(), "GetFailed", Toast.LENGTH_SHORT).show();
+        } else if (result.getType() == GetRidesEvent.Type.GET_FAILED) {
+            Toast.makeText(getActivity(), "Fetching Rides Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
 
+    @Subscribe
+    public void onGetDateResult(GetRidesDateEvent result) {
+        if (result.getType() == GetRidesDateEvent.Type.GET_SUCCESSFUL) {
+            List<Ride> refreshedRides = result.getResponse().getRides();
+            if (refreshedRides == null || refreshedRides.size() > 0) {
+                Toast.makeText(getActivity(), "No new rides", Toast.LENGTH_SHORT).show();
+            } else {
+                mRidesAllListFragment.setRefreshedRides(refreshedRides);
+                mRidesAroundListFragment.setRefreshedRides(refreshedRides);
+            }
+        } else if (result.getType() == GetRidesDateEvent.Type.GET_FAILED) {
+            Toast.makeText(getActivity(), "Get new rides failed", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -139,12 +157,12 @@ public class CampusRidesFragment extends AbstractNavigationFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_search, menu);
-        super.onCreateOptionsMenu(menu,inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_search){
+        if (item.getItemId() == R.id.action_search) {
             ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(5);
         }
         return super.onOptionsItemSelected(item);

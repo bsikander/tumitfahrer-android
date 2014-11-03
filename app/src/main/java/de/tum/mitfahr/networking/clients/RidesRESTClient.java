@@ -5,6 +5,7 @@ import de.tum.mitfahr.events.DeleteRideRequestEvent;
 import de.tum.mitfahr.events.GetRideEvent;
 import de.tum.mitfahr.events.GetRideRequestsEvent;
 import de.tum.mitfahr.events.GetRidesDateEvent;
+import de.tum.mitfahr.events.GetRidesEvent;
 import de.tum.mitfahr.events.GetRidesPageEvent;
 import de.tum.mitfahr.events.GetUserRequestsEvent;
 import de.tum.mitfahr.events.JoinRequestEvent;
@@ -18,7 +19,9 @@ import de.tum.mitfahr.events.UpdateRideEvent;
 import de.tum.mitfahr.networking.api.RidesAPIService;
 import de.tum.mitfahr.networking.events.RequestFailedEvent;
 import de.tum.mitfahr.networking.models.Ride;
+import de.tum.mitfahr.networking.models.requests.JoinRideReqest;
 import de.tum.mitfahr.networking.models.requests.OfferRideRequest;
+import de.tum.mitfahr.networking.models.requests.RespondRideReqest;
 import de.tum.mitfahr.networking.models.response.DeleteRideResponse;
 import de.tum.mitfahr.networking.models.response.JoinRequestResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
@@ -209,6 +212,22 @@ public class RidesRESTClient extends AbstractRESTClient {
         }
     };
 
+    public void getAllRides(String userAPIKey, int rideType) {
+        ridesAPIService.getRides(userAPIKey, rideType, getAllRideCallback);
+    }
+
+    private Callback<RidesResponse> getAllRideCallback = new Callback<RidesResponse>() {
+        @Override
+        public void success(RidesResponse ridesResponse, Response response) {
+            mBus.post(new GetRidesEvent(GetRidesEvent.Type.RESULT, ridesResponse));
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
+            mBus.post(new RequestFailedEvent());
+        }
+    };
+
     public void removePassenger(String userAPIKey, int userId, int rideId, int removedPassengerId) {
         ridesAPIService.removePassenger(userAPIKey, userId, rideId, removedPassengerId, removePassengerCallback);
     }
@@ -244,7 +263,8 @@ public class RidesRESTClient extends AbstractRESTClient {
     };
 
     public void joinRequest(int rideId, int passengerId, String userAPIKey) {
-        ridesAPIService.joinRequest(userAPIKey, rideId, passengerId, joinRequestCallback);
+        JoinRideReqest joinRideReqest = new JoinRideReqest(passengerId);
+        ridesAPIService.joinRequest(userAPIKey, rideId, joinRideReqest, joinRequestCallback);
     }
 
     private Callback<JoinRequestResponse> joinRequestCallback = new Callback<JoinRequestResponse>() {
@@ -260,7 +280,13 @@ public class RidesRESTClient extends AbstractRESTClient {
     };
 
     public void respondToRequest(int rideId, int passengerId, int requestId, boolean confirmed, String userAPIKey) {
-        ridesAPIService.respondToRequest(userAPIKey, rideId, requestId, passengerId, confirmed, respondToRequestCallback);
+        RespondRideReqest respondRideReqest = new RespondRideReqest(passengerId, confirmed);
+        if (confirmed) {
+            ridesAPIService.acceptRideRequest(userAPIKey, rideId, requestId, passengerId, respondToRequestCallback);
+        } else {
+            ridesAPIService.rejectRideRequest(userAPIKey, rideId, requestId, respondToRequestCallback);
+
+        }
     }
 
     private Callback respondToRequestCallback = new Callback() {

@@ -6,7 +6,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -20,24 +19,30 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.melnykov.fab.FloatingActionButton;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.panoramio.PanoramioPhoto;
 import de.tum.mitfahr.ui.MainActivity;
 import de.tum.mitfahr.ui.RideDetailsActivity;
-import de.tum.mitfahr.util.LocationUtil;
-import de.tum.mitfahr.widget.FloatingActionButton;
 
 /**
  * Authored by abhijith on 21/06/14.
@@ -47,9 +52,10 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
     private static final String TAG = RidesAllListFragment.class.getName();
     private static final int LIST_ITEM_COLOR_FILTER = 0x5F000000;
 
-    private List<Ride> mRides;
+    private List<Ride> mRides = new ArrayList<Ride>();
     private AlphaInAnimationAdapter mAdapter;
     private RideAdapter mRidesAdapter;
+    private int mRideType;
 
     @InjectView(R.id.rides_listview)
     ListView ridesListView;
@@ -67,27 +73,40 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
     private LatLng mCurrentLocation = new LatLng(52.5167, 13.3833);
     private PanoramioTask mPanoramioTask;
 
-    private Comparator mLocationComparator = new Comparator<Ride>() {
+    private Comparator mTimeComparator = new Comparator<Ride>() {
         @Override
         public int compare(Ride ride1, Ride ride2) {
-            Double distance1 = LocationUtil.haversineDistance(mCurrentLocation.latitude,
-                    mCurrentLocation.longitude,
-                    ride1.getLatitude(), ride1.getLongitude());
-            Double distance2 = LocationUtil.haversineDistance(mCurrentLocation.latitude,
-                    mCurrentLocation.longitude,
-                    ride2.getLatitude(), ride2.getLongitude());
-            return distance1.compareTo(distance2);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+            Date date1 = new Date();
+            Date date2 = new Date();
+            try {
+                date1 = outputFormat.parse(ride1.getDepartureTime());
+                date2 = outputFormat.parse(ride1.getDepartureTime());
+                return date1.compareTo(date2);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            return date2.compareTo(date1);
         }
     };
 
-    public static RidesAllListFragment newInstance() {
+    public static RidesAllListFragment newInstance(int rideType) {
         RidesAllListFragment fragment = new RidesAllListFragment();
+        Bundle args = new Bundle();
+        args.putInt("ride_type", rideType);
+        fragment.setArguments(args);
         return fragment;
     }
 
     public RidesAllListFragment() {
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mRideType = getArguments() != null ? getArguments().getInt("ride_type") : 0;
+        mGeocoder = new Geocoder(getActivity().getApplicationContext(), Locale.getDefault());
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -115,9 +134,9 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
                 ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(4);
             }
         });
-
         return rootView;
     }
+
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -125,7 +144,6 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
         mRidesAdapter = new RideAdapter(getActivity());
         mAdapter = new AlphaInAnimationAdapter(mRidesAdapter);
         mAdapter.setAbsListView(ridesListView);
-        ridesListView.setAdapter(mAdapter);
         ridesListView.setAdapter(mAdapter);
         ridesListView.setOnItemClickListener(mItemClickListener);
         setLoading(true);
@@ -145,20 +163,28 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
 
     @Override
     public void onRefresh() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(false);
-                swipeRefreshLayoutEmptyView.setRefreshing(false);
-            }
-        }, 5000);
+        setLoading(true);
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        String time = outputFormat.format(calendar.getTime());
+        TUMitfahrApplication.getApplication(getActivity()).getRidesService().getRides(time, mRideType);
     }
+
 
     public void setRides(List<Ride> rides) {
         setLoading(false);
-        mRides = rides;
+        mRides.clear();
+        mRides.addAll(rides);
+        Collections.reverse(mRides);
         mPanoramioTask = new PanoramioTask(mRidesAdapter);
         mPanoramioTask.execute(mRides);
+        refreshList();
+    }
+
+    public void setRefreshedRides(List<Ride> rides) {
+        setLoading(false);
+        new PanoramioTask(mRidesAdapter).execute(rides);
+        mRides.addAll(0, rides);
         refreshList();
     }
 
@@ -172,13 +198,6 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
     private void setLoading(boolean loading) {
         swipeRefreshLayout.setRefreshing(loading);
         swipeRefreshLayoutEmptyView.setRefreshing(loading);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mGeocoder = new Geocoder(getActivity().getApplicationContext(), Locale.getDefault());
-
     }
 
     class RideAdapter extends ArrayAdapter<Ride> {
@@ -203,13 +222,13 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
 
             String[] dateTime = ride.getDepartureTime().split("T");
             ((ImageView) view.findViewById(R.id.ride_location_image)).setBackgroundResource(R.drawable.list_image_placeholder);
-            ((TextView) view.findViewById(R.id.rides_from_text)).setText(ride.getDeparturePlace().split(",")[0]);
-            ((TextView) view.findViewById(R.id.rides_to_text)).setText(ride.getDestination().split(",")[0]);
+            ((TextView) view.findViewById(R.id.rides_from_text)).setText(ride.getDeparturePlace());
+            ((TextView) view.findViewById(R.id.rides_to_text)).setText(ride.getDestination());
             ((TextView) view.findViewById(R.id.rides_date_text)).setText(dateTime[0]);
             ((TextView) view.findViewById(R.id.rides_time_text)).setText(dateTime[1].substring(0, 5));
             if (!ride.isRideRequest()) {
                 ((TextView) view.findViewById(R.id.ride_seats_text)).setVisibility(View.VISIBLE);
-                ((TextView) view.findViewById(R.id.ride_seats_text)).setText(ride.getFreeSeats() + " seats available");
+                ((TextView) view.findViewById(R.id.ride_seats_text)).setText(ride.getFreeSeats() + " seats free");
                 ((ImageView) view.findViewById(R.id.ride_type_image)).setImageResource(R.drawable.ic_driver);
             } else {
                 ((ImageView) view.findViewById(R.id.ride_type_image)).setImageResource(R.drawable.ic_passenger);
@@ -246,6 +265,8 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
                 for (Ride ride : rides) {
                     String locationName = ride.getDestination();
                     List<Address> addresses = null;
+                    if (ride.getLatitude() != 0 && ride.getLongitude() != 0)
+                        continue;
                     try {
                         addresses = mGeocoder.getFromLocationName(locationName, 2);
                     } catch (IOException exception1) {
@@ -264,7 +285,7 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
                         longValue = Math.round(address.getLongitude());
                         int lng = Integer.valueOf(longValue.intValue());
                         try {
-                            PanoramioPhoto photo = TUMitfahrApplication.getApplication(getActivity()).getmPanoramioService().getPhoto(lng - PHOTO_AREA, lat - PHOTO_AREA, lng + PHOTO_AREA, lat + PHOTO_AREA);
+                            PanoramioPhoto photo = TUMitfahrApplication.getApplication(getActivity()).getPanoramioService().getPhoto(lng - PHOTO_AREA, lat - PHOTO_AREA, lng + PHOTO_AREA, lat + PHOTO_AREA);
                             if (photo != null) {
                                 ride.setRideImageUrl(photo.getPhotoFileUrl());
                                 publishProgress();
@@ -298,6 +319,18 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
             mPanoramioTask.cancel(true);
             mPanoramioTask = null;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
     }
 
 }

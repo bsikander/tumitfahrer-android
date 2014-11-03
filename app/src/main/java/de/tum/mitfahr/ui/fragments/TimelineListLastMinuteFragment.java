@@ -2,8 +2,8 @@ package de.tum.mitfahr.ui.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.format.DateUtils;
@@ -17,12 +17,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.melnykov.fab.FloatingActionButton;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -34,19 +35,21 @@ import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.ui.MainActivity;
 import de.tum.mitfahr.ui.RideDetailsActivity;
 import de.tum.mitfahr.util.TimelineItem;
-import de.tum.mitfahr.widget.FloatingActionButton;
 
 /**
  * Authored by abhijith on 21/06/14.
  */
-public class TimelineListNearbyFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class TimelineListLastMinuteFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private static final String TAG = TimelineListNearbyFragment.class.getName();
+    private static final String TAG = TimelineListLastMinuteFragment.class.getName();
 
     private List<TimelineItem> mTimeline = new ArrayList<TimelineItem>();
+    private static final int MAX_TIME = 600; //seconds
+
 
     private TimelineAdapter mTimelineAdapter;
     private AlphaInAnimationAdapter mAdapter;
+    private FilterLastMinuteTask mLastMinuteTask;
 
     @InjectView(R.id.rides_listview)
     ListView timelineList;
@@ -61,12 +64,12 @@ public class TimelineListNearbyFragment extends Fragment implements SwipeRefresh
     FloatingActionButton floatingActionButton;
 
 
-    public static TimelineListNearbyFragment newInstance() {
-        TimelineListNearbyFragment fragment = new TimelineListNearbyFragment();
+    public static TimelineListLastMinuteFragment newInstance() {
+        TimelineListLastMinuteFragment fragment = new TimelineListLastMinuteFragment();
         return fragment;
     }
 
-    public TimelineListNearbyFragment() {
+    public TimelineListLastMinuteFragment() {
     }
 
     @Override
@@ -141,9 +144,8 @@ public class TimelineListNearbyFragment extends Fragment implements SwipeRefresh
 
     public void setTimelineItems(List<TimelineItem> timelineItems) {
         setLoading(false);
-        mTimeline = timelineItems;
-        Collections.sort(mTimeline);
-        refreshList();
+        mLastMinuteTask = new FilterLastMinuteTask();
+        mLastMinuteTask.execute(timelineItems);
     }
 
     private void refreshList() {
@@ -182,15 +184,15 @@ public class TimelineListNearbyFragment extends Fragment implements SwipeRefresh
             long time = item.getTime().getTime();
             String timeSpanString = DateUtils.getRelativeTimeSpanString(time, now, DateUtils.FORMAT_ABBREV_TIME).toString();
             if (item.getType().equals(TimelineItem.TimelineItemType.RIDE_CREATED)) {
-                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.placeholder);
+                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.ic_driver);
                 ((TextView) view.findViewById(R.id.timeline_activity_text)).setText("New Ride offer to");
 
             } else if (item.getType().equals(TimelineItem.TimelineItemType.RIDE_SEARCHED)) {
-                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.placeholder);
+                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.ic_search_white_24dp);
                 ((TextView) view.findViewById(R.id.timeline_activity_text)).setText("User searched for a Ride to");
 
             } else if (item.getType().equals(TimelineItem.TimelineItemType.RIDE_REQUEST)) {
-                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.placeholder);
+                ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.ic_passenger);
                 ((TextView) view.findViewById(R.id.timeline_activity_text)).setText("Request received for a ride to");
 
             }
@@ -200,14 +202,43 @@ public class TimelineListNearbyFragment extends Fragment implements SwipeRefresh
         }
     }
 
+    protected class FilterLastMinuteTask extends AsyncTask<List<TimelineItem>, Void, List<TimelineItem>> {
+
+        public FilterLastMinuteTask() {
+            super();
+        }
+
+        @Override
+        protected List<TimelineItem> doInBackground(List<TimelineItem>... params) {
+            List<TimelineItem> items = params[0];
+            List<TimelineItem> nearbyItems = new ArrayList<TimelineItem>();
+            Date now = new Date();
+
+            if (!isCancelled()) {
+                for (TimelineItem item : items) {
+                    Date date = item.getTime();
+                    long seconds = (now.getTime() - date.getTime()) / 1000;
+
+                    if (seconds > 0 && seconds < MAX_TIME) {
+                        nearbyItems.add(item);
+                    }
+                }
+            }
+            return nearbyItems;
+        }
+
+        @Override
+        protected void onPostExecute(List<TimelineItem> result) {
+            setLoading(false);
+            mTimeline = result;
+            refreshList();
+        }
+    }
+
     @Override
     public void onRefresh() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                setLoading(false);
-            }
-        }, 5000);
+        setLoading(true);
+        TUMitfahrApplication.getApplication(getActivity()).getActivitiesService().getActivities();
     }
 
 }

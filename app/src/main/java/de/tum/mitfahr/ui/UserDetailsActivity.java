@@ -62,7 +62,6 @@ public class UserDetailsActivity extends Activity {
         } else {
             finish();
         }
-
         showData();
 
     }

@@ -1,6 +1,7 @@
 package de.tum.mitfahr.ui.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -8,14 +9,15 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -24,6 +26,7 @@ import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.MyRidesAsPassengerEvent;
 import de.tum.mitfahr.networking.models.Ride;
+import de.tum.mitfahr.ui.RideDetailsActivity;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -32,8 +35,8 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private ArrayList<Ride> mRidesAsDriver;
-
+    RideAdapterTest mAdapter;
+    List<Ride> mPastRides = new ArrayList<Ride>();
     @InjectView(R.id.list)
     StickyListHeadersListView ridesListView;
 
@@ -57,19 +60,14 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
 
     @Subscribe
     public void onGetMyRidesAsPassengerResult(MyRidesAsPassengerEvent result) {
+        setLoading(false);
         if (result.getType() == MyRidesAsPassengerEvent.Type.GET_SUCCESSFUL) {
-            RideAdapterTest adapter = new RideAdapterTest(getActivity());
-            adapter.addAll(result.getResponse().getRides());
-            ridesListView.setAdapter(adapter);
+            mAdapter.clear();
+            mAdapter.addAll(result.getResponse().getRides());
+            ridesListView.setAdapter(mAdapter);
         } else if (result.getType() == MyRidesAsPassengerEvent.Type.GET_FAILED) {
             Toast.makeText(getActivity(), "Failed", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        fetchRides();
     }
 
     @Override
@@ -94,6 +92,28 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mAdapter = new RideAdapterTest(getActivity());
+        ridesListView.setAdapter(mAdapter);
+        ridesListView.setOnItemClickListener(mItemClickListener);
+        fetchRides();
+        setLoading(true);
+    }
+
+    private AdapterView.OnItemClickListener mItemClickListener = new android.widget.AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Ride clickedItem = mAdapter.getItem(position);
+            if (clickedItem != null) {
+                Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
+                intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, clickedItem);
+                startActivity(intent);
+            }
+        }
+    };
+
+    @Override
     public void onRefresh() {
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -102,6 +122,12 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
             }
         }, 5000);
     }
+
+    private void setLoading(boolean loading) {
+        swipeRefreshLayout.setRefreshing(loading);
+        swipeRefreshLayoutEmptyView.setRefreshing(loading);
+    }
+
 
     class RideAdapterTest extends ArrayAdapter<Ride> implements StickyListHeadersAdapter {
 
@@ -124,11 +150,12 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
                 view = (ViewGroup) convertView;
             }
             Ride ride = getItem(position);
+            String[] dateTime = ride.getDepartureTime().split("T");
 
-            ((ImageView) view.findViewById(R.id.my_rides_location_image)).setImageResource(R.drawable.list_image_placeholder);
             ((TextView) view.findViewById(R.id.my_rides_from_text)).setText(ride.getDeparturePlace());
             ((TextView) view.findViewById(R.id.my_rides_to_text)).setText(ride.getDestination());
-            ((TextView) view.findViewById(R.id.my_rides_time_text)).setText(ride.getDepartureTime());
+            ((TextView) view.findViewById(R.id.my_rides_time_text)).setText(dateTime[1].substring(0, 5));
+            ((TextView) view.findViewById(R.id.my_rides_date_text)).setText(dateTime[0]);
             return view;
         }
 
@@ -144,8 +171,7 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
                 holder = (HeaderViewHolder) convertView.getTag();
             }
             //set header text as first char in name
-            String headerText = Integer.toString(position);
-            holder.text.setText(headerText);
+            holder.text.setText("Joined Rides");
             return convertView;
         }
 
