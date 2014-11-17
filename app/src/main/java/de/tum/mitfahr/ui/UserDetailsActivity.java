@@ -52,7 +52,7 @@ public class UserDetailsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        setContentView(R.layout.fragment_profile);
+        setContentView(R.layout.activity_user_details);
         ButterKnife.inject(this);
         changeActionBarColor(android.R.color.transparent);
 

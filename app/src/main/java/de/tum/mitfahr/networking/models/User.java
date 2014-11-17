@@ -100,4 +100,52 @@ public class User implements Serializable{
                 ", updatedAt='" + updatedAt + '\'' +
                 '}';
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public void setCar(String car) {
+        this.car = car;
+    }
+
+    public void setStudent(boolean isStudent) {
+        this.isStudent = isStudent;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public void setRatingAverage(int ratingAverage) {
+        this.ratingAverage = ratingAverage;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

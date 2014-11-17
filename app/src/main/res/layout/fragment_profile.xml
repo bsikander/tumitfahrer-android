@@ -13,7 +13,7 @@
         <FrameLayout
             android:layout_width="fill_parent"
             android:orientation="vertical"
-            android:layout_height="180dp">
+            android:layout_height="200dp">
 
             <ImageView
                 android:layout_width="fill_parent"
@@ -68,11 +68,11 @@
             android:paddingRight="12dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:layout_height="wrap_content">
+            android:layout_height="48dp">
 
             <TextView
                 android:layout_width="0dp"
-                android:text="26"
+                android:text="-"
                 android:textColor="@color/white"
                 android:drawableLeft="@drawable/ic_driver"
                 android:textAppearance="?android:attr/textAppearanceMedium"
@@ -84,7 +84,7 @@
 
             <TextView
                 android:layout_width="0dp"
-                android:text="35"
+                android:text="-"
                 android:textColor="@color/white"
                 android:drawableLeft="@drawable/ic_passenger"
                 android:textAppearance="?android:attr/textAppearanceMedium"
@@ -95,10 +95,10 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:text="1"
+                android:text="-"
                 android:gravity="center_vertical"
                 android:textColor="@color/white"
-                android:drawableLeft="@drawable/placeholder"
+                android:drawableLeft="@drawable/ic_action_grade"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_gravity="center"
                 android:layout_height="wrap_content" />
@@ -136,45 +136,6 @@
             android:layout_marginRight="16dp"
             android:background="@color/gray_faded"
             android:layout_height="2px" />
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:padding="16dp"
-            android:visibility="gone"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:src="@drawable/ic_lock_dark"
-                android:layout_height="30dp" />
-
-            <TextView
-                android:id="@+id/profile_password"
-                android:layout_width="0dp"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
-                android:text="Password"
-                android:textColor="@color/gray"
-                android:layout_gravity="center"
-                android:layout_marginLeft="6dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <View
-                android:layout_width="2px"
-                android:background="@color/gray_faded"
-                android:layout_height="fill_parent" />
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:background="@color/transparent"
-                android:src="@drawable/ic_action_create"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:layout_height="fill_parent" />
-        </LinearLayout>
 
         <View
             android:layout_width="fill_parent"
@@ -270,6 +231,46 @@
                 android:layout_marginLeft="6dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:padding="16dp"
+            android:visibility="visible"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:src="@drawable/ic_lock_dark"
+                android:layout_height="30dp" />
+
+            <TextView
+                android:id="@+id/profile_password"
+                android:layout_width="0dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:text="Change Password"
+                android:textColor="@color/gray"
+                android:layout_gravity="center"
+                android:layout_marginLeft="6dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <View
+                android:layout_width="2px"
+                android:background="@color/gray_faded"
+                android:layout_height="fill_parent" />
+
+            <ImageButton
+                android:id="@+id/change_password_button"
+                android:layout_width="wrap_content"
+                android:background="@color/transparent"
+                android:src="@drawable/ic_action_create"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_height="fill_parent" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

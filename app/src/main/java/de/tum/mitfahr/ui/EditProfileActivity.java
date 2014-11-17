@@ -2,26 +2,34 @@ package de.tum.mitfahr.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.dd.CircularProgressButton;
 import com.pkmmte.view.CircularImageView;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import butterknife.OnTextChanged;
+import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.UpdateUserEvent;
 import de.tum.mitfahr.networking.models.User;
+import de.tum.mitfahr.ui.fragments.PasswordPromptDialogFragment;
 
-public class EditProfileActivity extends Activity {
+public class EditProfileActivity extends Activity implements PasswordPromptDialogFragment.PasswordPromptDialogListener {
 
     public static final int PICK_IMAGE_INTENT = 1;
 
@@ -47,6 +55,7 @@ public class EditProfileActivity extends Activity {
     private boolean imageChanged;
     private String changedImageUri;
     private User mCurrentUser;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +65,11 @@ public class EditProfileActivity extends Activity {
         ButterKnife.inject(this);
         mCurrentUser = TUMitfahrApplication.getApplication(this).getProfileService().getUserFromPreferences();
         populateTheFields();
+        firstNameEditText.addTextChangedListener(textWatcher);
+        lastNameEditText.addTextChangedListener(textWatcher);
+        phoneNumberEditText.addTextChangedListener(textWatcher);
+        carEditText.addTextChangedListener(textWatcher);
+        mProgressDialog = new ProgressDialog(this);
     }
 
     private void populateTheFields() {
@@ -79,6 +93,15 @@ public class EditProfileActivity extends Activity {
         startActivityForResult(Intent.createChooser(intent, "Select Profile Image"), PICK_IMAGE_INTENT);
     }
 
+
+    @OnClick(R.id.edit_profile_button)
+    public void onEditProfileButtonClicked() {
+        if (detailsChanged || imageChanged) {
+            PasswordPromptDialogFragment dialogFragment = PasswordPromptDialogFragment.newInstance();
+            dialogFragment.show(getFragmentManager(), "password_prompt");
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -97,6 +120,23 @@ public class EditProfileActivity extends Activity {
             changedImageUri = selectedImage.toString();
         }
     }
+
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            detailsChanged = true;
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -126,5 +166,46 @@ public class EditProfileActivity extends Activity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog, String password) {
+        //Start the edit process
+        mProgressDialog.show();
+        Toast.makeText(this, "Gotcha!", Toast.LENGTH_SHORT).show();
+        if (detailsChanged) {
+            mCurrentUser.setFirstName(firstNameEditText.getText().toString());
+            mCurrentUser.setLastName(lastNameEditText.getText().toString());
+            mCurrentUser.setPhoneNumber(phoneNumberEditText.getText().toString());
+            mCurrentUser.setCar(carEditText.getText().toString());
+            TUMitfahrApplication.getApplication(this).getProfileService().
+                    updateUser(mCurrentUser, mCurrentUser.getEmail(), password, password);
+        }
+        if (imageChanged) {
+            TUMitfahrApplication.getApplication(this).getProfileService().uploadImage(changedImageUri);
+        }
+    }
+
+    @Subscribe
+    public void onUpdateUserResult(UpdateUserEvent result) {
+        mProgressDialog.dismiss();
+        if (result.getType() == UpdateUserEvent.Type.USER_UPDATED) {
+            Toast.makeText(this, "User Updated", Toast.LENGTH_LONG).show();
+            finish();
+        } else if (result.getType() == UpdateUserEvent.Type.UPDATE_FAILED) {
+            Toast.makeText(this, "Failed to update User", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        BusProvider.getInstance().unregister(this);
     }
 }

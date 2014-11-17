@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -38,6 +39,7 @@ import de.tum.mitfahr.networking.models.response.GetUserResponse;
 import de.tum.mitfahr.networking.models.response.LoginResponse;
 import de.tum.mitfahr.networking.models.response.RegisterResponse;
 import de.tum.mitfahr.networking.models.response.UpdateUserResponse;
+import de.tum.mitfahr.util.BitmapUtils;
 
 /**
  * Created by abhijith on 09/05/14.
@@ -281,8 +283,15 @@ public class ProfileService {
     };
 
     public boolean uploadImage(String filePath) {
+        Bitmap bitmap = BitmapUtils.decodeFile(filePath, 350, 350);
+
+        File path = Environment.getExternalStorageDirectory();
+        File dirFile = new File(path, "/" + "tumitfahr");
+        File imageFile = new File(dirFile, "profile_image.png");
+
+        BitmapUtils.save(bitmap, Uri.fromFile(imageFile));
         AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(AMZ_ACCESS_KEY_ID, AMZ_SECRET_KEY));
-        PutObjectRequest por = new PutObjectRequest(AMZ_BUCKET_NAME, AMZ_PATH + userId + AMZ_FILENAME, new java.io.File(filePath));
+        PutObjectRequest por = new PutObjectRequest(AMZ_BUCKET_NAME, AMZ_PATH + userId + AMZ_FILENAME, imageFile);
         s3Client.putObject(por);
         return false;
     }

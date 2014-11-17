@@ -45,6 +45,7 @@
 
                 <TextView
                     android:layout_width="fill_parent"
+                    android:text="UserName"
                     android:id="@+id/profile_name_text"
                     android:gravity="center"
                     android:shadowColor="@color/text_shadow"
@@ -53,7 +54,10 @@
                     android:shadowRadius="2"
                     android:textAppearance="?android:attr/textAppearanceLargeInverse"
                     android:layout_height="wrap_content" />
+
             </LinearLayout>
+
+
         </FrameLayout>
 
         <LinearLayout
@@ -64,11 +68,11 @@
             android:paddingRight="12dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:layout_height="wrap_content">
+            android:layout_height="48dp">
 
             <TextView
                 android:layout_width="0dp"
-                android:text="26"
+                android:text="-"
                 android:textColor="@color/white"
                 android:drawableLeft="@drawable/ic_driver"
                 android:textAppearance="?android:attr/textAppearanceMedium"
@@ -80,7 +84,7 @@
 
             <TextView
                 android:layout_width="0dp"
-                android:text="35"
+                android:text="-"
                 android:textColor="@color/white"
                 android:drawableLeft="@drawable/ic_passenger"
                 android:textAppearance="?android:attr/textAppearanceMedium"
@@ -91,10 +95,10 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:text="44"
+                android:text="-"
                 android:gravity="center_vertical"
                 android:textColor="@color/white"
-                android:drawableLeft="@drawable/placeholder"
+                android:drawableLeft="@drawable/ic_action_grade"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_gravity="center"
                 android:layout_height="wrap_content" />

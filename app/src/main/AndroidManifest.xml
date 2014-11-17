@@ -40,6 +40,11 @@
             android:name=".ui.RideDetailsActivity"
             android:label=""
             android:noHistory="true"></activity>
+
+        <activity
+            android:name=".ui.EditRideActivity"
+            android:label=""
+            android:noHistory="true"></activity>
         <activity
             android:name=".ui.SearchResultsActivity"
             android:label="@string/title_activity_search_results"></activity>

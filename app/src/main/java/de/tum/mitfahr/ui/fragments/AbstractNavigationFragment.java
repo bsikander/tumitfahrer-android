@@ -21,6 +21,7 @@ public abstract class AbstractNavigationFragment extends Fragment {
     protected static final String ARG_SECTION_NUMBER = "section_number";
     protected ActionBarColorChangeListener mListener;
     private Handler mHandler = new Handler();
+    private Drawable mActionBarDrawable;
     private int mCurrentColor = 0xFF666666;
 
     @Override
@@ -48,11 +49,14 @@ public abstract class AbstractNavigationFragment extends Fragment {
     }
 
     public void changeActionBarColor(int newColor) {
-        Drawable newDrawable = new ColorDrawable((newColor));
+        mActionBarDrawable = new ColorDrawable((newColor));
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            newDrawable.setCallback(drawableCallback);
+            mActionBarDrawable.setCallback(drawableCallback);
         } else {
-            getActivity().getActionBar().setBackgroundDrawable(newDrawable);
+            getActivity().getActionBar().setBackgroundDrawable(mActionBarDrawable);
+            getActivity().getActionBar().setDisplayShowTitleEnabled(true);
+            getActivity().getActionBar().setDisplayShowTitleEnabled(false);
+            getActivity().invalidateOptionsMenu();
         }
     }
 
@@ -105,6 +109,9 @@ public abstract class AbstractNavigationFragment extends Fragment {
         @Override
         public void invalidateDrawable(Drawable who) {
             getActivity().getActionBar().setBackgroundDrawable(who);
+            getActivity().getActionBar().setDisplayShowTitleEnabled(true);
+            getActivity().getActionBar().setDisplayShowTitleEnabled(false);
+            getActivity().invalidateOptionsMenu();
         }
 
         @Override

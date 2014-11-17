@@ -115,12 +115,7 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
 
     @Override
     public void onRefresh() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        }, 5000);
+        fetchRides();
     }
 
     private void setLoading(boolean loading) {

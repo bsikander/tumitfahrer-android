@@ -3,7 +3,11 @@ package de.tum.mitfahr.ui;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -12,13 +16,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.squareup.otto.Subscribe;
+
 import java.io.IOException;
 
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.UIActionOfferRideEvent;
 import de.tum.mitfahr.gcm.PushNotificationHelper;
 import de.tum.mitfahr.gcm.PushNotificationInterface;
+import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.ui.fragments.AbstractNavigationFragment;
 import de.tum.mitfahr.ui.fragments.ActivityRidesFragment;
 import de.tum.mitfahr.ui.fragments.CampusRidesFragment;
@@ -32,7 +40,7 @@ import de.tum.mitfahr.util.ActionBarColorChangeListener;
 
 public class MainActivity extends FragmentActivity
         implements ActionBarColorChangeListener,
-        NavigationDrawerFragment.NavigationDrawerCallbacks,PushNotificationInterface{
+        NavigationDrawerFragment.NavigationDrawerCallbacks, PushNotificationInterface {
     private static final String TAG_TIMELINE_FRAGMENT = "timeline_fragment";
     private static final String TAG_ACTIVITY_RIDES_FRAGMENT = "activity_rides_fragment";
     private static final String TAG_CAMPUS_RIDES_FRAGMENT = "campus_rides_fragment";
@@ -46,6 +54,8 @@ public class MainActivity extends FragmentActivity
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private AbstractNavigationFragment mCurrentFragment;
+    private boolean offerRideFlag;
+    private Ride mOfferedRide = null;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -162,6 +172,13 @@ public class MainActivity extends FragmentActivity
 
             case 4:
                 mCurrentFragment = CreateRidesFragment.newInstance(position + 1);
+                if (offerRideFlag) {
+                    Bundle extras = new Bundle();
+                    extras.putSerializable(CreateRidesFragment.ARG_OFFER_RIDE, mOfferedRide);
+                    mCurrentFragment.setArguments(extras);
+                    offerRideFlag = false;
+                    mOfferedRide = null;
+                }
                 fragmentManager.beginTransaction()
                         .setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit)
                         .replace(R.id.container, mCurrentFragment, TAG_CREATE_RIDE_FRAGMENT)
@@ -254,13 +271,18 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public void onPlayServiceRegistrationComplete(String id) {
-        if(id == null){
+        if (id == null) {
             Toast.makeText(this, "There is some problem with registration. Please try again!", Toast.LENGTH_LONG).show();
-        }else{
+        } else {
             // Use this id for your purposes
             //Toast.makeText(this, id, Toast.LENGTH_LONG).show();
         }
-
     }
 
+    @Subscribe
+    public void onOfferRideUIAction(UIActionOfferRideEvent event) {
+        mNavigationDrawerFragment.selectItem(4);
+        offerRideFlag = true;
+        mOfferedRide = event.getRide();
+    }
 }

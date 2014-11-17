@@ -14,10 +14,9 @@ import android.widget.TextView;
 import com.pkmmte.view.CircularImageView;
 import com.squareup.picasso.Picasso;
 
-import java.net.URL;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.networking.models.User;
@@ -27,7 +26,7 @@ import de.tum.mitfahr.util.StringHelper;
 /**
  * Created by abhijith on 22/05/14.
  */
-public class ProfileFragment extends AbstractNavigationFragment {
+public class ProfileFragment extends AbstractNavigationFragment implements PasswordChangeDialogFragment.PasswordChangeDialogListener {
 
     @InjectView(R.id.profile_big_blurred)
     ImageView blurredProfileImage;
@@ -121,5 +120,18 @@ public class ProfileFragment extends AbstractNavigationFragment {
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.change_password_button)
+    public void onChangePasswordClicked() {
+        PasswordChangeDialogFragment dialogFragment = PasswordChangeDialogFragment.newInstance(this);
+        dialogFragment.show(getFragmentManager(), "password_change");
+
+    }
+
+    @Override
+    public void onDialogPositiveClick(android.support.v4.app.DialogFragment dialog, String passwordOld, String passwordNew) {
+        //Changing password! :D
+
     }
 }

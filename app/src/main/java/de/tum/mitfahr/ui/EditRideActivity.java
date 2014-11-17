@@ -1,15 +1,13 @@
-package de.tum.mitfahr.ui.fragments;
+package de.tum.mitfahr.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -17,13 +15,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.dd.CircularProgressButton;
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialPickerLayout;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog;
-import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
 
@@ -40,43 +36,27 @@ import butterknife.OnClick;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.adapters.LocationAutoCompleteAdapter;
-import de.tum.mitfahr.events.OfferRideEvent;
 import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.User;
-import de.tum.mitfahr.ui.RideDetailsActivity;
 import de.tum.mitfahr.util.StringHelper;
 import info.hoang8f.android.segmented.SegmentedGroup;
 
 /**
- * Created by Abhijith on 22/05/14.
+ * Created by abhijith on 04/11/14.
  */
-public class CreateRidesFragment extends AbstractNavigationFragment implements CalendarDatePickerDialog.OnDateSetListener, RadialTimePickerDialog.OnTimeSetListener {
+public class EditRideActivity extends FragmentActivity implements CalendarDatePickerDialog.OnDateSetListener, RadialTimePickerDialog.OnTimeSetListener {
+
+    public static final String RIDE_INTENT_EXTRA = "selected_ride";
 
     private static final String FRAG_TAG_TIME_PICKER = "timePickerDialogFragment";
     private static final String FRAG_TAG_DATE_PICKER = "datePickerDialogFragment";
-    public static final String ARG_OFFER_RIDE = "offerRide";
 
     public static final int RIDE_TYPE_CAMPUS = 0;
     public static final int RIDE_TYPE_ACTIVITY = 1;
 
     private User mCurrentUser;
-    private boolean offerRideFlag;
-    private Ride mOfferRideExtra;
+    private Ride mRide;
 
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static CreateRidesFragment newInstance(int sectionNumber) {
-        CreateRidesFragment fragment = new CreateRidesFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public CreateRidesFragment() {
-    }
 
     @InjectView(R.id.segmentedRequestType)
     SegmentedGroup requestTypeSegmentedGroup;
@@ -99,8 +79,8 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
     @InjectView(R.id.rideTypeSpinner)
     Spinner rideTypeSpinner;
 
-    @InjectView(R.id.offerRideButton)
-    CircularProgressButton offerRideButton;
+    @InjectView(R.id.editRideButton)
+    CircularProgressButton editRideButton;
 
     @InjectView(R.id.pickTimeButton)
     Button pickTimeButton;
@@ -116,115 +96,47 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
     private int mRideType = RIDE_TYPE_CAMPUS;
     private boolean driver = false;
     private ArrayAdapter<CharSequence> mRideTypeAdapter;
-    private Handler mCreateButtonHandler = new Handler() {
+    private Handler mEditButtonHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            offerRideButton.setProgress(0);
-            offerRideButton.setClickable(true);
+            editRideButton.setProgress(0);
+            editRideButton.setClickable(true);
         }
     };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Calendar calendar = Calendar.getInstance();
-        if (getArguments().getSerializable(ARG_OFFER_RIDE) != null) {
-            mOfferRideExtra = (Ride) getArguments().getSerializable(ARG_OFFER_RIDE);
-            populateUI();
+        setContentView(R.layout.activity_edit_ride);
+        ButterKnife.inject(this);
+        Intent intent = getIntent();
+        if (intent.hasExtra(RIDE_INTENT_EXTRA)) {
+            mRide = (Ride) intent.getSerializableExtra(RIDE_INTENT_EXTRA);
+        } else {
+            finish();
         }
-        mHourOfDeparture = calendar.get(Calendar.HOUR_OF_DAY);
-        mMinuteOfDeparture = calendar.get(Calendar.MINUTE);
-        mYearOfDeparture = calendar.get(Calendar.YEAR);
-        mMonthOfDeparture = calendar.get(Calendar.MONTH);
-        mDayOfDeparture = calendar.get(Calendar.DAY_OF_MONTH);
-        mCurrentUser = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getUserFromPreferences();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_create_rides, container, false);
-        ButterKnife.inject(this, rootView);
-        requestTypeSegmentedGroup.setTintColor(getResources().getColor(R.color.blue3));
-        requestTypeSegmentedGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.radioButtonDriver:
-                        driver = true;
-                        updateLayoutForDriverAndPassenger();
-                        break;
-                    case R.id.radioButtonPassenger:
-                        driver = false;
-                        updateLayoutForDriverAndPassenger();
-                        break;
-                    default:
-                        driver = false;
-                        updateLayoutForDriverAndPassenger();
-                        break;
-                }
-            }
-        });
-        offerRideButton.setIndeterminateProgressMode(true);
-        changeActionBarColor(getResources().getColor(R.color.blue3));
-        return rootView;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy, hh:mm a");
-        String dateTimeString = dateFormat.format(Calendar.getInstance().getTime());
-
-        String[] dateTime = dateTimeString.split(",");
-
-        pickTimeButton.setText(dateTime[1]);
-        pickDateButton.setText(dateTime[0]);
-
-        mRideTypeAdapter = new ArrayAdapter<CharSequence>(getActivity(),
-                android.R.layout.simple_spinner_item,
-                getResources().getTextArray(R.array.ride_array));
-        mRideTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        rideTypeSpinner.setAdapter(mRideTypeAdapter);
-        rideTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    mRideType = RIDE_TYPE_CAMPUS;
-                } else {
-                    mRideType = RIDE_TYPE_ACTIVITY;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                mRideType = RIDE_TYPE_CAMPUS;
-            }
-        });
-        final LocationAutoCompleteAdapter adapter = new LocationAutoCompleteAdapter(getActivity());
-        departureText.setAdapter(adapter);
-        destinationText.setAdapter(adapter);
+        mCurrentUser = TUMitfahrApplication.getApplication(this).getProfileService().getUserFromPreferences();
+        populateUI();
     }
 
     private void populateUI() {
-        destinationText.setText(mOfferRideExtra.getDestination());
-        departureText.setText(mOfferRideExtra.getDeparturePlace());
-        meetingText.setText(mOfferRideExtra.getMeetingPoint());
-        if (mOfferRideExtra.isRideRequest()) {
+        destinationText.setText(mRide.getDestination());
+        departureText.setText(mRide.getDeparturePlace());
+        meetingText.setText(mRide.getMeetingPoint());
+        if (mRide.isRideRequest()) {
             requestTypeSegmentedGroup.check(R.id.radioButtonPassenger);
         } else {
             requestTypeSegmentedGroup.check(R.id.radioButtonDriver);
-            seatsText.setText(mOfferRideExtra.getFreeSeats());
+            seatsText.setText(mRide.getFreeSeats());
         }
-        mRideType = mOfferRideExtra.getRideType();
+        mRideType = mRide.getRideType();
         rideTypeSpinner.setSelection(mRideType);
 
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         Date departureTime = new Date();
         try {
-            departureTime = outputFormat.parse(mOfferRideExtra.getDepartureTime());
+            departureTime = outputFormat.parse(mRide.getDepartureTime());
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -244,16 +156,56 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
         pickDateButton.setText(dateTime[0]);
     }
 
-    private void updateLayoutForDriverAndPassenger() {
-        if (driver) {
-            seatsTextContainer.setVisibility(View.VISIBLE);
-        } else {
-            seatsTextContainer.setVisibility(View.GONE);
-        }
+    private void setUpViews() {
+        requestTypeSegmentedGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.radioButtonDriver:
+                        driver = true;
+                        updateLayoutForDriverAndPassenger();
+                        break;
+                    case R.id.radioButtonPassenger:
+                        driver = false;
+                        updateLayoutForDriverAndPassenger();
+                        break;
+                    default:
+                        driver = false;
+                        updateLayoutForDriverAndPassenger();
+                        break;
+                }
+            }
+        });
+
+        editRideButton.setIndeterminateProgressMode(true);
+        mRideTypeAdapter = new ArrayAdapter<CharSequence>(this,
+                android.R.layout.simple_spinner_item,
+                getResources().getTextArray(R.array.ride_array));
+        mRideTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        rideTypeSpinner.setAdapter(mRideTypeAdapter);
+        rideTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    mRideType = RIDE_TYPE_CAMPUS;
+                } else {
+                    mRideType = RIDE_TYPE_ACTIVITY;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                mRideType = RIDE_TYPE_CAMPUS;
+            }
+        });
+        final LocationAutoCompleteAdapter adapter = new LocationAutoCompleteAdapter(this);
+        departureText.setAdapter(adapter);
+        destinationText.setAdapter(adapter);
+
     }
 
-    @OnClick(R.id.offerRideButton)
-    public void onOfferRidePressed(Button button) {
+    @OnClick(R.id.editRideButton)
+    public void onEditRidePressed(Button button) {
         if (StringHelper.isBlank(departureText.getText().toString())) {
             departureText.setError("Required");
             return;
@@ -267,7 +219,7 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
             seatsText.setError("Required");
             return;
         }
-        offerRideButton.setClickable(false);
+        editRideButton.setClickable(false);
         String departure = departureText.getText().toString();
         String destination = destinationText.getText().toString();
         String meetingPoint = meetingText.getText().toString();
@@ -279,12 +231,15 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
         int isDriver = (driver) ? 1 : 0;
 
         if (!StringHelper.isBlank(departure) && !StringHelper.isBlank(destination) && !StringHelper.isBlank(meetingPoint) && !StringHelper.isBlank(dateTime)) {
-            offerRideButton.setProgress(50);
-
-            TUMitfahrApplication.getApplication(getActivity()).getRidesService()
-                    .offerRide(departure, destination, meetingPoint,
-                            freeSeats, dateTime, rideType,
-                            isDriver, mCurrentUser.getCar());
+            editRideButton.setProgress(50);
+            mRide.setDeparturePlace(departure);
+            mRide.setDestination(destination);
+            mRide.setMeetingPoint(meetingPoint);
+            mRide.setFreeSeats(freeSeats);
+            mRide.setRideType(rideType);
+            mRide.setRideRequest(!driver);
+            TUMitfahrApplication.getApplication(this).getRidesService()
+                    .updateRide(mRide);
         }
     }
 
@@ -302,60 +257,29 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
         return outputFormat.format(calendar.getTime());
     }
 
+    private void updateLayoutForDriverAndPassenger() {
+        if (driver) {
+            seatsTextContainer.setVisibility(View.VISIBLE);
+        } else {
+            seatsTextContainer.setVisibility(View.GONE);
+        }
+    }
 
     @OnClick(R.id.pickTimeButton)
     public void showTimePickerDialog() {
-        DateTime now = DateTime.now();
+        DateTime now = DateTime.parse(mRide.getDepartureTime());
         RadialTimePickerDialog timePickerDialog = RadialTimePickerDialog.newInstance(this, now.getHourOfDay(), now.getMinuteOfHour(), false);
-        timePickerDialog.show(getChildFragmentManager(), FRAG_TAG_TIME_PICKER);
+        timePickerDialog.show(getSupportFragmentManager(), FRAG_TAG_TIME_PICKER);
     }
 
     @OnClick(R.id.pickDateButton)
     public void showDatePickerDialog() {
-        FragmentManager fm = getChildFragmentManager();
-        DateTime now = DateTime.now();
+        FragmentManager fm = getSupportFragmentManager();
+        DateTime now = DateTime.parse(mRide.getDepartureTime());
         CalendarDatePickerDialog calendarDatePickerDialog = CalendarDatePickerDialog
                 .newInstance(this, now.getYear(), now.getMonthOfYear() - 1,
                         now.getDayOfMonth());
         calendarDatePickerDialog.show(fm, FRAG_TAG_DATE_PICKER);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-    }
-
-
-    @Subscribe
-    public void onOfferRideEvent(OfferRideEvent event) {
-        if (event.getType() == OfferRideEvent.Type.RIDE_ADDED) {
-            Toast.makeText(getActivity(), "Ride Created", Toast.LENGTH_SHORT).show();
-            offerRideButton.setProgress(100);
-            if (event.getRide() != null) {
-                Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
-                intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, event.getRide());
-                startActivity(intent);
-            }
-        } else if (event.getType() == OfferRideEvent.Type.OFFER_RIDE_FAILED) {
-            Toast.makeText(getActivity(), "Offering Ride Failed! Please check credentials and try again.",
-                    Toast.LENGTH_SHORT).show();
-            offerRideButton.setProgress(-1);
-        } else {
-            offerRideButton.setProgress(0);
-        }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(2000);
-                    mCreateButtonHandler.sendEmptyMessage(0);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
     @Override
@@ -382,4 +306,6 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
             pickTimeButton.setText(time);
         }
     }
+
+
 }

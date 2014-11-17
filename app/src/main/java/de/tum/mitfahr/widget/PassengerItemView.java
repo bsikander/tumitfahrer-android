@@ -1,6 +1,8 @@
 package de.tum.mitfahr.widget;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,10 +66,10 @@ public class PassengerItemView extends RelativeLayout implements View.OnClickLis
 
         mListener = sDummyListener;
 
-        mActionButton.setBackgroundResource(android.R.color.holo_green_light);
+        mActionButton.setBackgroundDrawable(getRoundedShapeDrawable(getResources().getColor(android.R.color.holo_green_light)));
         mActionButton.setImageResource(R.drawable.ic_check_white_24dp);
 
-        mRemoveButton.setBackgroundResource(android.R.color.holo_red_light);
+        mActionButton.setBackgroundDrawable(getRoundedShapeDrawable(getResources().getColor(android.R.color.holo_red_light)));
         mRemoveButton.setImageResource(R.drawable.ic_cancel_white_24dp);
 
         mRemoveButton.setOnClickListener(new OnClickListener() {
@@ -91,7 +93,6 @@ public class PassengerItemView extends RelativeLayout implements View.OnClickLis
             }
         });
         setItemType(TYPE_NONE);
-
     }
 
     private void showButtons(boolean action, boolean remove) {
@@ -165,4 +166,11 @@ public class PassengerItemView extends RelativeLayout implements View.OnClickLis
 
         }
     };
+
+    private Drawable getRoundedShapeDrawable(int color) {
+        GradientDrawable shape = new GradientDrawable();
+        shape.setCornerRadius(8);
+        shape.setColor(color);
+        return shape;
+    }
 }
