@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.ui.MainActivity;
@@ -53,45 +54,9 @@ public abstract class AbstractNavigationFragment extends Fragment {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             mActionBarDrawable.setCallback(drawableCallback);
         } else {
-            getActivity().getActionBar().setBackgroundDrawable(mActionBarDrawable);
-            getActivity().getActionBar().setDisplayShowTitleEnabled(true);
-            getActivity().getActionBar().setDisplayShowTitleEnabled(false);
-            getActivity().invalidateOptionsMenu();
+            ((MainActivity)getActivity()).getToolbar().setBackgroundDrawable(mActionBarDrawable);
         }
     }
-
-//    public void changeActionBarColor(int newColor) {
-//
-//        Drawable newDrawable = new ColorDrawable(newColor);
-//        Drawable oldBackground = new ColorDrawable(mCurrentColor);
-//        if (oldBackground == null) {
-//
-//            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-//                newDrawable.setCallback(drawableCallback);
-//            } else {
-//                getActivity().getActionBar().setBackgroundDrawable(newDrawable);
-//            }
-//
-//        } else {
-//
-//            TransitionDrawable td = new TransitionDrawable(new Drawable[]{oldBackground, newDrawable});
-//            td.setCrossFadeEnabled(true);
-//            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-//                td.setCallback(drawableCallback);
-//            } else {
-//                getActivity().getActionBar().setBackgroundDrawable(td);
-//            }
-//
-//            td.startTransition(1000);
-//
-//        }
-//        // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-mHandler
-//        getActivity().getActionBar().setDisplayShowTitleEnabled(false);
-//        getActivity().getActionBar().setDisplayShowTitleEnabled(true);
-//
-//        mCurrentColor = newColor;
-//        ((MainActivity) getActivity()).onActionBarColorChanged(newColor);
-//    }
 
     @Override
     public void onResume() {
@@ -108,10 +73,7 @@ public abstract class AbstractNavigationFragment extends Fragment {
     private Drawable.Callback drawableCallback = new Drawable.Callback() {
         @Override
         public void invalidateDrawable(Drawable who) {
-            getActivity().getActionBar().setBackgroundDrawable(who);
-            getActivity().getActionBar().setDisplayShowTitleEnabled(true);
-            getActivity().getActionBar().setDisplayShowTitleEnabled(false);
-            getActivity().invalidateOptionsMenu();
+            ((MainActivity)getActivity()).getToolbar().setBackgroundDrawable(who);
         }
 
         @Override

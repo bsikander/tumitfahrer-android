@@ -36,7 +36,7 @@ public class PasswordChangeDialogFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(dialogView);
-        builder.setTitle("Password");
+        builder.setTitle("Change Password");
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(final DialogInterface dialog, int id) {

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TUMitfahr-Android.iml" filepath="$PROJECT_DIR$/TUMitfahr-Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/better-pickers/better-pickers.iml" filepath="$PROJECT_DIR$/better-pickers/better-pickers.iml" />
     </modules>
   </component>
 </project>

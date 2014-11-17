@@ -1,12 +1,13 @@
 package de.tum.mitfahr.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -23,7 +24,7 @@ import de.tum.mitfahr.util.StringHelper;
 /**
  * Created by abhijith on 02/10/14.
  */
-public class UserDetailsActivity extends Activity {
+public class UserDetailsActivity extends ActionBarActivity {
 
     public static final String USER_INTENT_EXTRA = "selected_user";
 
@@ -47,12 +48,16 @@ public class UserDetailsActivity extends Activity {
 
     private User mCurrentUser;
     private Handler mHandler = new Handler();
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_user_details);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         ButterKnife.inject(this);
         changeActionBarColor(android.R.color.transparent);
 
@@ -88,14 +93,14 @@ public class UserDetailsActivity extends Activity {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             newDrawable.setCallback(drawableCallback);
         } else {
-            getActionBar().setBackgroundDrawable(newDrawable);
+            getSupportActionBar().setBackgroundDrawable(newDrawable);
         }
     }
 
     private Drawable.Callback drawableCallback = new Drawable.Callback() {
         @Override
         public void invalidateDrawable(Drawable who) {
-            getActionBar().setBackgroundDrawable(who);
+            getSupportActionBar().setBackgroundDrawable(who);
         }
 
         @Override

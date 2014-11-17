@@ -2,6 +2,7 @@ package de.tum.mitfahr;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.multidex.MultiDex;
 
 import com.squareup.otto.Bus;
 
@@ -93,5 +94,11 @@ public class TUMitfahrApplication extends Application {
 
     public static TUMitfahrApplication getApplication(final Context context) {
         return (TUMitfahrApplication) context.getApplicationContext();
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 }

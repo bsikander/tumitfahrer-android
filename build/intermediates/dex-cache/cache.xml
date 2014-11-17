@@ -2,12 +2,6 @@
 <pre-dex-items>
 
     <item
-        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-59e133bf0c1873fd1e7fbfe9924b207d27ce2b57.jar"
-        jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/5.0.89/classes.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="d71573c9c5ea98a8db47ad6ff993a63d492b3bfa"/>
-    <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/aws-android-sdk-1.7.1.1-core-964e98899598307ad6d898445b1dfb39f00e8696.jar"
         jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/libs/aws-android-sdk-1.7.1.1-core.jar"
         jumboMode="false"
@@ -19,6 +13,12 @@
         jumboMode="false"
         revision="19.1.0"
         sha1="fe79f292dc7f04ef5c0f18a65b7d52202b7bbb42"/>
+    <item
+        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-ad594810f8662b7c77515338040deabb85bdfef5.jar"
+        jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.0/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="95fd37732ec852e99f07eeb516a3650172f1d136"/>
     <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-f8c0e715d41e2ed4e406053edc5840912ee405ec.jar"
         jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/se.emilsjolander/stickylistheaders/2.4.1/classes.jar"
@@ -32,6 +32,12 @@
         revision="19.1.0"
         sha1="204e63a153ba147b98f3d9631aa3b1cd1c9759e6"/>
     <item
+        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-e9f0695eebea10d814a77806b0291f9c04683f5f.jar"
+        jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.1.71/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="0f6d5c1ef2e982c3b7858408e3df389cf5d202da"/>
+    <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/otto-1.3.4-57f69a146f1d002998225f96ae3337bee296d389.jar"
         jar="/Users/abhijith/.gradle/caches/modules-2/files-2.1/com.squareup/otto/1.3.4/4d72fb811c7b3c0e7f412112020d4430f044e510/otto-1.3.4.jar"
         jumboMode="false"
@@ -43,6 +49,12 @@
         jumboMode="false"
         revision="19.1.0"
         sha1="7912610ed96381c25c36d986eba422731b9641b6"/>
+    <item
+        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-4a7cfc470b01ff48c357d75229a0fcc0252e3e21.jar"
+        jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/TUMitfahr-Android/better-pickers/unspecified/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="04246269be6cc62b7daf8f0ca3c4a97551986ba6"/>
     <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/retrofit-1.7.0-914a5f12eedd8d2e291ed6e8402dbd9999132506.jar"
         jar="/Users/abhijith/.gradle/caches/modules-2/files-2.1/com.squareup.retrofit/retrofit/1.7.0/cc6807da6fdf91bea1b6a4a90c3818dac27d335f/retrofit-1.7.0.jar"
@@ -86,23 +98,11 @@
         revision="19.1.0"
         sha1="1a578b9607b36266c63d43a4fa0ab5664dbe911e"/>
     <item
-        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-d177a0a2b2a9a9c10e0e0dcaa880b1d16fa4e25b.jar"
-        jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/com.ikimuhendis/ldrawer/0.1/classes.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="d3bec8d72ee2aa86e69f66375c31f2161b7bb324"/>
-    <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/library-2.4.0-6b3389936ea32ecd1b6ce2161072b05492771244.jar"
         jar="/Users/abhijith/.gradle/caches/modules-2/files-2.1/com.nineoldandroids/library/2.4.0/e9b63380f3a242dbdbf103a2355ad7e43bad17cb/library-2.4.0.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="e9b63380f3a242dbdbf103a2355ad7e43bad17cb"/>
-    <item
-        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-2a2acba0c9af6d1ee65dd6c8b93e3f1d607ab638.jar"
-        jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/com.melnykov/floatingactionbutton/1.0.6/classes.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="9e2a086dd45f06b4bfa44ecfa63e892486699af6"/>
     <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/kenburnsview-1.0.4-7afd35e149d615aa1cdeb0aa5cfcba840a74e838.jar"
         jar="/Users/abhijith/.gradle/caches/modules-2/files-2.1/com.flaviofaria/kenburnsview/1.0.4/293feddf70e3dc179facfc065d499accb24510f1/kenburnsview-1.0.4.jar"
@@ -115,6 +115,12 @@
         jumboMode="false"
         revision="19.1.0"
         sha1="698b40a43ecff2ebadc58b019ae236edd053fc67"/>
+    <item
+        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-9d058a1794c5cfea8c0ca49374ae3e385781caeb.jar"
+        jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/com.melnykov/floatingactionbutton/1.0.7/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="b105aa5409ceb15382344efedf970c1b8257a09a"/>
     <item
         dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/gson-2.3-f6f2e14fde400ae2388fce4a91cebe0475702fd1.jar"
         jar="/Users/abhijith/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.3/5fc52c41ef0239d1093a1eb7c3697036183677ce/gson-2.3.jar"
@@ -145,11 +151,5 @@
         jumboMode="false"
         revision="19.1.0"
         sha1="efeda77c808750cb670ee9c48d8a1835d89dbcb2"/>
-    <item
-        dex="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/pre-dexed/debug/classes-c75d346db9017a67236b324903e89dfa08ba6ced.jar"
-        jar="/Users/abhijith/IDP/dev/TUMitfahr-Android/app/build/intermediates/exploded-aar/com.doomonafireball.betterpickers/library/1.5.2/classes.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="73d0c7e564f21532cdda0b0c93b07be5aee87e7d"/>
 
 </pre-dex-items>

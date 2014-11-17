@@ -70,6 +70,8 @@ public class RidesService {
         }
     }
 
+
+
     public void getRide(int rideId) {
         mRidesRESTClient.getRide(userAPIKey, rideId);
     }

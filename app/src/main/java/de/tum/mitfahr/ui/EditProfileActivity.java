@@ -1,6 +1,5 @@
 package de.tum.mitfahr.ui;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
@@ -8,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
@@ -29,7 +30,7 @@ import de.tum.mitfahr.events.UpdateUserEvent;
 import de.tum.mitfahr.networking.models.User;
 import de.tum.mitfahr.ui.fragments.PasswordPromptDialogFragment;
 
-public class EditProfileActivity extends Activity implements PasswordPromptDialogFragment.PasswordPromptDialogListener {
+public class EditProfileActivity extends ActionBarActivity implements PasswordPromptDialogFragment.PasswordPromptDialogListener {
 
     public static final int PICK_IMAGE_INTENT = 1;
 
@@ -56,12 +57,16 @@ public class EditProfileActivity extends Activity implements PasswordPromptDialo
     private String changedImageUri;
     private User mCurrentUser;
     private ProgressDialog mProgressDialog;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         ButterKnife.inject(this);
         mCurrentUser = TUMitfahrApplication.getApplication(this).getProfileService().getUserFromPreferences();
         populateTheFields();
@@ -172,7 +177,6 @@ public class EditProfileActivity extends Activity implements PasswordPromptDialo
     public void onDialogPositiveClick(DialogFragment dialog, String password) {
         //Start the edit process
         mProgressDialog.show();
-        Toast.makeText(this, "Gotcha!", Toast.LENGTH_SHORT).show();
         if (detailsChanged) {
             mCurrentUser.setFirstName(firstNameEditText.getText().toString());
             mCurrentUser.setLastName(lastNameEditText.getText().toString());
@@ -190,6 +194,7 @@ public class EditProfileActivity extends Activity implements PasswordPromptDialo
     public void onUpdateUserResult(UpdateUserEvent result) {
         mProgressDialog.dismiss();
         if (result.getType() == UpdateUserEvent.Type.USER_UPDATED) {
+            TUMitfahrApplication.getApplication(this).getProfileService().addUserToSharedPreferences(mCurrentUser);
             Toast.makeText(this, "User Updated", Toast.LENGTH_LONG).show();
             finish();
         } else if (result.getType() == UpdateUserEvent.Type.UPDATE_FAILED) {

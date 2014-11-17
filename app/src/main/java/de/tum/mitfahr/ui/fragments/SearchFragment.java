@@ -309,7 +309,7 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
     }
 
     @Override
-    public void onTimeSet(RadialPickerLayout radialPickerLayout, int hourOfDay, int minute) {
+    public void onTimeSet(RadialTimePickerDialog radialPickerLayout, int hourOfDay, int minute) {
         mHourOfDeparture = hourOfDay;
         mMinuteOfDeparture = minute;
         if (hourOfDay > 12) {

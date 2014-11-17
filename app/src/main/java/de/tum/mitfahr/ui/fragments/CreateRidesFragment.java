@@ -370,7 +370,7 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
     }
 
     @Override
-    public void onTimeSet(RadialPickerLayout radialPickerLayout, int hourOfDay, int minute) {
+    public void onTimeSet(RadialTimePickerDialog dialog, int hourOfDay, int minute) {
         mHourOfDeparture = hourOfDay;
         mMinuteOfDeparture = minute;
         if (hourOfDay > 12) {
@@ -382,4 +382,6 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
             pickTimeButton.setText(time);
         }
     }
+
+
 }

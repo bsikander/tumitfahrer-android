@@ -1,17 +1,14 @@
 package de.tum.mitfahr.ui;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -38,7 +35,7 @@ import de.tum.mitfahr.ui.fragments.SettingsFragment;
 import de.tum.mitfahr.ui.fragments.TimelineFragment;
 import de.tum.mitfahr.util.ActionBarColorChangeListener;
 
-public class MainActivity extends FragmentActivity
+public class MainActivity extends ActionBarActivity
         implements ActionBarColorChangeListener,
         NavigationDrawerFragment.NavigationDrawerCallbacks, PushNotificationInterface {
     private static final String TAG_TIMELINE_FRAGMENT = "timeline_fragment";
@@ -52,6 +49,7 @@ public class MainActivity extends FragmentActivity
 
     private static final String TAG_SEARCH_RESULTS_FRAGMENT = "search_results_fragment";
 
+    private Toolbar toolbar;
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private AbstractNavigationFragment mCurrentFragment;
     private boolean offerRideFlag;
@@ -86,6 +84,10 @@ public class MainActivity extends FragmentActivity
         mTitle = getTitle();
 
         setContentView(R.layout.activity_main);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         if (savedInstanceState == null) {
             onNavigationDrawerItemSelected(1, "Timeline");
         } else {
@@ -216,7 +218,7 @@ public class MainActivity extends FragmentActivity
     }
 
     public void restoreActionBar() {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
@@ -285,4 +287,9 @@ public class MainActivity extends FragmentActivity
         offerRideFlag = true;
         mOfferedRide = event.getRide();
     }
+
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
+
 }

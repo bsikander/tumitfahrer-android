@@ -1,40 +1,29 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/blue2</item>
+        <item name="colorPrimaryDark">@color/blue1</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@color/window_background</item>
-        <item name="android:actionBarStyle">@style/MyActionBar</item>
-        <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:actionOverflowButtonStyle">@style/MyActionBarOverflowStyle</item>
-        <item name="android:listViewStyle">@style/MyListView</item>
-        <item name="android:listViewWhiteStyle">@style/MyListView.White</item>
-        <item name="android:homeAsUpIndicator">@drawable/ic_action_up</item>
         <item name="android:activatedBackgroundIndicator">
             @drawable/tumitfahr_activated_background_holo_light
         </item>
-
+        <item name="colorControlActivated">@color/blue3</item>
+        <item name="colorControlHighlight">@color/blue3</item>
     </style>
 
-    <!-- ActionBar styles -->
-    <style name="MyActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+    <!-- Toolbar style -->
+    <style name="MyToolbarStyle" parent="Widget.AppCompat.Toolbar">
         <item name="android:background">@color/blue1</item>
-        <item name="android:height">56dp</item>
-        <item name="android:logo">@drawable/transparent</item>
-        <item name="android:titleTextStyle">@style/MyActionTitleTextStyle</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
-    <style name="MyActionBarOverflowStyle" parent="@android:style/Widget.Holo.ActionButton.Overflow">
-        <item name="android:src">@drawable/ic_action_overflow</item>
-    </style>
-
-    <style name="MyActionTitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="NoActionBarTheme" parent="android:Theme.Holo.Light.NoActionBar">
+    <style name="NoActionBarTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
     </style>
 

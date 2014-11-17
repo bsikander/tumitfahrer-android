@@ -7,6 +7,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import java.util.List;
@@ -18,7 +20,7 @@ import de.tum.mitfahr.ui.fragments.SearchResultsFragment;
 /**
  * Created by abhijith on 02/10/14.
  */
-public class SearchResultsActivity extends Activity {
+public class SearchResultsActivity extends ActionBarActivity {
 
     public static final String SEARCH_RIDE_RESULT_INTENT_RIDES = "search_ride_results";
     public static final String SEARCH_RIDE_RESULT_INTENT_FROM = "search_ride_from";
@@ -29,12 +31,17 @@ public class SearchResultsActivity extends Activity {
     private String mTo;
     private String mFrom;
     private Handler mHandler = new Handler();
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_results);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         Intent intent = getIntent();
         if (intent.hasExtra(SEARCH_RIDE_RESULT_INTENT_RIDES)) {

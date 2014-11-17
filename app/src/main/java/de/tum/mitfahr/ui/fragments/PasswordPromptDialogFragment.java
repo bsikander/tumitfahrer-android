@@ -74,6 +74,12 @@ public class PasswordPromptDialogFragment extends DialogFragment {
                     }
                 }
         );
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
         AlertDialog dialog = builder.create();
         return dialog;
     }

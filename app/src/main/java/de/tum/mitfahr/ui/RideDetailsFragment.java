@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +27,6 @@ import android.widget.TextView;
 
 import com.dd.CircularProgressButton;
 import com.pkmmte.view.CircularImageView;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
@@ -190,7 +190,7 @@ public class RideDetailsFragment extends Fragment {
         mActionBarBackgroundDrawable.setAlpha(0);
         rideLocationImage.setColorFilter(IMAGE_COLOR_FILTER);
 
-        getActivity().getActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(mActionBarBackgroundDrawable);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             mActionBarBackgroundDrawable.setCallback(mDrawableCallback);
@@ -326,7 +326,7 @@ public class RideDetailsFragment extends Fragment {
     public void onDeleteRideRequest(DeleteRideRequestEvent result) {
         if (result.getType() == DeleteRideRequestEvent.Type.RESULT) {
             rideActionButton.setProgress(100);
-            rideActionButton.setText("Cancelled Ride Request");
+            rideActionButton.setText("Cancelled Ride");
         } else {
             rideActionButton.setProgress(100);
             rideActionButton.setText("Cancel Request Failed");
@@ -743,7 +743,7 @@ public class RideDetailsFragment extends Fragment {
     private Drawable.Callback mDrawableCallback = new Drawable.Callback() {
         @Override
         public void invalidateDrawable(Drawable who) {
-            getActivity().getActionBar().setBackgroundDrawable(who);
+            ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(who);
         }
 
         @Override
@@ -757,7 +757,7 @@ public class RideDetailsFragment extends Fragment {
 
     private NotifyingScrollView.OnScrollChangedListener mOnScrollChangedListener = new NotifyingScrollView.OnScrollChangedListener() {
         public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
-            final int headerHeight = rideLocationImage.getHeight() - getActivity().getActionBar().getHeight();
+            final int headerHeight = rideLocationImage.getHeight() - ((ActionBarActivity) getActivity()).getSupportActionBar().getHeight();
             final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
             final int newAlpha = (int) (ratio * 255);
             mActionBarBackgroundDrawable.setAlpha(newAlpha);

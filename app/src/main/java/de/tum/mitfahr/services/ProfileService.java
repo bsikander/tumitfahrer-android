@@ -40,6 +40,7 @@ import de.tum.mitfahr.networking.models.response.LoginResponse;
 import de.tum.mitfahr.networking.models.response.RegisterResponse;
 import de.tum.mitfahr.networking.models.response.UpdateUserResponse;
 import de.tum.mitfahr.util.BitmapUtils;
+import de.tum.mitfahr.util.Crypto;
 
 /**
  * Created by abhijith on 09/05/14.
@@ -132,7 +133,9 @@ public class ProfileService {
     }
 
     public void updateUser(User updatedUser, String email, String password, String passwordConfirmation) {
-        UpdateUserRequest updateUserRequest = new UpdateUserRequest(updatedUser, password, passwordConfirmation);
+        String encryptedPassword = Crypto.sha512(password);
+        String encryptedConfirmPassword = Crypto.sha512(passwordConfirmation);
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest(updatedUser, encryptedPassword, encryptedConfirmPassword);
         mProfileRESTClient.updateUser(userId, updateUserRequest, email, password);
     }
 
@@ -140,10 +143,10 @@ public class ProfileService {
     public void onUpdateUserResult(UpdateUserEvent result) {
         if (result.getType() == UpdateUserEvent.Type.RESULT) {
             UpdateUserResponse response = result.getUpdateUserResponse();
-            if (null == response.getUser()) {
-                mBus.post(new UpdateUserEvent(UpdateUserEvent.Type.UPDATE_FAILED, response, result.getRetrofitResponse()));
-            } else {
+            if (204 == result.getRetrofitResponse().getStatus()) {
                 mBus.post(new UpdateUserEvent(UpdateUserEvent.Type.USER_UPDATED, response, result.getRetrofitResponse()));
+            } else {
+                mBus.post(new UpdateUserEvent(UpdateUserEvent.Type.UPDATE_FAILED, response, result.getRetrofitResponse()));
             }
         }
     }
@@ -175,7 +178,7 @@ public class ProfileService {
         return currentUser;
     }
 
-    private void addUserToSharedPreferences(User user) {
+    public void addUserToSharedPreferences(User user) {
         Log.d("USER", user.toString());
         SharedPreferences.Editor prefEditor = mSharedPreferences.edit();
         prefEditor.putInt("id", user.getId());

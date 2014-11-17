@@ -1,12 +1,13 @@
 package de.tum.mitfahr.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import de.tum.mitfahr.R;
@@ -15,18 +16,22 @@ import de.tum.mitfahr.networking.models.Ride;
 /**
  * Created by abhijith on 02/10/14.
  */
-public class RideDetailsActivity extends Activity {
+public class RideDetailsActivity extends ActionBarActivity {
 
     public static final String RIDE_INTENT_EXTRA = "selected_ride";
 
     private Ride mRide = null;
     private Handler mHandler = new Handler();
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ride_detail);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         changeActionBarColor(android.R.color.transparent);
 
@@ -49,14 +54,14 @@ public class RideDetailsActivity extends Activity {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             newDrawable.setCallback(drawableCallback);
         } else {
-            getActionBar().setBackgroundDrawable(newDrawable);
+            getSupportActionBar().setBackgroundDrawable(newDrawable);
         }
     }
 
     private Drawable.Callback drawableCallback = new Drawable.Callback() {
         @Override
         public void invalidateDrawable(Drawable who) {
-            getActionBar().setBackgroundDrawable(who);
+            getSupportActionBar().setBackgroundDrawable(who);
         }
 
         @Override

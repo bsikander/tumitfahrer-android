@@ -1,5 +1,6 @@
 package de.tum.mitfahr.ui.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,9 +10,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.pkmmte.view.CircularImageView;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
@@ -19,6 +23,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.UpdateUserEvent;
 import de.tum.mitfahr.networking.models.User;
 import de.tum.mitfahr.ui.EditProfileActivity;
 import de.tum.mitfahr.util.StringHelper;
@@ -53,6 +58,7 @@ public class ProfileFragment extends AbstractNavigationFragment implements Passw
     TextView profilePasswordText;
 
     private User mCurrentUser;
+    private ProgressDialog mProgressDialog;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -73,6 +79,7 @@ public class ProfileFragment extends AbstractNavigationFragment implements Passw
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mProgressDialog = new ProgressDialog(getActivity());
         mCurrentUser = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getUserFromPreferences();
     }
 
@@ -122,6 +129,13 @@ public class ProfileFragment extends AbstractNavigationFragment implements Passw
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        mCurrentUser = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getUserFromPreferences();
+
+    }
+
     @OnClick(R.id.change_password_button)
     public void onChangePasswordClicked() {
         PasswordChangeDialogFragment dialogFragment = PasswordChangeDialogFragment.newInstance(this);
@@ -131,7 +145,17 @@ public class ProfileFragment extends AbstractNavigationFragment implements Passw
 
     @Override
     public void onDialogPositiveClick(android.support.v4.app.DialogFragment dialog, String passwordOld, String passwordNew) {
-        //Changing password! :D
+        mProgressDialog.show();
+        TUMitfahrApplication.getApplication(getActivity()).getProfileService().updateUser(mCurrentUser, mCurrentUser.getEmail(), passwordOld, passwordNew);
+    }
 
+    @Subscribe
+    public void onUpdateUserResult(UpdateUserEvent result) {
+        mProgressDialog.dismiss();
+        if (result.getType() == UpdateUserEvent.Type.USER_UPDATED) {
+            Toast.makeText(getActivity(), "Changed Password", Toast.LENGTH_LONG).show();
+        } else if (result.getType() == UpdateUserEvent.Type.UPDATE_FAILED) {
+            Toast.makeText(getActivity(), "Failed to Change Password", Toast.LENGTH_LONG).show();
+        }
     }
 }

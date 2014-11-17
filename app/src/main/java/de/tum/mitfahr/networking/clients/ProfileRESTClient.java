@@ -16,6 +16,7 @@ import de.tum.mitfahr.networking.models.response.GetUserResponse;
 import de.tum.mitfahr.networking.models.response.LoginResponse;
 import de.tum.mitfahr.networking.models.response.RegisterResponse;
 import de.tum.mitfahr.networking.models.response.UpdateUserResponse;
+import de.tum.mitfahr.util.Crypto;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;

@@ -294,7 +294,7 @@ public class EditRideActivity extends FragmentActivity implements CalendarDatePi
     }
 
     @Override
-    public void onTimeSet(RadialPickerLayout radialPickerLayout, int hourOfDay, int minute) {
+    public void onTimeSet(RadialTimePickerDialog radialPickerLayout, int hourOfDay, int minute) {
         mHourOfDeparture = hourOfDay;
         mMinuteOfDeparture = minute;
         if (hourOfDay > 12) {
