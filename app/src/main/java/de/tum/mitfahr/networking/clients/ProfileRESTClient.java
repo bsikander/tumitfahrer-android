@@ -10,8 +10,10 @@ import de.tum.mitfahr.networking.api.SessionAPIService;
 import de.tum.mitfahr.networking.api.UserAPIService;
 import de.tum.mitfahr.networking.events.RequestFailedEvent;
 import de.tum.mitfahr.networking.models.User;
+import de.tum.mitfahr.networking.models.requests.ForgotPasswordRequest;
 import de.tum.mitfahr.networking.models.requests.RegisterRequest;
 import de.tum.mitfahr.networking.models.requests.UpdateUserRequest;
+import de.tum.mitfahr.networking.models.response.ForgotPasswordResponse;
 import de.tum.mitfahr.networking.models.response.GetUserResponse;
 import de.tum.mitfahr.networking.models.response.LoginResponse;
 import de.tum.mitfahr.networking.models.response.RegisterResponse;
@@ -115,12 +117,13 @@ public class ProfileRESTClient extends AbstractRESTClient {
     };
 
     public void forgotPassword(String email) {
-        userAPIService.forgotPassword(email, forgotPasswordCallback);
+        ForgotPasswordRequest request = new ForgotPasswordRequest(email);
+        userAPIService.forgotPassword(request, forgotPasswordCallback);
     }
 
-    private Callback forgotPasswordCallback = new Callback() {
+    private Callback<ForgotPasswordResponse> forgotPasswordCallback = new Callback<ForgotPasswordResponse>() {
         @Override
-        public void success(Object o, Response response) {
+        public void success(ForgotPasswordResponse o, Response response) {
             mBus.post(new ForgotPasswordEvent(ForgotPasswordEvent.Type.RESULT, response));
         }
 

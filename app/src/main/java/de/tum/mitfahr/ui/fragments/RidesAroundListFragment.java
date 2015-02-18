@@ -1,12 +1,17 @@
 package de.tum.mitfahr.ui.fragments;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -21,8 +26,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.melnykov.fab.FloatingActionButton;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
@@ -54,31 +64,37 @@ import de.tum.mitfahr.util.LocationUtil;
  * Authored by abhijith on 21/06/14.
  */
 public class RidesAroundListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
-        GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = RidesAroundListFragment.class.getName();
     private static final int MAX_DISTANCE = 5; //kilometers
     private static final int LIST_ITEM_COLOR_FILTER = 0x5F000000;
+
+    @InjectView(R.id.rides_listview)
+    ListView ridesListView;
+    @InjectView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @InjectView(R.id.swipeRefreshLayout_emptyView)
+    SwipeRefreshLayout swipeRefreshLayoutEmptyView;
+    @InjectView(R.id.button_floating_action)
+    FloatingActionButton floatingActionButton;
 
     private List<Ride> mRides = new ArrayList<Ride>();
     private AlphaInAnimationAdapter mAdapter;
     private RideAdapter mRidesAdapter;
     private int mRideType;
 
-    @InjectView(R.id.rides_listview)
-    ListView ridesListView;
+    private GoogleApiClient mGoogleAPIClient;
+    private LocationRequest mLocationRequest;
+    private static boolean mResolvingError = false;
+    // Request code to use when launching the resolution activity
+    private static final int REQUEST_RESOLVE_ERROR = 1001;
+    // Unique tag for the error dialog fragment
+    private static final String DIALOG_ERROR = "dialog_error";
+    private static final String STATE_RESOLVING_ERROR = "resolving_error";
 
-    @InjectView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout swipeRefreshLayout;
 
-    @InjectView(R.id.swipeRefreshLayout_emptyView)
-    SwipeRefreshLayout swipeRefreshLayoutEmptyView;
-
-    @InjectView(R.id.button_floating_action)
-    FloatingActionButton floatingActionButton;
-
-    private LocationClient mLocationClient;
     private LatLng mCurrentLocation = new LatLng(52.5167, 13.3833);
     private Comparator mLocationComparator = new Comparator<Ride>() {
         @Override
@@ -95,6 +111,20 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
 
     private GetAddressTask mGetAddressTask;
     private Geocoder mGeocoder;
+    private AdapterView.OnItemClickListener mItemClickListener = new android.widget.AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Ride clickedItem = mRides.get(position);
+            if (clickedItem != null) {
+                Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
+                intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, clickedItem);
+                startActivity(intent);
+            }
+        }
+    };
+
+    public RidesAroundListFragment() {
+    }
 
     public static RidesAroundListFragment newInstance(int rideType) {
         RidesAroundListFragment fragment = new RidesAroundListFragment();
@@ -104,14 +134,15 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
         return fragment;
     }
 
-    public RidesAroundListFragment() {
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRideType = getArguments() != null ? getArguments().getInt("ride_type") : 0;
-        mLocationClient = new LocationClient(getActivity(), this, this);
+        mGoogleAPIClient = new GoogleApiClient.Builder(getActivity())
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
         mGeocoder = new Geocoder(getActivity().getApplicationContext(), Locale.getDefault());
     }
 
@@ -121,16 +152,14 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
         View rootView = inflater.inflate(R.layout.fragment_ride_list, container, false);
         ButterKnife.inject(this, rootView);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        swipeRefreshLayout.setColorSchemeResources(R.color.blue1,
+                R.color.blue2,
+                R.color.blue3);
 
         swipeRefreshLayoutEmptyView.setOnRefreshListener(this);
-        swipeRefreshLayoutEmptyView.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        swipeRefreshLayoutEmptyView.setColorSchemeResources(R.color.blue1,
+                R.color.blue2,
+                R.color.blue3);
 
         ridesListView.setEmptyView(swipeRefreshLayoutEmptyView);
 
@@ -154,18 +183,6 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
         ridesListView.setOnItemClickListener(mItemClickListener);
         setLoading(true);
     }
-
-    private AdapterView.OnItemClickListener mItemClickListener = new android.widget.AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Ride clickedItem = mRides.get(position);
-            if (clickedItem != null) {
-                Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
-                intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, clickedItem);
-                startActivity(intent);
-            }
-        }
-    };
 
     @Override
     public void onPause() {
@@ -196,13 +213,28 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
         mAdapter.notifyDataSetChanged();
     }
 
-    private void setLoading(boolean loading) {
-        swipeRefreshLayout.setRefreshing(loading);
-        swipeRefreshLayoutEmptyView.setRefreshing(loading);
+    private void setLoading(final boolean loading) {
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(loading);
+            }
+        });
+        swipeRefreshLayoutEmptyView.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayoutEmptyView.setRefreshing(loading);
+            }
+        });
     }
 
     @Override
     public void onRefresh() {
+        if (mRides.size() == 0) {
+            setLoading(true);
+            TUMitfahrApplication.getApplication(getActivity()).getRidesService().getAllRides(mRideType);
+        }
+
         setLoading(true);
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
@@ -224,6 +256,59 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
         } else if (result.getType() == GetRidesDateEvent.Type.GET_FAILED) {
             Toast.makeText(getActivity(), "Get new rides failed", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleAPIClient);
+        if (location != null)
+            mCurrentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        if (mResolvingError) {
+            // Already attempting to resolve an error.
+            return;
+        } else if (connectionResult.hasResolution()) {
+            try {
+                mResolvingError = true;
+                connectionResult.startResolutionForResult(getActivity(), REQUEST_RESOLVE_ERROR);
+            } catch (IntentSender.SendIntentException e) {
+                // There was an error with the resolution intent. Try again.
+                mGoogleAPIClient.connect();
+            }
+        } else {
+            // Show dialog using GooglePlayServicesUtil.getErrorDialog()
+            showErrorDialog(connectionResult.getErrorCode());
+            mResolvingError = true;
+        }
+        Toast.makeText(getActivity(), "Cannot get location.Make sure the location sharing is enabled", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!mResolvingError) {  // more about this later
+            mGoogleAPIClient.connect();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        mGoogleAPIClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
     }
 
     protected class GetAddressTask extends AsyncTask<List<Ride>, Void, List<Ride>> {
@@ -334,42 +419,54 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
 
             return view;
         }
+
+    }
+
+    /* Creates a dialog for an error message */
+    private void showErrorDialog(int errorCode) {
+        // Create a fragment for the error dialog
+        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
+        // Pass the error that should be displayed
+        Bundle args = new Bundle();
+        args.putInt(DIALOG_ERROR, errorCode);
+        dialogFragment.setArguments(args);
+        dialogFragment.show(getChildFragmentManager(), "errordialog");
+    }
+
+    /* Called from ErrorDialogFragment when the dialog is dismissed. */
+    public static void onDialogDismissed() {
+        mResolvingError = false;
+    }
+
+    /* A fragment to display an error dialog */
+    public static class ErrorDialogFragment extends DialogFragment {
+        public ErrorDialogFragment() { }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Get the error code and retrieve the appropriate dialog
+            int errorCode = this.getArguments().getInt(DIALOG_ERROR);
+            return GooglePlayServicesUtil.getErrorDialog(errorCode,
+                    this.getActivity(), REQUEST_RESOLVE_ERROR);
+        }
+
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            onDialogDismissed();
+        }
     }
 
     @Override
-    public void onConnected(Bundle bundle) {
-        Location location = mLocationClient.getLastLocation();
-        if (location != null)
-            mCurrentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_RESOLVE_ERROR) {
+            mResolvingError = false;
+            if (resultCode == Activity.RESULT_OK) {
+                // Make sure the app is not already connected or attempting to connect
+                if (!mGoogleAPIClient.isConnecting() &&
+                        !mGoogleAPIClient.isConnected()) {
+                    mGoogleAPIClient.connect();
+                }
+            }
+        }
     }
-
-    @Override
-    public void onDisconnected() {
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Toast.makeText(getActivity(), "Cannot get location.Make sure the location sharing is enabled", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (mLocationClient != null)
-            mLocationClient.connect();
-    }
-
-    @Override
-    public void onStop() {
-        if (mLocationClient != null)
-            mLocationClient.disconnect();
-        super.onStop();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        BusProvider.getInstance().register(this);
-    }
-
 }

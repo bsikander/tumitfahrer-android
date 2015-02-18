@@ -18,20 +18,19 @@ import de.tum.mitfahr.networking.models.response.BadgesResponse;
 /**
  * Created by amr on 02/07/14.
  */
-public class ActivitiesService {
+public class ActivitiesService extends AbstractService {
 
-    private SharedPreferences mSharedPreferences;
     private ActivitiesRESTClient mActivitiesRESTClient;
     private Bus mBus;
     private String userAPIKey;
     private int userId;
 
     public ActivitiesService(final Context context) {
+        super(context);
         String baseBackendURL = TUMitfahrApplication.getApplication(context).getBaseURLBackend();
         mBus = BusProvider.getInstance();
         mBus.register(this);
         mActivitiesRESTClient = new ActivitiesRESTClient(baseBackendURL);
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         userId = mSharedPreferences.getInt("id", 0);
         userAPIKey = mSharedPreferences.getString("api_key", null);
     }

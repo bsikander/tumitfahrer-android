@@ -233,44 +233,44 @@
                 android:layout_weight="1" />
         </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:padding="16dp"
-            android:visibility="visible"
-            android:layout_height="wrap_content">
+        <!--<LinearLayout-->
+            <!--android:orientation="horizontal"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:padding="16dp"-->
+            <!--android:visibility="visible"-->
+            <!--android:layout_height="wrap_content">-->
 
-            <ImageView
-                android:layout_width="30dp"
-                android:src="@drawable/ic_lock_dark"
-                android:layout_height="30dp" />
+            <!--<ImageView-->
+                <!--android:layout_width="30dp"-->
+                <!--android:src="@drawable/ic_lock_dark"-->
+                <!--android:layout_height="30dp" />-->
 
-            <TextView
-                android:id="@+id/profile_password"
-                android:layout_width="0dp"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
-                android:text="Change Password"
-                android:textColor="@color/gray"
-                android:layout_gravity="center"
-                android:layout_marginLeft="6dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+            <!--<TextView-->
+                <!--android:id="@+id/profile_password"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:singleLine="true"-->
+                <!--android:ellipsize="end"-->
+                <!--android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"-->
+                <!--android:text="Change Password"-->
+                <!--android:textColor="@color/gray"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:layout_marginLeft="6dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="1" />-->
 
-            <View
-                android:layout_width="2px"
-                android:background="@color/gray_faded"
-                android:layout_height="fill_parent" />
+            <!--<View-->
+                <!--android:layout_width="2px"-->
+                <!--android:background="@color/gray_faded"-->
+                <!--android:layout_height="fill_parent" />-->
 
-            <ImageButton
-                android:id="@+id/change_password_button"
-                android:layout_width="wrap_content"
-                android:background="@color/transparent"
-                android:src="@drawable/ic_action_create"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:layout_height="fill_parent" />
-        </LinearLayout>
+            <!--<ImageButton-->
+                <!--android:id="@+id/change_password_button"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:background="@color/transparent"-->
+                <!--android:src="@drawable/ic_action_create"-->
+                <!--android:paddingLeft="16dp"-->
+                <!--android:paddingRight="16dp"-->
+                <!--android:layout_height="fill_parent" />-->
+        <!--</LinearLayout>-->
     </LinearLayout>
 </ScrollView>

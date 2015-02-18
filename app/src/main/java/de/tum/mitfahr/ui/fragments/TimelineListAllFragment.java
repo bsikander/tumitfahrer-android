@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -39,72 +38,17 @@ import de.tum.mitfahr.util.TimelineItem;
 public class TimelineListAllFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = TimelineListAllFragment.class.getName();
-    private List<TimelineItem> mTimeline = new ArrayList<TimelineItem>();
-
-
-    private TimelineAdapter mTimelineAdapter;
-    private AlphaInAnimationAdapter mAdapter;
-
     @InjectView(R.id.rides_listview)
     ListView timelineListView;
-
     @InjectView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
-
     @InjectView(R.id.swipeRefreshLayout_emptyView)
     SwipeRefreshLayout swipeRefreshLayoutEmptyView;
-
     @InjectView(R.id.button_floating_action)
     FloatingActionButton floatingActionButton;
-
-    public static TimelineListAllFragment newInstance() {
-        TimelineListAllFragment fragment = new TimelineListAllFragment();
-        return fragment;
-    }
-
-    public TimelineListAllFragment() {
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_timeline_list, container, false);
-        ButterKnife.inject(this, rootView);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
-        swipeRefreshLayoutEmptyView.setOnRefreshListener(this);
-        swipeRefreshLayoutEmptyView.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
-        timelineListView.setEmptyView(swipeRefreshLayoutEmptyView);
-
-        floatingActionButton.attachToListView(timelineListView);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(4);
-            }
-        });
-        return rootView;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mTimelineAdapter = new TimelineAdapter(getActivity());
-        mAdapter = new AlphaInAnimationAdapter(mTimelineAdapter);
-        mAdapter.setAbsListView(timelineListView);
-        timelineListView.setAdapter(mAdapter);
-        timelineListView.setOnItemClickListener(mItemClickListener);
-        setLoading(true);
-    }
-
+    private List<TimelineItem> mTimeline = new ArrayList<TimelineItem>();
+    private TimelineAdapter mTimelineAdapter;
+    private AlphaInAnimationAdapter mAdapter;
     private AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -121,6 +65,53 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
         }
     };
 
+    public TimelineListAllFragment() {
+    }
+
+    public static TimelineListAllFragment newInstance() {
+        TimelineListAllFragment fragment = new TimelineListAllFragment();
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_timeline_list, container, false);
+        ButterKnife.inject(this, rootView);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeResources(R.color.blue1,
+                R.color.blue2,
+                R.color.blue3);
+
+        swipeRefreshLayoutEmptyView.setOnRefreshListener(this);
+        swipeRefreshLayoutEmptyView.setColorSchemeResources(R.color.blue1,
+                R.color.blue2,
+                R.color.blue3);
+
+        floatingActionButton.attachToListView(timelineListView);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(4);
+            }
+        });
+
+        timelineListView.setEmptyView(swipeRefreshLayoutEmptyView);
+
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mTimelineAdapter = new TimelineAdapter(getActivity());
+        mAdapter = new AlphaInAnimationAdapter(mTimelineAdapter);
+        mAdapter.setAbsListView(timelineListView);
+        timelineListView.setAdapter(mAdapter);
+        timelineListView.setOnItemClickListener(mItemClickListener);
+        setLoading(true);
+    }
+
     public void setTimelineItems(List<TimelineItem> timelineItems) {
         setLoading(false);
         mTimeline = timelineItems;
@@ -135,9 +126,31 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
         mAdapter.notifyDataSetChanged();
     }
 
-    private void setLoading(boolean loading) {
-        swipeRefreshLayout.setRefreshing(loading);
-        swipeRefreshLayoutEmptyView.setRefreshing(loading);
+    private void setLoading(final boolean loading) {
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(loading);
+            }
+        });
+        swipeRefreshLayoutEmptyView.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayoutEmptyView.setRefreshing(loading);
+            }
+        });
+    }
+
+    @Override
+    public void onRefresh() {
+        setLoading(true);
+        TUMitfahrApplication.getApplication(getActivity()).getActivitiesService().getActivities();
+    }
+
+    private void dump(List<TimelineItem> list) {
+        for (TimelineItem item : list) {
+            Log.d(TAG, item.getDeparture() + ":" + item.getDestination());
+        }
     }
 
     private class TimelineAdapter extends ArrayAdapter<TimelineItem> {
@@ -179,18 +192,6 @@ public class TimelineListAllFragment extends Fragment implements SwipeRefreshLay
             ((TextView) view.findViewById(R.id.timeline_location_text)).setText(item.getDestination());
             ((TextView) view.findViewById(R.id.timeline_time_text)).setText(timeSpanString);
             return view;
-        }
-    }
-
-    @Override
-    public void onRefresh() {
-        setLoading(true);
-        TUMitfahrApplication.getApplication(getActivity()).getActivitiesService().getActivities();
-    }
-
-    private void dump(List<TimelineItem> list) {
-        for (TimelineItem item : list) {
-            Log.d(TAG, item.getDeparture() + ":" + item.getDestination());
         }
     }
 

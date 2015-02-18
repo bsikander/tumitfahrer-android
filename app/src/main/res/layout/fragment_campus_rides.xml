@@ -13,7 +13,7 @@
         android:visibility="visible"
         android:background="@color/blue2"
         app:pstsUnderlineColor="@color/blue2"
-        app:pstsIndicatorHeight="6dp"
+        app:pstsIndicatorHeight="4dp"
         app:pstsIndicatorColor="@color/white"
         android:layout_height="56dp" />
 

@@ -18,7 +18,6 @@ public class ActivitiesRESTClient extends AbstractRESTClient {
     private ActivitiesAPIService activitiesAPIService;
 
     public ActivitiesRESTClient(String mBaseBackendURL) {
-
         super(mBaseBackendURL);
         this.activitiesAPIService = mRestAdapter.create(ActivitiesAPIService.class);
     }

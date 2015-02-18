@@ -123,6 +123,8 @@
     <string name="lukas_motto">Creativity is doing something out of nothing</string>
     <string name="lukas_description">I took this project as my IDP. Personally i enjoyed that project because i could use my slightly artistic background in real application, to design something which students could enjoy.</string>
     <string name="title_car_sharing">Car Sharing</string>
+    <string name="title_feedback">Feedback</string>
+
 
     <string name="about_heading1">Need a ride to the university?</string>
     <string name="about_description1">Search for a ride to your campus and join fellow students going to the uni by car. Travel in a nice student atmosphere.</string>
@@ -142,5 +144,13 @@
 
     <!-- Notification Engine Strings -->
     <string name="messageTitle">TUMitfahrer</string>
+
+    <string name="feedbackPrompt">We would love to hear what you have to say…</string>
+    <string name="feedbackHint">Leave your feedback here</string>
+    <string name="sendFeedback">Send Feedback</string>
+    <string name="feedbackSent">Feedback Sent. Thanks!</string>
+    <string name="errorSendingFeedback">Error Sending Feedback</string>
+    <string name="repeat">Repeat?</string>
+
 
 </resources>

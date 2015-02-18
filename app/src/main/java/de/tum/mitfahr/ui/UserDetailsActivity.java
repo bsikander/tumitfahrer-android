@@ -8,11 +8,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.pkmmte.view.CircularImageView;
 import com.squareup.picasso.Picasso;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -49,6 +53,22 @@ public class UserDetailsActivity extends ActionBarActivity {
     private User mCurrentUser;
     private Handler mHandler = new Handler();
     private Toolbar toolbar;
+    private Drawable.Callback drawableCallback = new Drawable.Callback() {
+        @Override
+        public void invalidateDrawable(Drawable who) {
+            getSupportActionBar().setBackgroundDrawable(who);
+        }
+
+        @Override
+        public void scheduleDrawable(Drawable who, Runnable what, long when) {
+            mHandler.postAtTime(what, when);
+        }
+
+        @Override
+        public void unscheduleDrawable(Drawable who, Runnable what) {
+            mHandler.removeCallbacks(what);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +98,17 @@ public class UserDetailsActivity extends ActionBarActivity {
         if (!StringHelper.isBlank(mCurrentUser.getPhoneNumber()))
             profilePhoneText.setText(mCurrentUser.getPhoneNumber());
         if (!StringHelper.isBlank(mCurrentUser.getCar()))
-            profilePhoneText.setText(mCurrentUser.getCar());
+            profileCarText.setText(mCurrentUser.getCar());
+
+        String[] departmentArray = getResources().getStringArray(R.array.department_array);
+        Pattern p = Pattern.compile("-?\\d+");
+        Matcher m = p.matcher(mCurrentUser.getDepartment());
+
+        while (m.find()) {
+            String deptIndex = m.group();
+            String department = departmentArray[Integer.parseInt(deptIndex)];
+            profileDepartmentText.setText(department);
+        }
 
         String profileImageUrl = TUMitfahrApplication.getApplication(this).getProfileService().getProfileImageURL(mCurrentUser.getId());
         Picasso.with(this)
@@ -96,23 +126,6 @@ public class UserDetailsActivity extends ActionBarActivity {
             getSupportActionBar().setBackgroundDrawable(newDrawable);
         }
     }
-
-    private Drawable.Callback drawableCallback = new Drawable.Callback() {
-        @Override
-        public void invalidateDrawable(Drawable who) {
-            getSupportActionBar().setBackgroundDrawable(who);
-        }
-
-        @Override
-        public void scheduleDrawable(Drawable who, Runnable what, long when) {
-            mHandler.postAtTime(what, when);
-        }
-
-        @Override
-        public void unscheduleDrawable(Drawable who, Runnable what) {
-            mHandler.removeCallbacks(what);
-        }
-    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

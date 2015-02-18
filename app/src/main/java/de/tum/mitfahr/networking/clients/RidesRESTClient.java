@@ -1,5 +1,11 @@
 package de.tum.mitfahr.networking.clients;
 
+import android.util.Log;
+
+import java.util.List;
+import java.util.Objects;
+
+import de.tum.mitfahr.events.AcceptRequestEvent;
 import de.tum.mitfahr.events.DeleteRideEvent;
 import de.tum.mitfahr.events.DeleteRideRequestEvent;
 import de.tum.mitfahr.events.GetRideEvent;
@@ -13,6 +19,7 @@ import de.tum.mitfahr.events.MyRidesAsDriverEvent;
 import de.tum.mitfahr.events.MyRidesAsPassengerEvent;
 import de.tum.mitfahr.events.MyRidesPastEvent;
 import de.tum.mitfahr.events.OfferRideEvent;
+import de.tum.mitfahr.events.RejectRequestEvent;
 import de.tum.mitfahr.events.RemovePassengerEvent;
 import de.tum.mitfahr.events.RespondToRequestEvent;
 import de.tum.mitfahr.events.UpdateRideEvent;
@@ -22,9 +29,11 @@ import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.requests.JoinRideReqest;
 import de.tum.mitfahr.networking.models.requests.OfferRideRequest;
 import de.tum.mitfahr.networking.models.requests.RespondRideReqest;
+import de.tum.mitfahr.networking.models.response.AcceptRideResponse;
 import de.tum.mitfahr.networking.models.response.DeleteRideResponse;
 import de.tum.mitfahr.networking.models.response.JoinRequestResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
+import de.tum.mitfahr.networking.models.response.RejectRideResponse;
 import de.tum.mitfahr.networking.models.response.RequestsResponse;
 import de.tum.mitfahr.networking.models.response.RideResponse;
 import de.tum.mitfahr.networking.models.response.RidesResponse;
@@ -53,9 +62,10 @@ public class RidesRESTClient extends AbstractRESTClient {
                           final String userAPIKey,
                           final int rideType,
                           final int userId,
-                          final int isDriving,
-                          final String car) {
-        OfferRideRequest requestData = new OfferRideRequest(departure, destination, meetingPoint, freeSeats, dateTime, rideType, isDriving, car);
+                          final String isDriving,
+                          final String car,
+                          final List<String> repeatDates) {
+        OfferRideRequest requestData = new OfferRideRequest(departure, destination, meetingPoint, freeSeats, dateTime, rideType, isDriving, car,repeatDates);
         ridesAPIService.offerRide(userAPIKey, userId, requestData, offerRideCallback);
     }
 
@@ -279,20 +289,43 @@ public class RidesRESTClient extends AbstractRESTClient {
         }
     };
 
-    public void respondToRequest(int rideId, int passengerId, int requestId, boolean confirmed, String userAPIKey) {
-        RespondRideReqest respondRideReqest = new RespondRideReqest(passengerId, confirmed);
-        if (confirmed) {
-            ridesAPIService.acceptRideRequest(userAPIKey, rideId, requestId, passengerId, respondToRequestCallback);
-        } else {
-            ridesAPIService.rejectRideRequest(userAPIKey, rideId, requestId, respondToRequestCallback);
+    public void acceptRequest(int rideId, int passengerId, int requestId, String userAPIKey) {
+        ridesAPIService.acceptRideRequest(userAPIKey, rideId, requestId, passengerId, acceptRequestCallback);
 
-        }
     }
 
-    private Callback respondToRequestCallback = new Callback() {
+    public void rejectRequest(int rideId, int requestId, String userAPIKey) {
+        ridesAPIService.rejectRideRequest(userAPIKey, rideId, requestId, rejectRequestCallback);
+    }
+
+    private Callback<RejectRideResponse> rejectRequestCallback = new Callback<RejectRideResponse>() {
         @Override
-        public void success(Object o, Response response) {
-            mBus.post(new RespondToRequestEvent(RespondToRequestEvent.Type.RESULT, response));
+        public void success(RejectRideResponse o, Response response) {
+            Log.e("RidesClient", "RejectCallback");
+            Log.e("RidesService", "RejectCode:" + response.getStatus());
+            if(response.getStatus() == 200) {
+                mBus.post(new RejectRequestEvent(RejectRequestEvent.Type.REJECT_SENT, response));
+            }else{
+                mBus.post(new RejectRequestEvent(RejectRequestEvent.Type.REJECT_FAILED, response));
+            }
+        }
+
+        @Override
+        public void failure(RetrofitError error) {
+            mBus.post(new RequestFailedEvent());
+        }
+    };
+
+    private Callback<AcceptRideResponse> acceptRequestCallback = new Callback<AcceptRideResponse>() {
+        @Override
+        public void success(AcceptRideResponse o, Response response) {
+            Log.e("RidesClient", "AcceptCallback");
+            Log.e("RidesService", "AcceptCode:" + response.getStatus());
+            if(response.getStatus() == 200) {
+                mBus.post(new AcceptRequestEvent(AcceptRequestEvent.Type.ACCEPT_SENT, response));
+            }else{
+                mBus.post(new AcceptRequestEvent(AcceptRequestEvent.Type.ACCEPT_FAILED, response));
+            }
         }
 
         @Override

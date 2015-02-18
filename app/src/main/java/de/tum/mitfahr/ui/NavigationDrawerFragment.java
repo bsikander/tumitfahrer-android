@@ -51,39 +51,25 @@ public class NavigationDrawerFragment extends Fragment {
      * expands it. This shared preference tracks this.
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
-
+    @InjectView(R.id.header_drawer_first_name)
+    TextView mFirstNameView;
+    @InjectView(R.id.header_drawer_last_name)
+    TextView mLastNameView;
+    @InjectView(R.id.header_drawer_profile_image)
+    CircularImageView mProfileImageView;
     /**
      * A pointer to the current callbacks instance (the Activity).
      */
     private NavigationDrawerCallbacks mCallbacks;
-
     /**
      * Helper component that ties the action bar to the navigation drawer.
      */
     private ActionBarDrawerToggle mDrawerToggle;
-
-    private enum DrawerType {
-        TYPE1,
-        TYPE2,
-        TYPE3,
-        TYPE4
-    }
-
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
     private View mProfileHeaderView;
     private DrawerAdapter mAdapter;
-
-    @InjectView(R.id.header_drawer_first_name)
-    TextView mFirstNameView;
-
-    @InjectView(R.id.header_drawer_last_name)
-    TextView mLastNameView;
-
-    @InjectView(R.id.header_drawer_profile_image)
-    CircularImageView mProfileImageView;
-
     private int mCurrentSelectedPosition = 1;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
@@ -118,7 +104,6 @@ public class NavigationDrawerFragment extends Fragment {
                 .placeholder(R.drawable.ic_account_dark)
                 .into(mProfileImageView);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -175,74 +160,6 @@ public class NavigationDrawerFragment extends Fragment {
             } else {
                 mCallbacks.onNavigationDrawerItemSelected(position, mAdapter.getItem(position - 1).mTitle);
             }
-        }
-    }
-
-    private class DrawerAdapter extends ArrayAdapter<DrawerItem> {
-
-        private int selectedItem;
-
-        public DrawerAdapter(Context context) {
-            super(context, 0);
-        }
-
-        public void setSelectedItem(int selectedItem) {
-            this.selectedItem = selectedItem;
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            DrawerItem item = getItem(position);
-            ViewHolder holder;
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_drawer, parent, false);
-                holder = new ViewHolder();
-                holder.attach(convertView);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-            switch (item.mType) {
-                case TYPE1:
-                    convertView.setBackgroundResource(R.drawable.drawer_activated_background_type1);
-                    break;
-                case TYPE2:
-                    convertView.setBackgroundResource(R.drawable.drawer_activated_background_type2);
-                    break;
-                case TYPE3:
-                    convertView.setBackgroundResource(R.drawable.drawer_activated_background_type3);
-                    break;
-                case TYPE4:
-                    convertView.setBackgroundResource(R.drawable.drawer_activated_background_type4);
-                    break;
-            }
-            holder.title.setText(item.mTitle);
-            holder.title.setTypeface(null, position == selectedItem ? Typeface.BOLD : Typeface.NORMAL);
-            holder.icon.setImageResource(item.mIconResource);
-            return convertView;
-        }
-
-        private class ViewHolder {
-            public TextView title;
-            public ImageView icon;
-
-            public void attach(View v) {
-                title = (TextView) v.findViewById(R.id.menu_title);
-                icon = (ImageView) v.findViewById(R.id.menu_icon);
-            }
-        }
-    }
-
-    private class DrawerItem {
-        String mTitle;
-        int mIconResource;
-        DrawerType mType;
-
-        private DrawerItem(String mTitle, int mIconResource, DrawerType mType) {
-            this.mTitle = mTitle;
-            this.mIconResource = mIconResource;
-            this.mType = mType;
         }
     }
 
@@ -381,6 +298,13 @@ public class NavigationDrawerFragment extends Fragment {
         return ((ActionBarActivity) getActivity()).getSupportActionBar();
     }
 
+    private enum DrawerType {
+        TYPE1,
+        TYPE2,
+        TYPE3,
+        TYPE4
+    }
+
     /**
      * Callbacks interface that all activities using this fragment must implement.
      */
@@ -389,5 +313,73 @@ public class NavigationDrawerFragment extends Fragment {
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(int position, String title);
+    }
+
+    private class DrawerAdapter extends ArrayAdapter<DrawerItem> {
+
+        private int selectedItem;
+
+        public DrawerAdapter(Context context) {
+            super(context, 0);
+        }
+
+        public void setSelectedItem(int selectedItem) {
+            this.selectedItem = selectedItem;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            DrawerItem item = getItem(position);
+            ViewHolder holder;
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_drawer, parent, false);
+                holder = new ViewHolder();
+                holder.attach(convertView);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            switch (item.mType) {
+                case TYPE1:
+                    convertView.setBackgroundResource(R.drawable.drawer_activated_background_type1);
+                    break;
+                case TYPE2:
+                    convertView.setBackgroundResource(R.drawable.drawer_activated_background_type2);
+                    break;
+                case TYPE3:
+                    convertView.setBackgroundResource(R.drawable.drawer_activated_background_type3);
+                    break;
+                case TYPE4:
+                    convertView.setBackgroundResource(R.drawable.drawer_activated_background_type4);
+                    break;
+            }
+            holder.title.setText(item.mTitle);
+            holder.title.setTypeface(null, position == selectedItem ? Typeface.BOLD : Typeface.NORMAL);
+            holder.icon.setImageResource(item.mIconResource);
+            return convertView;
+        }
+
+        private class ViewHolder {
+            public TextView title;
+            public ImageView icon;
+
+            public void attach(View v) {
+                title = (TextView) v.findViewById(R.id.menu_title);
+                icon = (ImageView) v.findViewById(R.id.menu_icon);
+            }
+        }
+    }
+
+    private class DrawerItem {
+        String mTitle;
+        int mIconResource;
+        DrawerType mType;
+
+        private DrawerItem(String mTitle, int mIconResource, DrawerType mType) {
+            this.mTitle = mTitle;
+            this.mIconResource = mIconResource;
+            this.mType = mType;
+        }
     }
 }

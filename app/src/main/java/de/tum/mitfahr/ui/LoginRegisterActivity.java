@@ -1,20 +1,13 @@
 package de.tum.mitfahr.ui;
 
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
 
 import de.tum.mitfahr.R;
 
-public class LoginRegisterActivity extends Activity implements LoginFragment.RegisterClickListener, RegisterFragment.RegistrationFinishedListener {
+public class LoginRegisterActivity extends Activity implements LoginFragment.RegisterClickListener,
+        RegisterFragment.RegistrationFinishedListener,
+        ForgotPasswordFragment.ForgotPasswordClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +27,19 @@ public class LoginRegisterActivity extends Activity implements LoginFragment.Reg
                 .replace(R.id.container, new RegisterFragment())
                 .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public void onForgotPasswordClicked() {
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container, new ForgotPasswordFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onForgotPasswordFinished() {
+        getFragmentManager().popBackStack();
     }
 
     @Override

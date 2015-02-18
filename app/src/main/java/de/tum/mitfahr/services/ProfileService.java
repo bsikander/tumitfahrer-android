@@ -4,13 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -25,6 +25,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.TUMitfahrApplication;
@@ -39,7 +41,6 @@ import de.tum.mitfahr.networking.models.response.GetUserResponse;
 import de.tum.mitfahr.networking.models.response.LoginResponse;
 import de.tum.mitfahr.networking.models.response.RegisterResponse;
 import de.tum.mitfahr.networking.models.response.UpdateUserResponse;
-import de.tum.mitfahr.util.BitmapUtils;
 import de.tum.mitfahr.util.Crypto;
 
 /**
@@ -48,22 +49,55 @@ import de.tum.mitfahr.util.Crypto;
 public class ProfileService {
 
     private static final String AMZ_BUCKET_NAME = "tumitfahrer";
-    private static final String AMZ_SECRET_KEY = "";
-    private static final String AMZ_ACCESS_KEY_ID = "";
+    private static final String AMZ_SECRET_KEY = "AMZ_SECRET_KEY";
+    private static final String AMZ_ACCESS_KEY_ID = "AMZ_ACCESS_KEY_ID";
     private static final String AMZ_PATH = "users/";
     private static final String AMZ_FILENAME = "/profile_picture.jpg";
 
     private SharedPreferences mSharedPreferences;
     private ProfileRESTClient mProfileRESTClient;
+    private Context mContext;
     private Bus mBus;
     private String userAPIKey;
     private int userId;
+    private Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+
+            File path = Environment.getExternalStorageDirectory();
+            File dirFile = new File(path, "/" + "tumitfahr");
+            File imageFile = new File(dirFile, "profile_image.png");
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(imageFile);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (out != null)
+                        out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+        }
+    };
 
     public ProfileService(final Context context) {
         String baseBackendURL = TUMitfahrApplication.getApplication(context).getBaseURLBackend();
         mBus = BusProvider.getInstance();
         mBus.register(this);
         mProfileRESTClient = new ProfileRESTClient(baseBackendURL);
+        mContext = context;
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         userId = mSharedPreferences.getInt("id", 0);
         userAPIKey = mSharedPreferences.getString("api_key", null);
@@ -156,7 +190,6 @@ public class ProfileService {
     }
 
     public User getUserFromPreferences() {
-
         int id = mSharedPreferences.getInt("id", 0);
         String firstName = mSharedPreferences.getString("first_name", "");
         String lastName = mSharedPreferences.getString("last_name", "");
@@ -193,8 +226,19 @@ public class ProfileService {
         prefEditor.putString("created_at", user.getCreatedAt());
         prefEditor.putString("updated_at", user.getUpdatedAt());
         String deptString = user.getDepartment();
-        String deptIndex = deptString.replaceAll("[^0-9]", "");
+        Pattern p = Pattern.compile("-?\\d+");
+        Matcher m = p.matcher(deptString);
+        String deptIndex = "0";
+        while (m.find()) {
+            deptIndex = m.group();
+        }
         prefEditor.putString("department", deptIndex);
+        prefEditor.commit();
+    }
+
+    public void logout() {
+        SharedPreferences.Editor prefEditor = mSharedPreferences.edit();
+        prefEditor.clear();
         prefEditor.commit();
     }
 
@@ -253,50 +297,15 @@ public class ProfileService {
         return profileImageURL;
     }
 
-    private Target target = new Target() {
-        @Override
-        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-
-            File path = Environment.getExternalStorageDirectory();
-            File dirFile = new File(path, "/" + "tumitfahr");
-            File imageFile = new File(dirFile, "profile_image.png");
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream(imageFile);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (out != null)
-                        out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        @Override
-        public void onBitmapFailed(Drawable errorDrawable) {
-        }
-
-        @Override
-        public void onPrepareLoad(Drawable placeHolderDrawable) {
-        }
-    };
-
-    public boolean uploadImage(String filePath) {
-        Bitmap bitmap = BitmapUtils.decodeFile(filePath, 350, 350);
-
-        File path = Environment.getExternalStorageDirectory();
-        File dirFile = new File(path, "/" + "tumitfahr");
-        File imageFile = new File(dirFile, "profile_image.png");
-
-        BitmapUtils.save(bitmap, Uri.fromFile(imageFile));
+    public boolean uploadImage(String filePath, ProgressListener listener) {
+        Log.d("uploadImage", "" + filePath);
         AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(AMZ_ACCESS_KEY_ID, AMZ_SECRET_KEY));
-        PutObjectRequest por = new PutObjectRequest(AMZ_BUCKET_NAME, AMZ_PATH + userId + AMZ_FILENAME, imageFile);
+        PutObjectRequest por = new PutObjectRequest(AMZ_BUCKET_NAME, AMZ_PATH + userId + AMZ_FILENAME, filePath);
+        File file = new File(filePath);
+        por.setFile(file);
+        por.setGeneralProgressListener(listener);
         s3Client.putObject(por);
-        return false;
+        return true;
     }
 
 }

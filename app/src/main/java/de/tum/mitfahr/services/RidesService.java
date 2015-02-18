@@ -1,14 +1,17 @@
 package de.tum.mitfahr.services;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.util.List;
+
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.AcceptRequestEvent;
 import de.tum.mitfahr.events.DeleteRideEvent;
 import de.tum.mitfahr.events.DeleteRideRequestEvent;
 import de.tum.mitfahr.events.GetRideEvent;
@@ -22,6 +25,7 @@ import de.tum.mitfahr.events.MyRidesAsDriverEvent;
 import de.tum.mitfahr.events.MyRidesAsPassengerEvent;
 import de.tum.mitfahr.events.MyRidesPastEvent;
 import de.tum.mitfahr.events.OfferRideEvent;
+import de.tum.mitfahr.events.RejectRequestEvent;
 import de.tum.mitfahr.events.RemovePassengerEvent;
 import de.tum.mitfahr.events.RespondToRequestEvent;
 import de.tum.mitfahr.events.UpdateRideEvent;
@@ -36,15 +40,15 @@ import retrofit.client.Response;
 /**
  * Created by amr on 18/05/14.
  */
-public class RidesService {
+public class RidesService extends AbstractService {
 
-    private SharedPreferences mSharedPreferences;
     private RidesRESTClient mRidesRESTClient;
     private Bus mBus;
     private String userAPIKey;
     private int userId;
 
     public RidesService(final Context context) {
+        super(context);
         String baseBackendURL = TUMitfahrApplication.getApplication(context).getBaseURLBackend();
         mBus = BusProvider.getInstance();
         mBus.register(this);
@@ -54,23 +58,21 @@ public class RidesService {
         userAPIKey = mSharedPreferences.getString("api_key", null);
     }
 
-    public void offerRide(String departure, String destination, String meetingPoint, int freeSeats, String dateTime, int rideType, int isDriving, String car) {
-        mRidesRESTClient.offerRide(departure, destination, meetingPoint, freeSeats, dateTime, userAPIKey, rideType, userId, isDriving, car);
+    public void offerRide(String departure, String destination, String meetingPoint, int freeSeats, String dateTime, int rideType, String isDriving, String car, List<String> repeatDates) {
+        mRidesRESTClient.offerRide(departure, destination, meetingPoint, freeSeats, dateTime, userAPIKey, rideType, userId, isDriving, car, repeatDates);
     }
 
     @Subscribe
     public void onOfferRidesResult(OfferRideEvent result) {
         if (result.getType() == OfferRideEvent.Type.RESULT) {
             OfferRideResponse response = result.getResponse();
-            if (null == response.getRide()) {
+            if (null == response.getRides() && null == response.getRide()) {
                 mBus.post(new OfferRideEvent(OfferRideEvent.Type.OFFER_RIDE_FAILED));
             } else {
                 mBus.post(new OfferRideEvent(OfferRideEvent.Type.RIDE_ADDED, response.getRide()));
             }
         }
     }
-
-
 
     public void getRide(int rideId) {
         mRidesRESTClient.getRide(userAPIKey, rideId);
@@ -273,17 +275,56 @@ public class RidesService {
 
     }
 
-    public void respondToRequest(int rideId, int requestId, boolean confirmed) {
-        mRidesRESTClient.respondToRequest(rideId, userId, requestId, confirmed, userAPIKey);
+    public void acceptRequest(int rideId, int requestId) {
+        mRidesRESTClient.acceptRequest(rideId, userId, requestId, userAPIKey);
+    }
+
+    public void onAcceptRequestResult(AcceptRequestEvent result) {
+        Log.e("RidesService", "AcceptRequest");
+        if (result.getType() == AcceptRequestEvent.Type.RESULT) {
+            Response retrofitResponse = result.getRetrofitResponse();
+            Log.e("RidesService", "AcceptRequestCode:" + retrofitResponse.getStatus());
+            if (retrofitResponse.getStatus() == 200) {
+                Log.e("RidesService", "AcceptRequest:SENT:" + retrofitResponse.getStatus());
+                mBus.post(new AcceptRequestEvent(AcceptRequestEvent.Type.ACCEPT_SENT, retrofitResponse));
+            } else {
+                Log.e("RidesService", "AcceptRequest:FALIED:" + retrofitResponse.getStatus());
+                mBus.post(new AcceptRequestEvent(AcceptRequestEvent.Type.ACCEPT_FAILED, retrofitResponse));
+            }
+        }
+    }
+
+
+    public void rejectRequest(int rideId, int requestId) {
+        mRidesRESTClient.rejectRequest(rideId, requestId, userAPIKey);
+    }
+
+    public void onRejectRequestResult(RejectRequestEvent result) {
+        Log.e("RidesService", "RejectRequest");
+        if (result.getType() == RejectRequestEvent.Type.RESULT) {
+            Response retrofitResponse = result.getRetrofitResponse();
+            Log.e("RidesService", "RejectRequestEventCode:" + retrofitResponse.getStatus());
+            if (retrofitResponse.getStatus() == 200) {
+                Log.e("RidesService", "RejectRequestEvent:SENT:" + retrofitResponse.getStatus());
+                mBus.post(new RejectRequestEvent(RejectRequestEvent.Type.REJECT_SENT, retrofitResponse));
+            } else {
+                Log.e("RidesService", "RejectRequestEvent:FALIED:" + retrofitResponse.getStatus());
+                mBus.post(new RejectRequestEvent(RejectRequestEvent.Type.REJECT_FAILED, retrofitResponse));
+            }
+        }
     }
 
     @Subscribe
     public void onRespondToRequestResult(RespondToRequestEvent result) {
+        Log.e("RidesService", "ResponseToRequst");
         if (result.getType() == RespondToRequestEvent.Type.RESULT) {
             Response retrofitResponse = result.getRetrofitResponse();
-            if (200 == retrofitResponse.getStatus()) {
+            Log.e("RidesService", "Code:" + retrofitResponse.getStatus());
+            if (retrofitResponse.getStatus() == 200) {
+                Log.e("RidesService", "SENT:" + retrofitResponse.getStatus());
                 mBus.post(new RespondToRequestEvent(RespondToRequestEvent.Type.RESPOND_SENT, retrofitResponse));
             } else {
+                Log.e("RidesService", "FALIED:" + retrofitResponse.getStatus());
                 mBus.post(new RespondToRequestEvent(RespondToRequestEvent.Type.RESPOND_FAILED, retrofitResponse));
             }
         }

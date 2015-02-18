@@ -3,7 +3,6 @@ package de.tum.mitfahr.ui.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -45,13 +44,24 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
 
     @InjectView(R.id.swipeRefreshLayout_emptyView)
     SwipeRefreshLayout swipeRefreshLayoutEmptyView;
+    private AdapterView.OnItemClickListener mItemClickListener = new android.widget.AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Ride clickedItem = mAdapter.getItem(position);
+            if (clickedItem != null) {
+                Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
+                intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, clickedItem);
+                startActivity(intent);
+            }
+        }
+    };
+
+    public MyRidesJoinedFragment() {
+    }
 
     public static MyRidesJoinedFragment newInstance() {
         MyRidesJoinedFragment fragment = new MyRidesJoinedFragment();
         return fragment;
-    }
-
-    public MyRidesJoinedFragment() {
     }
 
     private void fetchRides() {
@@ -76,16 +86,14 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
         View rootView = inflater.inflate(R.layout.fragment_my_rides_list, container, false);
         ButterKnife.inject(this, rootView);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        swipeRefreshLayout.setColorSchemeResources(R.color.blue1,
+                R.color.blue2,
+                R.color.blue3);
 
         swipeRefreshLayoutEmptyView.setOnRefreshListener(this);
-        swipeRefreshLayoutEmptyView.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        swipeRefreshLayoutEmptyView.setColorSchemeResources(R.color.blue1,
+                R.color.blue2,
+                R.color.blue3);
 
         ridesListView.setEmptyView(swipeRefreshLayoutEmptyView);
         return rootView;
@@ -97,32 +105,41 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
         mAdapter = new RideAdapterTest(getActivity());
         ridesListView.setAdapter(mAdapter);
         ridesListView.setOnItemClickListener(mItemClickListener);
-        fetchRides();
         setLoading(true);
     }
 
-    private AdapterView.OnItemClickListener mItemClickListener = new android.widget.AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Ride clickedItem = mAdapter.getItem(position);
-            if (clickedItem != null) {
-                Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
-                intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, clickedItem);
-                startActivity(intent);
-            }
-        }
-    };
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+        fetchRides();
+    }
 
     @Override
     public void onRefresh() {
         fetchRides();
     }
 
-    private void setLoading(boolean loading) {
-        swipeRefreshLayout.setRefreshing(loading);
-        swipeRefreshLayoutEmptyView.setRefreshing(loading);
+    private void setLoading(final boolean loading) {
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(loading);
+            }
+        });
+        swipeRefreshLayoutEmptyView.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayoutEmptyView.setRefreshing(loading);
+            }
+        });
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
+    }
 
     class RideAdapterTest extends ArrayAdapter<Ride> implements StickyListHeadersAdapter {
 
@@ -178,17 +195,5 @@ public class MyRidesJoinedFragment extends Fragment implements SwipeRefreshLayou
         class HeaderViewHolder {
             TextView text;
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        BusProvider.getInstance().register(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        BusProvider.getInstance().unregister(this);
     }
 }

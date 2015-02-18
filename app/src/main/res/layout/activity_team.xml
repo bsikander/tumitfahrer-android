@@ -1,770 +1,775 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
+    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/toolbar"
+        style="@style/MyToolbarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimaryDark" />
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:orientation="vertical"
-            android:paddingTop="?android:attr/actionBarSize"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:layout_height="wrap_content">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:orientation="vertical"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
                 android:layout_height="wrap_content">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="fill_parent"
-                    android:text="Developed at:"
-                    android:layout_height="wrap_content" />
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
 
-                <ImageView
-                    android:layout_width="fill_parent"
-                    android:src="@drawable/winfobase_logo"
-                    android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="Developed at:"
+                        android:layout_height="wrap_content" />
 
-                <TextView
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:src="@drawable/winfobase_logo"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="fill_parent"
+                        android:text="Initial version by:"
+                        android:layout_height="wrap_content" />
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:src="@drawable/tum_junge_akademie"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:gravity="center"
+                        android:text="TUM: Junge Akademie"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <View
                     android:layout_marginTop="10dp"
                     android:layout_width="fill_parent"
-                    android:text="Initial version by:"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:layout_width="fill_parent"
-                    android:src="@drawable/tum_junge_akademie"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:gravity="center"
-                    android:text="TUM: Junge Akademie"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_marginTop="10dp"
-                android:layout_width="fill_parent"
-                android:background="@color/gray_faded"
-                android:layout_height="4px" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
+                    android:background="@color/gray_faded"
+                    android:layout_height="4px" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:orientation="horizontal"
-                    android:layout_height="wrap_content">
-
-                    <com.pkmmte.view.CircularImageView
-                        android:layout_width="75dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="12dp"
-                        android:layout_height="75dp"
-                        android:src="@drawable/abi_photo"
-                        android:scaleType="fitCenter"
-                        app:border_color="@color/white"
-                        app:border_width="2dp"
-                        app:border="true"
-                        app:shadow="true" />
-
-                    <LinearLayout
-                        android:layout_width="fill_parent"
-                        android:padding="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_gravity="center"
-                        android:layout_height="fill_parent">
-
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/abhijith_name"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/abhijith_role"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/abhijith_motto"
-                    android:textStyle="italic"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="12dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/abhijith_description"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="fill_parent"
-                android:background="@color/gray_faded"
-                android:layout_height="2px" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:layout_width="fill_parent"
-                        android:padding="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_gravity="center"
-                        android:layout_height="fill_parent">
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
 
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/amr_name"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:gravity="right"
-                            android:layout_height="wrap_content" />
+                        <com.pkmmte.view.CircularImageView
+                            android:layout_width="75dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="12dp"
+                            android:layout_height="75dp"
+                            android:src="@drawable/abi_photo"
+                            android:scaleType="fitCenter"
+                            app:border_color="@color/white"
+                            app:border_width="2dp"
+                            app:border="true"
+                            app:shadow="true" />
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="fill_parent"
-                            android:text="@string/amr_role"
-                            android:gravity="right"
-                            android:layout_height="wrap_content" />
+                            android:padding="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:layout_height="fill_parent">
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/abhijith_name"
+                                android:textStyle="bold"
+                                android:textSize="16sp"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/abhijith_role"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
                     </LinearLayout>
 
-                    <com.pkmmte.view.CircularImageView
-                        android:layout_width="75dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="12dp"
-                        android:layout_height="75dp"
-                        android:src="@drawable/amr_photo"
-                        app:border="true"
-                        android:scaleType="fitCenter"
-                        app:border_color="@color/white"
-                        app:border_width="2dp"
-                        app:shadow="true" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/amr_motto"
-                    android:textStyle="italic"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="12dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/amr_description"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-
-            <View
-                android:layout_width="fill_parent"
-                android:background="@color/gray_faded"
-                android:layout_height="2px" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:orientation="horizontal"
-                    android:layout_height="wrap_content">
-
-                    <com.pkmmte.view.CircularImageView
-                        android:layout_width="75dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="12dp"
-                        android:layout_height="75dp"
-                        android:src="@drawable/michael_photo"
-                        android:scaleType="fitCenter"
-                        app:border_color="@color/white"
-                        app:border_width="2dp"
-                        app:border="true"
-                        app:shadow="true" />
-
-                    <LinearLayout
+                    <TextView
                         android:layout_width="fill_parent"
-                        android:padding="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_gravity="center"
-                        android:layout_height="fill_parent">
+                        android:text="@string/abhijith_motto"
+                        android:textStyle="italic"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="12dp"
+                        android:layout_height="wrap_content" />
 
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/michael_name"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/michael_role"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/abhijith_description"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
-                <TextView
+                <View
                     android:layout_width="fill_parent"
-                    android:text="@string/michael_motto"
-                    android:textStyle="italic"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="12dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/michael_description"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="fill_parent"
-                android:background="@color/gray_faded"
-                android:layout_height="2px" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
+                    android:background="@color/gray_faded"
+                    android:layout_height="2px" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:layout_width="fill_parent"
-                        android:padding="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_gravity="center"
-                        android:layout_height="fill_parent">
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="fill_parent"
-                            android:text="@string/pawel_name"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:gravity="right"
-                            android:layout_height="wrap_content" />
+                            android:padding="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:layout_height="fill_parent">
 
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/pawel_role"
-                            android:gravity="right"
-                            android:layout_height="wrap_content" />
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/amr_name"
+                                android:textStyle="bold"
+                                android:textSize="16sp"
+                                android:gravity="right"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/amr_role"
+                                android:gravity="right"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <com.pkmmte.view.CircularImageView
+                            android:layout_width="75dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="12dp"
+                            android:layout_height="75dp"
+                            android:src="@drawable/amr_photo"
+                            app:border="true"
+                            android:scaleType="fitCenter"
+                            app:border_color="@color/white"
+                            app:border_width="2dp"
+                            app:shadow="true" />
+
                     </LinearLayout>
 
-                    <com.pkmmte.view.CircularImageView
-                        android:layout_width="75dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="12dp"
-                        android:layout_height="75dp"
-                        android:src="@drawable/pawel_photo"
-                        android:scaleType="fitCenter"
-                        app:border_color="@color/white"
-                        app:border="true"
-                        app:border_width="2dp"
-                        app:shadow="true" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/pawel_motto"
-                    android:textStyle="italic"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="12dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/pawel_description"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-
-            <View
-                android:layout_width="fill_parent"
-                android:background="@color/gray_faded"
-                android:layout_height="2px" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:orientation="horizontal"
-                    android:layout_height="wrap_content">
-
-                    <com.pkmmte.view.CircularImageView
-                        android:layout_width="75dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="12dp"
-                        android:layout_height="75dp"
-                        android:src="@drawable/behroz_photo"
-                        android:scaleType="fitCenter"
-                        app:border_color="@color/white"
-                        app:border_width="2dp"
-                        app:border="true"
-                        app:shadow="true" />
-
-                    <LinearLayout
+                    <TextView
                         android:layout_width="fill_parent"
-                        android:padding="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_gravity="center"
-                        android:layout_height="fill_parent">
+                        android:text="@string/amr_motto"
+                        android:textStyle="italic"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="12dp"
+                        android:layout_height="wrap_content" />
 
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/behroz_name"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/behroz_role"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/amr_description"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
-                <TextView
+
+                <View
                     android:layout_width="fill_parent"
-                    android:text="@string/behroz_motto"
-                    android:textStyle="italic"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="12dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/behroz_description"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="fill_parent"
-                android:background="@color/gray_faded"
-                android:layout_height="2px" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
+                    android:background="@color/gray_faded"
+                    android:layout_height="2px" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:layout_width="fill_parent"
-                        android:padding="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_gravity="center"
-                        android:layout_height="fill_parent">
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
 
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/hafiz_name"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:gravity="right"
-                            android:layout_height="wrap_content" />
+                        <com.pkmmte.view.CircularImageView
+                            android:layout_width="75dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="12dp"
+                            android:layout_height="75dp"
+                            android:src="@drawable/michael_photo"
+                            android:scaleType="fitCenter"
+                            app:border_color="@color/white"
+                            app:border_width="2dp"
+                            app:border="true"
+                            app:shadow="true" />
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="fill_parent"
-                            android:text="@string/hafiz_role"
-                            android:gravity="right"
-                            android:layout_height="wrap_content" />
+                            android:padding="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:layout_height="fill_parent">
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/michael_name"
+                                android:textStyle="bold"
+                                android:textSize="16sp"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/michael_role"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
                     </LinearLayout>
 
-                    <com.pkmmte.view.CircularImageView
-                        android:layout_width="75dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="12dp"
-                        android:layout_height="75dp"
-                        android:src="@drawable/saqib_photo"
-                        android:scaleType="fitCenter"
-                        app:border_color="@color/white"
-                        app:border_width="2dp"
-                        app:border="true"
-                        app:shadow="true" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/hafiz_motto"
-                    android:textStyle="italic"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="12dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/hafiz_description"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-
-            <View
-                android:layout_width="fill_parent"
-                android:background="@color/gray_faded"
-                android:layout_height="2px" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:orientation="horizontal"
-                    android:layout_height="wrap_content">
-
-                    <com.pkmmte.view.CircularImageView
-                        android:layout_width="75dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="12dp"
-                        android:layout_height="75dp"
-                        android:src="@drawable/anurada_photo"
-                        android:scaleType="fitCenter"
-                        app:border_color="@color/white"
-                        app:border="true"
-                        app:border_width="2dp"
-                        app:shadow="true" />
-
-                    <LinearLayout
+                    <TextView
                         android:layout_width="fill_parent"
-                        android:padding="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_gravity="center"
-                        android:layout_height="fill_parent">
+                        android:text="@string/michael_motto"
+                        android:textStyle="italic"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="12dp"
+                        android:layout_height="wrap_content" />
 
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/anuradha_name"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/anuradha_role"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/michael_description"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
-                <TextView
+                <View
                     android:layout_width="fill_parent"
-                    android:text="@string/anuradha_motto"
-                    android:textStyle="italic"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="12dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/anuradha_description"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="fill_parent"
-                android:background="@color/gray_faded"
-                android:layout_height="2px" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
+                    android:background="@color/gray_faded"
+                    android:layout_height="2px" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:layout_width="fill_parent"
-                        android:padding="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_gravity="center"
-                        android:layout_height="fill_parent">
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="fill_parent"
-                            android:text="@string/shahid_name"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:gravity="right"
-                            android:layout_height="wrap_content" />
+                            android:padding="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:layout_height="fill_parent">
 
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/shahid_role"
-                            android:gravity="right"
-                            android:layout_height="wrap_content" />
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/pawel_name"
+                                android:textStyle="bold"
+                                android:textSize="16sp"
+                                android:gravity="right"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/pawel_role"
+                                android:gravity="right"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <com.pkmmte.view.CircularImageView
+                            android:layout_width="75dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="12dp"
+                            android:layout_height="75dp"
+                            android:src="@drawable/pawel_photo"
+                            android:scaleType="fitCenter"
+                            app:border_color="@color/white"
+                            app:border="true"
+                            app:border_width="2dp"
+                            app:shadow="true" />
+
                     </LinearLayout>
 
-                    <com.pkmmte.view.CircularImageView
-                        android:layout_width="75dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="12dp"
-                        android:layout_height="75dp"
-                        android:src="@drawable/shahid_photo"
-                        android:scaleType="fitCenter"
-                        app:border_color="@color/white"
-                        app:border="true"
-                        app:border_width="2dp"
-                        app:shadow="true" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/shahid_motto"
-                    android:textStyle="italic"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="12dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/shahid_description"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-
-            <View
-                android:layout_width="fill_parent"
-                android:background="@color/gray_faded"
-                android:layout_height="2px" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:orientation="horizontal"
-                    android:layout_height="wrap_content">
-
-                    <com.pkmmte.view.CircularImageView
-                        android:layout_width="75dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="12dp"
-                        android:layout_height="75dp"
-                        android:src="@drawable/dansen_photo"
-                        android:scaleType="fitCenter"
-                        app:border_color="@color/white"
-                        app:border_width="2dp"
-                        app:border="true"
-                        app:shadow="true" />
-
-                    <LinearLayout
+                    <TextView
                         android:layout_width="fill_parent"
-                        android:padding="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_gravity="center"
-                        android:layout_height="fill_parent">
+                        android:text="@string/pawel_motto"
+                        android:textStyle="italic"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="12dp"
+                        android:layout_height="wrap_content" />
 
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/dansen_name"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/dansen_role"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/pawel_description"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
-                <TextView
+
+                <View
                     android:layout_width="fill_parent"
-                    android:text="@string/dansen_motto"
-                    android:textStyle="italic"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="12dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:text="@string/dansen_description"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="fill_parent"
-                android:background="@color/gray_faded"
-                android:layout_height="2px" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
+                    android:background="@color/gray_faded"
+                    android:layout_height="2px" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:layout_width="fill_parent"
-                        android:padding="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_gravity="center"
-                        android:layout_height="fill_parent">
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
 
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:text="@string/lukas_name"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:gravity="right"
-                            android:layout_height="wrap_content" />
+                        <com.pkmmte.view.CircularImageView
+                            android:layout_width="75dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="12dp"
+                            android:layout_height="75dp"
+                            android:src="@drawable/behroz_photo"
+                            android:scaleType="fitCenter"
+                            app:border_color="@color/white"
+                            app:border_width="2dp"
+                            app:border="true"
+                            app:shadow="true" />
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="fill_parent"
-                            android:text="@string/lukas_role"
-                            android:gravity="right"
-                            android:layout_height="wrap_content" />
+                            android:padding="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:layout_height="fill_parent">
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/behroz_name"
+                                android:textStyle="bold"
+                                android:textSize="16sp"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/behroz_role"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
                     </LinearLayout>
 
-                    <com.pkmmte.view.CircularImageView
-                        android:layout_width="75dp"
-                        android:layout_gravity="center"
-                        android:layout_margin="12dp"
-                        android:layout_height="75dp"
-                        android:src="@drawable/lukas_photo"
-                        android:scaleType="fitCenter"
-                        app:border_color="@color/white"
-                        app:border="true"
-                        app:border_width="2dp"
-                        app:shadow="true" />
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/behroz_motto"
+                        android:textStyle="italic"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="12dp"
+                        android:layout_height="wrap_content" />
 
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/behroz_description"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
-                <TextView
+                <View
                     android:layout_width="fill_parent"
-                    android:text="@string/lukas_motto"
-                    android:textStyle="italic"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="12dp"
-                    android:layout_height="wrap_content" />
+                    android:background="@color/gray_faded"
+                    android:layout_height="2px" />
 
-                <TextView
+                <LinearLayout
                     android:layout_width="fill_parent"
-                    android:text="@string/lukas_description"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:layout_height="wrap_content" />
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:padding="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:layout_height="fill_parent">
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/hafiz_name"
+                                android:textStyle="bold"
+                                android:textSize="16sp"
+                                android:gravity="right"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/hafiz_role"
+                                android:gravity="right"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <com.pkmmte.view.CircularImageView
+                            android:layout_width="75dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="12dp"
+                            android:layout_height="75dp"
+                            android:src="@drawable/saqib_photo"
+                            android:scaleType="fitCenter"
+                            app:border_color="@color/white"
+                            app:border_width="2dp"
+                            app:border="true"
+                            app:shadow="true" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/hafiz_motto"
+                        android:textStyle="italic"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="12dp"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/hafiz_description"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:background="@color/gray_faded"
+                    android:layout_height="2px" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
+
+                        <com.pkmmte.view.CircularImageView
+                            android:layout_width="75dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="12dp"
+                            android:layout_height="75dp"
+                            android:src="@drawable/anurada_photo"
+                            android:scaleType="fitCenter"
+                            app:border_color="@color/white"
+                            app:border="true"
+                            app:border_width="2dp"
+                            app:shadow="true" />
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:padding="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:layout_height="fill_parent">
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/anuradha_name"
+                                android:textStyle="bold"
+                                android:textSize="16sp"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/anuradha_role"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/anuradha_motto"
+                        android:textStyle="italic"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="12dp"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/anuradha_description"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:background="@color/gray_faded"
+                    android:layout_height="2px" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:padding="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:layout_height="fill_parent">
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/shahid_name"
+                                android:textStyle="bold"
+                                android:textSize="16sp"
+                                android:gravity="right"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/shahid_role"
+                                android:gravity="right"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <com.pkmmte.view.CircularImageView
+                            android:layout_width="75dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="12dp"
+                            android:layout_height="75dp"
+                            android:src="@drawable/shahid_photo"
+                            android:scaleType="fitCenter"
+                            app:border_color="@color/white"
+                            app:border="true"
+                            app:border_width="2dp"
+                            app:shadow="true" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/shahid_motto"
+                        android:textStyle="italic"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="12dp"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/shahid_description"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:background="@color/gray_faded"
+                    android:layout_height="2px" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
+
+                        <com.pkmmte.view.CircularImageView
+                            android:layout_width="75dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="12dp"
+                            android:layout_height="75dp"
+                            android:src="@drawable/dansen_photo"
+                            android:scaleType="fitCenter"
+                            app:border_color="@color/white"
+                            app:border_width="2dp"
+                            app:border="true"
+                            app:shadow="true" />
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:padding="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:layout_height="fill_parent">
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/dansen_name"
+                                android:textStyle="bold"
+                                android:textSize="16sp"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/dansen_role"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/dansen_motto"
+                        android:textStyle="italic"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="12dp"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/dansen_description"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:background="@color/gray_faded"
+                    android:layout_height="2px" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:padding="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:layout_height="fill_parent">
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/lukas_name"
+                                android:textStyle="bold"
+                                android:textSize="16sp"
+                                android:gravity="right"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:layout_width="fill_parent"
+                                android:text="@string/lukas_role"
+                                android:gravity="right"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <com.pkmmte.view.CircularImageView
+                            android:layout_width="75dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="12dp"
+                            android:layout_height="75dp"
+                            android:src="@drawable/lukas_photo"
+                            android:scaleType="fitCenter"
+                            app:border_color="@color/white"
+                            app:border="true"
+                            app:border_width="2dp"
+                            app:shadow="true" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/lukas_motto"
+                        android:textStyle="italic"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingBottom="12dp"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:text="@string/lukas_description"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:background="@color/gray_faded"
+                    android:layout_height="2px" />
+
             </LinearLayout>
+        </FrameLayout>
 
-
-            <View
-                android:layout_width="fill_parent"
-                android:background="@color/gray_faded"
-                android:layout_height="2px" />
-
-        </LinearLayout>
-
-        <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/toolbar"
-            style="@style/MyToolbarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimaryDark" />
-    </FrameLayout>
-
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

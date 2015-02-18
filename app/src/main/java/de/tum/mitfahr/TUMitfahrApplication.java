@@ -46,6 +46,7 @@ public class TUMitfahrApplication extends Application {
         mSearchService = new SearchService(this);
         mActivitiesService = new ActivitiesService(this);
         mPanoramioService = new PanoramioService(this);
+        mFeedbackService = new FeedbackService(this);
     }
 
     public ProfileService getProfileService() {

@@ -1,7 +1,9 @@
 package de.tum.mitfahr.ui;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
@@ -9,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -38,6 +41,7 @@ import de.tum.mitfahr.util.ActionBarColorChangeListener;
 public class MainActivity extends ActionBarActivity
         implements ActionBarColorChangeListener,
         NavigationDrawerFragment.NavigationDrawerCallbacks, PushNotificationInterface {
+    public static final String EXTRA_OFFER_RIDE = "offer_ride";
     private static final String TAG_TIMELINE_FRAGMENT = "timeline_fragment";
     private static final String TAG_ACTIVITY_RIDES_FRAGMENT = "activity_rides_fragment";
     private static final String TAG_CAMPUS_RIDES_FRAGMENT = "campus_rides_fragment";
@@ -46,14 +50,12 @@ public class MainActivity extends ActionBarActivity
     private static final String TAG_MY_RIDES_FRAGMENT = "my_rides_fragment";
     private static final String TAG_SETTINGS_FRAGMENT = "settings_fragment";
     private static final String TAG_PROFILE_FRAGMENT = "profile_fragment";
-
     private static final String TAG_SEARCH_RESULTS_FRAGMENT = "search_results_fragment";
-
     private Toolbar toolbar;
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private AbstractNavigationFragment mCurrentFragment;
     private boolean offerRideFlag;
-    private Ride mOfferedRide = null;
+    private Ride mOfferedRide;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -91,7 +93,7 @@ public class MainActivity extends ActionBarActivity
         if (savedInstanceState == null) {
             onNavigationDrawerItemSelected(1, "Timeline");
         } else {
-            mTitle = savedInstanceState.getCharSequence("title");
+            mTitle = savedInstanceState.getCharSequence("title", null);
             restoreActionBar();
             findAndAddFragment();
         }
@@ -108,6 +110,13 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        if (getIntent().hasExtra(EXTRA_OFFER_RIDE)) {
+            offerRideFlag = true;
+            mOfferedRide = (Ride) getIntent().getSerializableExtra(EXTRA_OFFER_RIDE);
+            Log.d("Main", mOfferedRide.toString());
+            mNavigationDrawerFragment.selectItem(4);
+        }
 
     }
 
@@ -140,6 +149,7 @@ public class MainActivity extends ActionBarActivity
         mTitle = title;
         restoreActionBar();
         FragmentManager fragmentManager = getSupportFragmentManager();
+        setLollipopStatusBarColor(position);
         switch (position) {
             case 0:
                 mCurrentFragment = ProfileFragment.newInstance(position + 1);
@@ -173,13 +183,11 @@ public class MainActivity extends ActionBarActivity
                 break;
 
             case 4:
-                mCurrentFragment = CreateRidesFragment.newInstance(position + 1);
                 if (offerRideFlag) {
-                    Bundle extras = new Bundle();
-                    extras.putSerializable(CreateRidesFragment.ARG_OFFER_RIDE, mOfferedRide);
-                    mCurrentFragment.setArguments(extras);
+                    mCurrentFragment = CreateRidesFragment.newInstance(position + 1, mOfferedRide);
                     offerRideFlag = false;
-                    mOfferedRide = null;
+                } else {
+                    mCurrentFragment = CreateRidesFragment.newInstance(position + 1, null);
                 }
                 fragmentManager.beginTransaction()
                         .setCustomAnimations(R.anim.fade_enter, R.anim.fade_exit)
@@ -213,8 +221,42 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
+    @TargetApi(21)
+    private void setLollipopStatusBarColor(int position) {
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.LOLLIPOP) {
+            return;
+        }
+        switch (position) {
+            case 0:
+                getWindow().setStatusBarColor(getResources().getColor(R.color.gray));
+                break;
+            case 1:
+                getWindow().setStatusBarColor(getResources().getColor(R.color.blue1_dark));
+                break;
+            case 2:
+                getWindow().setStatusBarColor(getResources().getColor(R.color.blue2_dark));
+                break;
+            case 3:
+                getWindow().setStatusBarColor(getResources().getColor(R.color.blue2_dark));
+                break;
+            case 4:
+                getWindow().setStatusBarColor(getResources().getColor(R.color.blue3_dark));
+                break;
+            case 5:
+                getWindow().setStatusBarColor(getResources().getColor(R.color.blue3_dark));
+                break;
+            case 6:
+                getWindow().setStatusBarColor(getResources().getColor(R.color.blue4_dark));
+                break;
+            case 7:
+                getWindow().setStatusBarColor(getResources().getColor(R.color.gray_dark));
+                break;
+        }
+    }
+
     public void setTitle(CharSequence title) {
-        getActionBar().setTitle(title);
+        if (title != null)
+            getActionBar().setTitle(title);
     }
 
     public void restoreActionBar() {
@@ -283,9 +325,8 @@ public class MainActivity extends ActionBarActivity
 
     @Subscribe
     public void onOfferRideUIAction(UIActionOfferRideEvent event) {
-        mNavigationDrawerFragment.selectItem(4);
-        offerRideFlag = true;
-        mOfferedRide = event.getRide();
+        Log.d("Main", "Received UIOfferRideEvent");
+
     }
 
     public Toolbar getToolbar() {

@@ -18,7 +18,6 @@ import de.tum.mitfahr.ui.fragments.AboutFragment;
 public class AboutActivity extends FragmentActivity {
 
     SectionsPagerAdapter mSectionsPagerAdapter;
-
     ViewPager mViewPager;
 
     @Override

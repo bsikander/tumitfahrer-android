@@ -17,14 +17,14 @@ import retrofit.client.Response;
 /**
  * Created by amr on 23/06/14.
  */
-public class RatingsService {
+public class RatingsService extends AbstractService{
 
-    private SharedPreferences mSharedPreferences;
     private RatingsRESTClient mRatingsRESTClient;
     private Bus mBus;
     private String userAPIKey;
 
     public RatingsService(final Context context) {
+        super(context);
         String baseBackendURL = TUMitfahrApplication.getApplication(context).getBaseURLBackend();
         mBus = BusProvider.getInstance();
         mBus.register(this);

@@ -25,7 +25,7 @@ public class PushNotificationHelper {
 
 	// Android Project Id
 	// TODO change this ID to production one
-	private final static String SENDER_ID = "936967013602";
+	private final static String SENDER_ID = "SENDER_ID";
 	
 	// Google Play services handler local variable
 	private static GoogleCloudMessaging gcm = null;

@@ -2,9 +2,10 @@ package de.tum.mitfahr.networking.api;
 
 import org.json.JSONObject;
 
-import de.tum.mitfahr.networking.models.User;
+import de.tum.mitfahr.networking.models.requests.ForgotPasswordRequest;
 import de.tum.mitfahr.networking.models.requests.RegisterRequest;
 import de.tum.mitfahr.networking.models.requests.UpdateUserRequest;
+import de.tum.mitfahr.networking.models.response.ForgotPasswordResponse;
 import de.tum.mitfahr.networking.models.response.GetUserResponse;
 import de.tum.mitfahr.networking.models.response.RegisterResponse;
 import de.tum.mitfahr.networking.models.response.UpdateUserResponse;
@@ -58,8 +59,8 @@ public interface UserAPIService {
 
     @POST("/forgot")
     public void forgotPassword(
-            @Body String email,
-            Callback callback
+            @Body ForgotPasswordRequest email,
+            Callback<ForgotPasswordResponse> callback
     );
 
 }

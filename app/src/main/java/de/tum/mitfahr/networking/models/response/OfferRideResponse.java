@@ -1,5 +1,7 @@
 package de.tum.mitfahr.networking.models.response;
 
+import java.util.ArrayList;
+
 import de.tum.mitfahr.networking.models.Ride;
 
 /**
@@ -9,11 +11,13 @@ public class OfferRideResponse {
 
     private String status;
     private String message;
+    private ArrayList<Ride> rides;
     private Ride ride;
 
-    public OfferRideResponse(String status, String message, Ride ride) {
+    public OfferRideResponse(String status, String message, ArrayList<Ride> rides, Ride ride) {
         this.status = status;
         this.message = message;
+        this.rides = rides;
         this.ride = ride;
     }
 
@@ -23,6 +27,10 @@ public class OfferRideResponse {
 
     public String getMessage() {
         return message;
+    }
+
+    public ArrayList<Ride> getRides() {
+        return rides;
     }
 
     public Ride getRide() {

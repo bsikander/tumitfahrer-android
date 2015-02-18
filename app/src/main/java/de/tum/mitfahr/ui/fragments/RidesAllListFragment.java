@@ -51,24 +51,18 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
 
     private static final String TAG = RidesAllListFragment.class.getName();
     private static final int LIST_ITEM_COLOR_FILTER = 0x5F000000;
-
+    @InjectView(R.id.rides_listview)
+    ListView ridesListView;
+    @InjectView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @InjectView(R.id.swipeRefreshLayout_emptyView)
+    SwipeRefreshLayout swipeRefreshLayoutEmptyView;
+    @InjectView(R.id.button_floating_action)
+    FloatingActionButton floatingActionButton;
     private List<Ride> mRides = new ArrayList<Ride>();
     private AlphaInAnimationAdapter mAdapter;
     private RideAdapter mRidesAdapter;
     private int mRideType;
-
-    @InjectView(R.id.rides_listview)
-    ListView ridesListView;
-
-    @InjectView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout swipeRefreshLayout;
-
-    @InjectView(R.id.swipeRefreshLayout_emptyView)
-    SwipeRefreshLayout swipeRefreshLayoutEmptyView;
-
-    @InjectView(R.id.button_floating_action)
-    FloatingActionButton floatingActionButton;
-
     private Geocoder mGeocoder;
     private LatLng mCurrentLocation = new LatLng(52.5167, 13.3833);
     private PanoramioTask mPanoramioTask;
@@ -89,6 +83,20 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
             return date2.compareTo(date1);
         }
     };
+    private AdapterView.OnItemClickListener mItemClickListener = new android.widget.AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Ride clickedItem = mRides.get(position);
+            if (clickedItem != null) {
+                Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
+                intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, clickedItem);
+                startActivity(intent);
+            }
+        }
+    };
+
+    public RidesAllListFragment() {
+    }
 
     public static RidesAllListFragment newInstance(int rideType) {
         RidesAllListFragment fragment = new RidesAllListFragment();
@@ -96,9 +104,6 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
         args.putInt("ride_type", rideType);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public RidesAllListFragment() {
     }
 
     @Override
@@ -114,16 +119,14 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
         View rootView = inflater.inflate(R.layout.fragment_ride_list, container, false);
         ButterKnife.inject(this, rootView);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        swipeRefreshLayout.setColorSchemeResources(R.color.blue1,
+                R.color.blue2,
+                R.color.blue3);
 
         swipeRefreshLayoutEmptyView.setOnRefreshListener(this);
-        swipeRefreshLayoutEmptyView.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        swipeRefreshLayoutEmptyView.setColorSchemeResources(R.color.blue1,
+                R.color.blue2,
+                R.color.blue3);
 
         ridesListView.setEmptyView(swipeRefreshLayoutEmptyView);
 
@@ -137,7 +140,6 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
         return rootView;
     }
 
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -149,20 +151,12 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
         setLoading(true);
     }
 
-    private AdapterView.OnItemClickListener mItemClickListener = new android.widget.AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Ride clickedItem = mRides.get(position);
-            if (clickedItem != null) {
-                Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
-                intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, clickedItem);
-                startActivity(intent);
-            }
-        }
-    };
-
     @Override
     public void onRefresh() {
+        if (mRides.size() == 0) {
+            setLoading(true);
+            TUMitfahrApplication.getApplication(getActivity()).getRidesService().getAllRides(mRideType);
+        }
         setLoading(true);
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
@@ -195,9 +189,40 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
         mAdapter.notifyDataSetChanged();
     }
 
-    private void setLoading(boolean loading) {
-        swipeRefreshLayout.setRefreshing(loading);
-        swipeRefreshLayoutEmptyView.setRefreshing(loading);
+    private void setLoading(final boolean loading) {
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(loading);
+            }
+        });
+        swipeRefreshLayoutEmptyView.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayoutEmptyView.setRefreshing(loading);
+            }
+        });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mPanoramioTask != null && mPanoramioTask.getStatus() == AsyncTask.Status.RUNNING) {
+            mPanoramioTask.cancel(true);
+            mPanoramioTask = null;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusProvider.getInstance().unregister(this);
     }
 
     class RideAdapter extends ArrayAdapter<Ride> {
@@ -250,13 +275,12 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
     private class PanoramioTask extends AsyncTask<List<Ride>, Void, List<Ride>> {
 
         RideAdapter adapter;
+        private int PHOTO_AREA = 5;
 
         public PanoramioTask(RideAdapter adapter) {
             super();
             this.adapter = adapter;
         }
-
-        private int PHOTO_AREA = 5;
 
         @Override
         protected List<Ride> doInBackground(List<Ride>... params) {
@@ -309,28 +333,6 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
         protected void onPostExecute(List<Ride> result) {
             mRidesAdapter.notifyDataSetChanged();
         }
-    }
-
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mPanoramioTask != null && mPanoramioTask.getStatus() == AsyncTask.Status.RUNNING) {
-            mPanoramioTask.cancel(true);
-            mPanoramioTask = null;
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        BusProvider.getInstance().register(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        BusProvider.getInstance().unregister(this);
     }
 
 }

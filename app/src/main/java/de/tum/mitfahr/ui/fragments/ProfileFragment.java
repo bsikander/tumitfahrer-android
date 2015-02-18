@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,9 +17,11 @@ import com.pkmmte.view.CircularImageView;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.UpdateUserEvent;
@@ -54,9 +55,6 @@ public class ProfileFragment extends AbstractNavigationFragment implements Passw
     @InjectView(R.id.profile_department)
     TextView profileDepartmentText;
 
-    @InjectView(R.id.profile_password)
-    TextView profilePasswordText;
-
     private User mCurrentUser;
     private ProgressDialog mProgressDialog;
 
@@ -88,7 +86,6 @@ public class ProfileFragment extends AbstractNavigationFragment implements Passw
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.inject(this, rootView);
-        //defaultDrawable = new ColorDrawable(R.color.gray);
         changeActionBarColor(getResources().getColor(R.color.transparent));
         return rootView;
     }
@@ -103,7 +100,17 @@ public class ProfileFragment extends AbstractNavigationFragment implements Passw
         if (!StringHelper.isBlank(mCurrentUser.getPhoneNumber()))
             profilePhoneText.setText(mCurrentUser.getPhoneNumber());
         if (!StringHelper.isBlank(mCurrentUser.getCar()))
-            profilePhoneText.setText(mCurrentUser.getCar());
+            profileCarText.setText(mCurrentUser.getCar());
+
+        String[] departmentArray = getResources().getStringArray(R.array.department_array);
+        Pattern p = Pattern.compile("-?\\d+");
+        Matcher m = p.matcher(mCurrentUser.getDepartment());
+
+        while (m.find()) {
+            String deptIndex = m.group();
+            String department = departmentArray[Integer.parseInt(deptIndex)];
+            profileDepartmentText.setText(department);
+        }
 
         String profileImageUrl = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getProfileImageURL(getActivity());
         Picasso.with(getActivity())
@@ -136,12 +143,11 @@ public class ProfileFragment extends AbstractNavigationFragment implements Passw
 
     }
 
-    @OnClick(R.id.change_password_button)
-    public void onChangePasswordClicked() {
-        PasswordChangeDialogFragment dialogFragment = PasswordChangeDialogFragment.newInstance(this);
-        dialogFragment.show(getFragmentManager(), "password_change");
-
-    }
+//    @OnClick(R.id.change_password_button)
+//    public void onChangePasswordClicked() {
+//        PasswordChangeDialogFragment dialogFragment = PasswordChangeDialogFragment.newInstance(this);
+//        dialogFragment.show(getFragmentManager(), "password_change");
+//    }
 
     @Override
     public void onDialogPositiveClick(android.support.v4.app.DialogFragment dialog, String passwordOld, String passwordNew) {

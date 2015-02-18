@@ -68,16 +68,14 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
         View rootView = inflater.inflate(R.layout.fragment_my_rides_list, container, false);
         ButterKnife.inject(this, rootView);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        swipeRefreshLayout.setColorSchemeResources(R.color.blue1,
+                R.color.blue2,
+                R.color.blue3);
 
         swipeRefreshLayoutEmptyView.setOnRefreshListener(this);
-        swipeRefreshLayoutEmptyView.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        swipeRefreshLayoutEmptyView.setColorSchemeResources(R.color.blue1,
+                R.color.blue2,
+                R.color.blue3);
 
         ridesListView.setEmptyView(swipeRefreshLayoutEmptyView);
         return rootView;
@@ -89,8 +87,14 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
         mAdapter = new RideAdapterTest(getActivity());
         ridesListView.setAdapter(mAdapter);
         ridesListView.setOnItemClickListener(mItemClickListener);
-        fetchRides();
         setLoading(true);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusProvider.getInstance().register(this);
+        fetchRides();
     }
 
     private AdapterView.OnItemClickListener mItemClickListener = new android.widget.AdapterView.OnItemClickListener() {
@@ -110,6 +114,9 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
     };
 
     private void fetchRides() {
+        mAdapter.clear();
+        mAdapter.notifyDataSetChanged();
+        myCreatedRideList.clear();
         TUMitfahrApplication.getApplication(getActivity()).getRidesService().getMyRidesAsDriver();
         TUMitfahrApplication.getApplication(getActivity()).getRidesService().getUserRequests();
     }
@@ -243,19 +250,23 @@ public class MyRidesCreatedFragment extends Fragment implements SwipeRefreshLayo
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        BusProvider.getInstance().register(this);
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         BusProvider.getInstance().unregister(this);
     }
 
-    private void setLoading(boolean loading) {
-        swipeRefreshLayout.setRefreshing(loading);
-        swipeRefreshLayoutEmptyView.setRefreshing(loading);
+    private void setLoading(final boolean loading) {
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(loading);
+            }
+        });
+        swipeRefreshLayoutEmptyView.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayoutEmptyView.setRefreshing(loading);
+            }
+        });
     }
 }

@@ -25,27 +25,31 @@ public class PassengerItemView extends RelativeLayout implements View.OnClickLis
     public static final int TYPE_PASSENGER = 0;
     public static final int TYPE_REQUEST = 1;
     public static final int TYPE_NONE = 2;
-
-
+    private int mItemType = TYPE_NONE;
     private final CircularImageView mProfileImage;
     private final TextView mPassengerName;
     private final ImageButton mRemoveButton;
     private final ImageButton mActionButton;
     private final Context mContext;
-    private int mItemType = TYPE_NONE;
-
     private User mPassenger;
 
     private PassengerItemClickListener mListener;
+    private PassengerItemClickListener sDummyListener = new PassengerItemClickListener() {
+        @Override
+        public void onRemoveClicked(User passenger) {
 
-    public interface PassengerItemClickListener {
+        }
 
-        void onRemoveClicked(User passenger);
+        @Override
+        public void onActionClicked(User passenger) {
 
-        void onActionClicked(User passenger);
+        }
 
-        void onUserClicked(User passenger);
-    }
+        @Override
+        public void onUserClicked(User passenger) {
+
+        }
+    };
 
     public PassengerItemView(Context context) {
         this(context, null, 0);
@@ -69,7 +73,7 @@ public class PassengerItemView extends RelativeLayout implements View.OnClickLis
         mActionButton.setBackgroundDrawable(getRoundedShapeDrawable(getResources().getColor(android.R.color.holo_green_light)));
         mActionButton.setImageResource(R.drawable.ic_check_white_24dp);
 
-        mActionButton.setBackgroundDrawable(getRoundedShapeDrawable(getResources().getColor(android.R.color.holo_red_light)));
+        mRemoveButton.setBackgroundDrawable(getRoundedShapeDrawable(getResources().getColor(android.R.color.holo_red_light)));
         mRemoveButton.setImageResource(R.drawable.ic_cancel_white_24dp);
 
         mRemoveButton.setOnClickListener(new OnClickListener() {
@@ -86,7 +90,7 @@ public class PassengerItemView extends RelativeLayout implements View.OnClickLis
             }
         });
 
-        this.setOnClickListener(new OnClickListener() {
+        mProfileImage.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onUserClicked(mPassenger);
@@ -150,27 +154,19 @@ public class PassengerItemView extends RelativeLayout implements View.OnClickLis
         return false;
     }
 
-    private PassengerItemClickListener sDummyListener = new PassengerItemClickListener() {
-        @Override
-        public void onRemoveClicked(User passenger) {
-
-        }
-
-        @Override
-        public void onActionClicked(User passenger) {
-
-        }
-
-        @Override
-        public void onUserClicked(User passenger) {
-
-        }
-    };
-
     private Drawable getRoundedShapeDrawable(int color) {
         GradientDrawable shape = new GradientDrawable();
         shape.setCornerRadius(8);
         shape.setColor(color);
         return shape;
+    }
+
+    public interface PassengerItemClickListener {
+
+        void onRemoveClicked(User passenger);
+
+        void onActionClicked(User passenger);
+
+        void onUserClicked(User passenger);
     }
 }

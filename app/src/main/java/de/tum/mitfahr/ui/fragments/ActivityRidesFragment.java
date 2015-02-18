@@ -19,13 +19,16 @@ import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.GetRidesDateEvent;
 import de.tum.mitfahr.events.GetRidesEvent;
+import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.ui.MainActivity;
 
 /**
@@ -43,6 +46,9 @@ public class ActivityRidesFragment extends AbstractNavigationFragment {
     private RidesAllListFragment mRidesAllListFragment;
     private RidesAroundListFragment mRidesAroundListFragment;
 
+    public ActivityRidesFragment() {
+    }
+
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -53,9 +59,6 @@ public class ActivityRidesFragment extends AbstractNavigationFragment {
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public ActivityRidesFragment() {
     }
 
     @Override
@@ -106,6 +109,40 @@ public class ActivityRidesFragment extends AbstractNavigationFragment {
         }
     }
 
+    @Subscribe
+    public void onGetDateResult(GetRidesDateEvent result) {
+        if (result.getType() == GetRidesDateEvent.Type.GET_SUCCESSFUL) {
+            List<Ride> refreshedRides = result.getResponse().getRides();
+            if (refreshedRides == null || refreshedRides.size() > 0) {
+                Toast.makeText(getActivity(), "No new rides", Toast.LENGTH_SHORT).show();
+            } else {
+                mRidesAllListFragment.setRefreshedRides(refreshedRides);
+                mRidesAroundListFragment.setRefreshedRides(refreshedRides);
+            }
+        } else if (result.getType() == GetRidesDateEvent.Type.GET_FAILED) {
+            Toast.makeText(getActivity(), "Get new rides failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_search, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_search) {
+            ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(5);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
     public class ActivityRidesPagerAdapter extends FragmentPagerAdapter {
 
         private final String[] TITLES = {"All", "Around Me", "Get a car"};
@@ -133,24 +170,5 @@ public class ActivityRidesFragment extends AbstractNavigationFragment {
             else
                 return CarSharingFragment.newInstance();
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_search, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_search) {
-            ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(5);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
     }
 }

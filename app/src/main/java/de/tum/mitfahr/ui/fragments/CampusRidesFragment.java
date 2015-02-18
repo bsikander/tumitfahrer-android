@@ -47,6 +47,9 @@ public class CampusRidesFragment extends AbstractNavigationFragment {
     private RidesAllListFragment mRidesAllListFragment;
     private RidesAroundListFragment mRidesAroundListFragment;
 
+    public CampusRidesFragment() {
+    }
+
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -57,9 +60,6 @@ public class CampusRidesFragment extends AbstractNavigationFragment {
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public CampusRidesFragment() {
     }
 
     @Override
@@ -125,6 +125,25 @@ public class CampusRidesFragment extends AbstractNavigationFragment {
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_search, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_search) {
+            ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(5);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
     public class CampusPagerAdapter extends FragmentPagerAdapter {
 
         private final String[] TITLES = {"All", "Around Me", "Get a car"};
@@ -152,24 +171,5 @@ public class CampusRidesFragment extends AbstractNavigationFragment {
             else
                 return CarSharingFragment.newInstance();
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_search, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_search) {
-            ((MainActivity) getActivity()).getNavigationDrawerFragment().selectItem(5);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
     }
 }

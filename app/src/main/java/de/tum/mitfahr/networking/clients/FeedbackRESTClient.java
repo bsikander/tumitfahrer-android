@@ -4,6 +4,7 @@ import de.tum.mitfahr.events.SendFeedbackEvent;
 import de.tum.mitfahr.networking.api.FeedbackAPIService;
 import de.tum.mitfahr.networking.events.RequestFailedEvent;
 import de.tum.mitfahr.networking.models.requests.FeedbackRequest;
+import de.tum.mitfahr.networking.models.response.FeedbackResponse;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -14,21 +15,14 @@ import retrofit.client.Response;
 public class FeedbackRESTClient extends AbstractRESTClient {
 
     private FeedbackAPIService feedbackAPIService;
+    private Callback sendFeedbackCallback = new Callback<FeedbackResponse>() {
 
-    public FeedbackRESTClient(String mBaseBackendURL) {
-
-        super(mBaseBackendURL);
-        feedbackAPIService = mRestAdapter.create(FeedbackAPIService.class);
-    }
-
-    public void sendFeedback(String userAPIKey, FeedbackRequest feedback) {
-        feedbackAPIService.sendFeedback(userAPIKey, feedback, sendFeedbackCallback);
-    }
-
-    private Callback sendFeedbackCallback = new Callback() {
         @Override
-        public void success(Object o, Response response) {
-            mBus.post(new SendFeedbackEvent(SendFeedbackEvent.Type.RESULT, response));
+        public void success(FeedbackResponse feedbackResponse, Response response) {
+            if (response.getStatus() == 201)
+                mBus.post(new SendFeedbackEvent(SendFeedbackEvent.Type.SUCCESSFUL, response));
+            else
+                mBus.post(new SendFeedbackEvent(SendFeedbackEvent.Type.FAILED, response));
         }
 
         @Override
@@ -36,4 +30,13 @@ public class FeedbackRESTClient extends AbstractRESTClient {
             mBus.post(new RequestFailedEvent());
         }
     };
+
+    public FeedbackRESTClient(String mBaseBackendURL) {
+        super(mBaseBackendURL);
+        feedbackAPIService = mRestAdapter.create(FeedbackAPIService.class);
+    }
+
+    public void sendFeedback(String userAPIKey, FeedbackRequest feedback) {
+        feedbackAPIService.sendFeedback(userAPIKey, feedback, sendFeedbackCallback);
+    }
 }

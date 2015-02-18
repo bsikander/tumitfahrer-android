@@ -114,10 +114,10 @@
                     android:layout_gravity="bottom"
                     android:layout_width="match_parent"
                     android:layout_height="3dp"
+                    app:spb_progressiveStart_activated="false"
                     style="@style/GNowProgressBar"
                     android:indeterminate="true" />
             </FrameLayout>
-
 
             <TextView
                 android:layout_width="fill_parent"
@@ -373,10 +373,10 @@
             android:textColor="@color/white"
             android:textAllCaps="true"
             android:textSize="14sp"
-            app:cpb_textComplete="Ride Requested"
-            app:cpb_textError="Error"
+            app:cpb_textComplete="Success"
+            app:cpb_textError="Failed"
             app:cpb_cornerRadius="2dp"
-            app:cpb_textIdle="Request Ride"
+            app:cpb_textIdle="Idle"
             app:cpb_selectorIdle="@drawable/button_blue3_idle_state_selector" />
     </LinearLayout>
 

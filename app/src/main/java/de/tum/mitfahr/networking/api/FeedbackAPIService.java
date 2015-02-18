@@ -1,6 +1,7 @@
 package de.tum.mitfahr.networking.api;
 
 import de.tum.mitfahr.networking.models.requests.FeedbackRequest;
+import de.tum.mitfahr.networking.models.response.FeedbackResponse;
 import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.Header;
@@ -15,6 +16,6 @@ public interface FeedbackAPIService {
     public void sendFeedback(
             @Header("apiKey") String apiKey,
             @Body FeedbackRequest feedback,
-            Callback callback
+            Callback<FeedbackResponse> callback
     );
 }

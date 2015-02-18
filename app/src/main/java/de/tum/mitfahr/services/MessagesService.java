@@ -17,15 +17,15 @@ import retrofit.client.Response;
 /**
  * Created by amr on 07.07.14.
  */
-public class MessagesService {
+public class MessagesService extends AbstractService{
 
-    private SharedPreferences mSharedPreferences;
     private MessagesRESTClient mMessagesRESTClient;
     private Bus mBus;
     private String userAPIKey;
     private int senderId;
 
     public MessagesService(final Context context) {
+        super(context);
         String baseBackendURL = TUMitfahrApplication.getApplication(context).getBaseURLBackend();
         mBus = BusProvider.getInstance();
         mBus.register(this);

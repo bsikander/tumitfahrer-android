@@ -31,38 +31,49 @@ import de.tum.mitfahr.util.StringHelper;
 
 public class LoginFragment extends Fragment implements KenBurnsView.TransitionListener {
 
-    private RegisterClickListener mListener;
     private static final int BG_TINT = 0x7F000000;
-    private Context mContext;
-
     @InjectView(R.id.emailEditText)
     EditText emailText;
-
     @InjectView(R.id.passwordEditText)
     EditText passwordText;
-
     @InjectView(R.id.loginButton)
     CircularProgressButton loginButton;
-
     @InjectView(R.id.registerButton)
     Button registerButton;
-
     @InjectView(R.id.img1)
     KenBurnsView heroBg1;
-
     @InjectView(R.id.img2)
     KenBurnsView heroBg2;
-
     @InjectView(R.id.img3)
     KenBurnsView heroBg3;
-
     @InjectView(R.id.img4)
     KenBurnsView heroBg4;
-
     @InjectView(R.id.viewFlipper)
     ViewFlipper viewFlipper;
-
+    private RegisterClickListener mListener;
+    private Context mContext;
     private int mTransitionsCount = 0;
+    private Handler mLoginButtonHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            loginButton.setProgress(0);
+            loginButton.setClickable(true);
+        }
+    };
+    private Handler mLoginSuccessHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            loginButton.setProgress(0);
+            loginButton.setClickable(true);
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        }
+    };
+
+    public LoginFragment() {
+        // Required empty public constructor
+    }
 
     public static LoginFragment newInstance(String email) {
         LoginFragment fragment = new LoginFragment();
@@ -70,10 +81,6 @@ public class LoginFragment extends Fragment implements KenBurnsView.TransitionLi
         args.putString("email", email);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public LoginFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -129,6 +136,13 @@ public class LoginFragment extends Fragment implements KenBurnsView.TransitionLi
         }
     }
 
+    @OnClick(R.id.forgotPasswordButton)
+    public void onForgotPasswordPressed(Button button) {
+        if (mListener != null) {
+            mListener.onForgotPasswordClicked();
+        }
+    }
+
     @Subscribe
     public void onLogin(LoginEvent event) {
         if (event.getType() == LoginEvent.Type.LOGIN_SUCCESSFUL) {
@@ -159,25 +173,6 @@ public class LoginFragment extends Fragment implements KenBurnsView.TransitionLi
             }).start();
         }
     }
-
-    private Handler mLoginButtonHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            loginButton.setProgress(0);
-            loginButton.setClickable(true);
-        }
-    };
-
-    private Handler mLoginSuccessHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            loginButton.setProgress(0);
-            loginButton.setClickable(true);
-            Intent intent = new Intent(getActivity(), MainActivity.class);
-            startActivity(intent);
-            getActivity().finish();
-        }
-    };
 
     @Override
     public void onAttach(Activity activity) {
@@ -224,6 +219,8 @@ public class LoginFragment extends Fragment implements KenBurnsView.TransitionLi
 
     public interface RegisterClickListener {
         public void onRegisterClicked();
+
+        public void onForgotPasswordClicked();
     }
 
 }

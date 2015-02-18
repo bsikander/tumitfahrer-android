@@ -42,34 +42,41 @@ import de.tum.mitfahr.util.TimelineItem;
 public class TimelineListLastMinuteFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = TimelineListLastMinuteFragment.class.getName();
-
-    private List<TimelineItem> mTimeline = new ArrayList<TimelineItem>();
     private static final int MAX_TIME = 600; //seconds
-
-
+    @InjectView(R.id.rides_listview)
+    ListView timelineList;
+    @InjectView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @InjectView(R.id.swipeRefreshLayout_emptyView)
+    SwipeRefreshLayout swipeRefreshLayoutEmptyView;
+    @InjectView(R.id.button_floating_action)
+    FloatingActionButton floatingActionButton;
+    private List<TimelineItem> mTimeline = new ArrayList<TimelineItem>();
     private TimelineAdapter mTimelineAdapter;
     private AlphaInAnimationAdapter mAdapter;
     private FilterLastMinuteTask mLastMinuteTask;
+    private AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            TimelineItem clickedItem = mTimeline.get(position);
 
-    @InjectView(R.id.rides_listview)
-    ListView timelineList;
+            if (!TimelineItem.TimelineItemType.RIDE_SEARCHED.equals(clickedItem.getType())) {
+                Ride ride = clickedItem.getRide();
+                if (ride != null) {
+                    Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
+                    intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, ride);
+                    startActivity(intent);
+                }
+            }
+        }
+    };
 
-    @InjectView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout swipeRefreshLayout;
-
-    @InjectView(R.id.swipeRefreshLayout_emptyView)
-    SwipeRefreshLayout swipeRefreshLayoutEmptyView;
-
-    @InjectView(R.id.button_floating_action)
-    FloatingActionButton floatingActionButton;
-
+    public TimelineListLastMinuteFragment() {
+    }
 
     public static TimelineListLastMinuteFragment newInstance() {
         TimelineListLastMinuteFragment fragment = new TimelineListLastMinuteFragment();
         return fragment;
-    }
-
-    public TimelineListLastMinuteFragment() {
     }
 
     @Override
@@ -82,17 +89,16 @@ public class TimelineListLastMinuteFragment extends Fragment implements SwipeRef
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_timeline_list, container, false);
         ButterKnife.inject(this, rootView);
+
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        swipeRefreshLayout.setColorSchemeResources(R.color.blue1,
+                R.color.blue2,
+                R.color.blue3);
 
         swipeRefreshLayoutEmptyView.setOnRefreshListener(this);
-        swipeRefreshLayoutEmptyView.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        swipeRefreshLayoutEmptyView.setColorSchemeResources(R.color.blue1,
+                R.color.blue2,
+                R.color.blue3);
 
         timelineList.setEmptyView(swipeRefreshLayoutEmptyView);
 
@@ -126,22 +132,6 @@ public class TimelineListLastMinuteFragment extends Fragment implements SwipeRef
         setLoading(true);
     }
 
-    private AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            TimelineItem clickedItem = mTimeline.get(position);
-
-            if (!TimelineItem.TimelineItemType.RIDE_SEARCHED.equals(clickedItem.getType())) {
-                Ride ride = clickedItem.getRide();
-                if (ride != null) {
-                    Intent intent = new Intent(getActivity(), RideDetailsActivity.class);
-                    intent.putExtra(RideDetailsActivity.RIDE_INTENT_EXTRA, ride);
-                    startActivity(intent);
-                }
-            }
-        }
-    };
-
     public void setTimelineItems(List<TimelineItem> timelineItems) {
         setLoading(false);
         mLastMinuteTask = new FilterLastMinuteTask();
@@ -155,9 +145,25 @@ public class TimelineListLastMinuteFragment extends Fragment implements SwipeRef
         mAdapter.notifyDataSetChanged();
     }
 
-    private void setLoading(boolean loading) {
-        swipeRefreshLayout.setRefreshing(loading);
-        swipeRefreshLayoutEmptyView.setRefreshing(loading);
+    private void setLoading(final boolean loading) {
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(loading);
+            }
+        });
+        swipeRefreshLayoutEmptyView.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayoutEmptyView.setRefreshing(loading);
+            }
+        });
+    }
+
+    @Override
+    public void onRefresh() {
+        setLoading(true);
+        TUMitfahrApplication.getApplication(getActivity()).getActivitiesService().getActivities();
     }
 
     private class TimelineAdapter extends ArrayAdapter<TimelineItem> {
@@ -233,12 +239,6 @@ public class TimelineListLastMinuteFragment extends Fragment implements SwipeRef
             mTimeline = result;
             refreshList();
         }
-    }
-
-    @Override
-    public void onRefresh() {
-        setLoading(true);
-        TUMitfahrApplication.getApplication(getActivity()).getActivitiesService().getActivities();
     }
 
 }

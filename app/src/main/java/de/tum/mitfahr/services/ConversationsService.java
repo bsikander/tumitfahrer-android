@@ -18,15 +18,15 @@ import de.tum.mitfahr.networking.models.response.ConversationsResponse;
 /**
  * Created by amr on 07.07.14.
  */
-public class ConversationsService {
+public class ConversationsService extends AbstractService{
 
-    private SharedPreferences mSharedPreferences;
     private ConversationsRESTClient mConversationsRESTClient;
     private Bus mBus;
     private String userAPIKey;
     private int userId;
 
     public ConversationsService(final Context context) {
+        super(context);
         String baseBackendURL = TUMitfahrApplication.getApplication(context).getBaseURLBackend();
         mBus = BusProvider.getInstance();
         mBus.register(this);

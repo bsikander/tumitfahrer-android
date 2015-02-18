@@ -3,22 +3,33 @@ package de.tum.mitfahr.ui;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.amazonaws.event.ProgressEvent;
+import com.amazonaws.event.ProgressListener;
 import com.dd.CircularProgressButton;
 import com.pkmmte.view.CircularImageView;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
+import java.io.File;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -29,6 +40,8 @@ import de.tum.mitfahr.TUMitfahrApplication;
 import de.tum.mitfahr.events.UpdateUserEvent;
 import de.tum.mitfahr.networking.models.User;
 import de.tum.mitfahr.ui.fragments.PasswordPromptDialogFragment;
+import de.tum.mitfahr.util.BitmapUtils;
+import de.tum.mitfahr.util.StringHelper;
 
 public class EditProfileActivity extends ActionBarActivity implements PasswordPromptDialogFragment.PasswordPromptDialogListener {
 
@@ -53,6 +66,22 @@ public class EditProfileActivity extends ActionBarActivity implements PasswordPr
     CircularProgressButton editProfileButton;
 
     private boolean detailsChanged;
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            detailsChanged = true;
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
     private boolean imageChanged;
     private String changedImageUri;
     private User mCurrentUser;
@@ -75,6 +104,8 @@ public class EditProfileActivity extends ActionBarActivity implements PasswordPr
         phoneNumberEditText.addTextChangedListener(textWatcher);
         carEditText.addTextChangedListener(textWatcher);
         mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setMessage("Updating Profile");
     }
 
     private void populateTheFields() {
@@ -98,10 +129,13 @@ public class EditProfileActivity extends ActionBarActivity implements PasswordPr
         startActivityForResult(Intent.createChooser(intent, "Select Profile Image"), PICK_IMAGE_INTENT);
     }
 
-
     @OnClick(R.id.edit_profile_button)
     public void onEditProfileButtonClicked() {
-        if (detailsChanged || imageChanged) {
+        if (imageChanged) {
+            if (!StringHelper.isBlank(changedImageUri))
+                new UploadImageTask(this).execute(changedImageUri);
+        }
+        if (detailsChanged) {
             PasswordPromptDialogFragment dialogFragment = PasswordPromptDialogFragment.newInstance();
             dialogFragment.show(getFragmentManager(), "password_prompt");
         }
@@ -115,33 +149,37 @@ public class EditProfileActivity extends ActionBarActivity implements PasswordPr
                 && null != data) {
 
             Uri selectedImage = data.getData();
-
+            Log.d("EditProfileActivity", "" + selectedImage);
             Picasso.with(this)
                     .load(selectedImage.toString())
                     .placeholder(R.drawable.ic_account_dark)
                     .error(R.drawable.placeholder)
-                    .into(userImageView);
-            imageChanged = true;
-            changedImageUri = selectedImage.toString();
+                    .resize(350, 350)
+                    .into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            userImageView.setImageBitmap(bitmap);
+                            File path = Environment.getExternalStorageDirectory();
+                            File dirFile = new File(path, "/" + "tumitfahr");
+                            File imageFile = new File(dirFile, "profile_image_temp.png");
+                            BitmapUtils.save(bitmap, Uri.fromFile(imageFile));
+                            imageChanged = true;
+                            changedImageUri = imageFile.getAbsolutePath();
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+                            Toast.makeText(EditProfileActivity.this, "Cannot load image", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                        }
+                    });
+
         }
     }
-
-    private TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            detailsChanged = true;
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -185,17 +223,15 @@ public class EditProfileActivity extends ActionBarActivity implements PasswordPr
             TUMitfahrApplication.getApplication(this).getProfileService().
                     updateUser(mCurrentUser, mCurrentUser.getEmail(), password, password);
         }
-        if (imageChanged) {
-            TUMitfahrApplication.getApplication(this).getProfileService().uploadImage(changedImageUri);
-        }
+
     }
 
     @Subscribe
     public void onUpdateUserResult(UpdateUserEvent result) {
         mProgressDialog.dismiss();
         if (result.getType() == UpdateUserEvent.Type.USER_UPDATED) {
-            TUMitfahrApplication.getApplication(this).getProfileService().addUserToSharedPreferences(mCurrentUser);
             Toast.makeText(this, "User Updated", Toast.LENGTH_LONG).show();
+            TUMitfahrApplication.getApplication(this).getProfileService().addUserToSharedPreferences(mCurrentUser);
             finish();
         } else if (result.getType() == UpdateUserEvent.Type.UPDATE_FAILED) {
             Toast.makeText(this, "Failed to update User", Toast.LENGTH_LONG).show();
@@ -213,4 +249,46 @@ public class EditProfileActivity extends ActionBarActivity implements PasswordPr
         super.onStop();
         BusProvider.getInstance().unregister(this);
     }
+
+    private class UploadImageTask extends AsyncTask<String, Void, Boolean> {
+
+        Context mContext;
+
+        public UploadImageTask(Context context) {
+            super();
+            mContext = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            TUMitfahrApplication.getApplication(mContext).getProfileService().uploadImage(params[0], new ProgressListener() {
+                @Override
+                public void progressChanged(ProgressEvent progressEvent) {
+                    Log.d("AMZPRogress", "Progress:" + progressEvent.getBytesTransferred());
+                }
+            });
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            File path = Environment.getExternalStorageDirectory();
+            File dirFile = new File(path, "/" + "tumitfahr");
+            File tempFile = new File(dirFile, "profile_image_temp.png");
+            tempFile.delete();
+            File originalFile = new File(dirFile, "profile_image.png");
+            originalFile.delete();
+            mProgressDialog.dismiss();
+            finish();
+        }
+    }
+
+
 }

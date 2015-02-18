@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dd.CircularProgressButton;
 import com.pkmmte.view.CircularImageView;
@@ -44,13 +45,14 @@ import butterknife.InjectView;
 import de.tum.mitfahr.BusProvider;
 import de.tum.mitfahr.R;
 import de.tum.mitfahr.TUMitfahrApplication;
+import de.tum.mitfahr.events.AcceptRequestEvent;
 import de.tum.mitfahr.events.DeleteRideEvent;
 import de.tum.mitfahr.events.DeleteRideRequestEvent;
 import de.tum.mitfahr.events.GetRideEvent;
 import de.tum.mitfahr.events.JoinRequestEvent;
+import de.tum.mitfahr.events.RejectRequestEvent;
 import de.tum.mitfahr.events.RemovePassengerEvent;
 import de.tum.mitfahr.events.RespondToRequestEvent;
-import de.tum.mitfahr.events.UIActionOfferRideEvent;
 import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.RideRequest;
 import de.tum.mitfahr.networking.models.User;
@@ -124,6 +126,12 @@ public class RideDetailsFragment extends Fragment {
     @InjectView(R.id.details_progress_bar)
     SmoothProgressBar progressBar;
 
+    @InjectView(R.id.details_date_text)
+    TextView dateText;
+
+    @InjectView(R.id.details_time_text)
+    TextView timeText;
+
     private ProgressDialog mProgressDialog;
 
     private Ride mRide;
@@ -148,15 +156,32 @@ public class RideDetailsFragment extends Fragment {
         }
     };
     private int mPendingRequestId;
+    private Drawable.Callback mDrawableCallback = new Drawable.Callback() {
+        @Override
+        public void invalidateDrawable(Drawable who) {
+            ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(who);
+        }
 
-    private enum ActionButtonState {
-        REQUEST_RIDE,
-        LEAVE_RIDE,
-        PENDING_RIDE,
-        DELETE_RIDE,
-        OFFER_RIDE,
+        @Override
+        public void scheduleDrawable(Drawable who, Runnable what, long when) {
+        }
+
+        @Override
+        public void unscheduleDrawable(Drawable who, Runnable what) {
+        }
+    };
+    private NotifyingScrollView.OnScrollChangedListener mOnScrollChangedListener = new NotifyingScrollView.OnScrollChangedListener() {
+        public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
+            final int headerHeight = rideLocationImage.getHeight() - ((ActionBarActivity) getActivity()).getSupportActionBar().getHeight();
+            final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
+            final int newAlpha = (int) (ratio * 255);
+            mActionBarBackgroundDrawable.setAlpha(newAlpha);
+        }
+    };
+
+    public RideDetailsFragment() {
+        // Required empty public constructor
     }
-
 
     public static RideDetailsFragment newInstance(Ride ride) {
         RideDetailsFragment fragment = new RideDetailsFragment();
@@ -164,10 +189,6 @@ public class RideDetailsFragment extends Fragment {
         args.putSerializable(RIDE, ride);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public RideDetailsFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -210,7 +231,6 @@ public class RideDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         TUMitfahrApplication.getApplication(getActivity()).getRidesService().getRide(mRide.getId());
         progressBar.progressiveStart();
         mCurrentUser = TUMitfahrApplication.getApplication(getActivity()).getProfileService().getUserFromPreferences();
@@ -256,10 +276,8 @@ public class RideDetailsFragment extends Fragment {
     public void onRideRequestResult(JoinRequestEvent result) {
         if (result.getType() == JoinRequestEvent.Type.REQUEST_SENT) {
             rideActionButton.setProgress(100);
-            rideActionButton.setText("Request Sent");
         } else {
             rideActionButton.setProgress(-1);
-            rideActionButton.setText("Request Failed");
         }
 
         new Thread(new Runnable() {
@@ -279,11 +297,9 @@ public class RideDetailsFragment extends Fragment {
     public void onRemovePassengerResult(RemovePassengerEvent result) {
         mProgressDialog.dismiss();
         if (result.getType() == RemovePassengerEvent.Type.SUCCESSFUL) {
-            rideActionButton.setProgress(100);
-            rideActionButton.setText("Removed Passenger");
+            Toast.makeText(getActivity(), "Removed Passenger", Toast.LENGTH_SHORT).show();
         } else {
-            rideActionButton.setProgress(-1);
-            rideActionButton.setText("Remove Passenger Failed");
+            Toast.makeText(getActivity(), "Remove Passenger Failed", Toast.LENGTH_SHORT).show();
         }
 
         new Thread(new Runnable() {
@@ -303,11 +319,54 @@ public class RideDetailsFragment extends Fragment {
     public void onRespondToRequestResult(RespondToRequestEvent result) {
         mProgressDialog.dismiss();
         if (result.getType() == RespondToRequestEvent.Type.RESPOND_SENT) {
-            rideActionButton.setProgress(100);
-            rideActionButton.setText("Response Sent");
-        } else {
-            rideActionButton.setProgress(100);
-            rideActionButton.setText("Response Sending Failed");
+            Toast.makeText(getActivity(), "Response Sent", Toast.LENGTH_SHORT).show();
+
+        } else if (result.getType() == RespondToRequestEvent.Type.RESPOND_FAILED) {
+            Toast.makeText(getActivity(), "Response Failed", Toast.LENGTH_SHORT).show();
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                    mActionButtonHandler.sendEmptyMessage(0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    @Subscribe
+    public void onAcceptRequestResult(AcceptRequestEvent result) {
+        mProgressDialog.dismiss();
+        if (result.getType() == AcceptRequestEvent.Type.ACCEPT_SENT) {
+            Toast.makeText(getActivity(), "Response Sent", Toast.LENGTH_SHORT).show();
+
+        } else if (result.getType() == AcceptRequestEvent.Type.ACCEPT_FAILED) {
+            Toast.makeText(getActivity(), "Response Failed", Toast.LENGTH_SHORT).show();
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                    mActionButtonHandler.sendEmptyMessage(0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    @Subscribe
+    public void onRejectRequestResult(RejectRequestEvent result) {
+        mProgressDialog.dismiss();
+        if (result.getType() == RejectRequestEvent.Type.REJECT_SENT) {
+            Toast.makeText(getActivity(), "Response Sent", Toast.LENGTH_SHORT).show();
+
+        } else if (result.getType() == RejectRequestEvent.Type.REJECT_FAILED) {
+            Toast.makeText(getActivity(), "Response Failed", Toast.LENGTH_SHORT).show();
         }
         new Thread(new Runnable() {
             @Override
@@ -326,10 +385,8 @@ public class RideDetailsFragment extends Fragment {
     public void onDeleteRideRequest(DeleteRideRequestEvent result) {
         if (result.getType() == DeleteRideRequestEvent.Type.RESULT) {
             rideActionButton.setProgress(100);
-            rideActionButton.setText("Cancelled Ride");
         } else {
-            rideActionButton.setProgress(100);
-            rideActionButton.setText("Cancel Request Failed");
+            rideActionButton.setProgress(-1);
         }
         new Thread(new Runnable() {
             @Override
@@ -348,12 +405,20 @@ public class RideDetailsFragment extends Fragment {
         fromTextView.setText(mRide.getDeparturePlace());
         toTextView.setText(mRide.getDestination());
         infoTextView.setText(mRide.getMeetingPoint());
+        String[] dateTime = mRide.getDepartureTime().split("T");
+        dateText.setText(dateTime[0]);
+        timeText.setText(dateTime[1].substring(0, 5));
+
         if (!StringHelper.isBlank(mRide.getCar())) {
             carTextView.setText(mRide.getCar());
         } else {
             carContainer.setVisibility(View.GONE);
         }
-        seatsTextView.setText(Integer.toString(mRide.getFreeSeats()));
+        if (mRide.isRideRequest()) {
+            seatsContainer.setVisibility(View.GONE);
+        } else {
+            seatsTextView.setText(Integer.toString(mRide.getFreeSeats()));
+        }
 
         if (mRide.getRideImageUrl() != null) {
             Picasso.with(getActivity())
@@ -375,9 +440,15 @@ public class RideDetailsFragment extends Fragment {
             setActionButtonState(ActionButtonState.LEAVE_RIDE);
 
             rideOwnerLayoutContainer.setVisibility(View.VISIBLE);
+            requestsLayoutContainer.setVisibility(View.GONE);
+            requestsItemContainer.removeAllViews();
+
+            passengersLayoutContainer.setVisibility(View.GONE);
+            passengersItemContainer.removeAllViews();
+
             driverNameTextView.setText(mRide.getRideOwner()
                     .getFirstName() + " " + mRide.getRideOwner().getLastName());
-            rideOwnerLayoutContainer.setOnClickListener(new View.OnClickListener() {
+            ownerImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), UserDetailsActivity.class);
@@ -437,15 +508,17 @@ public class RideDetailsFragment extends Fragment {
                 passengerItem.setListener(new PassengerItemView.PassengerItemClickListener() {
                     @Override
                     public void onRemoveClicked(User passenger) {
+                        //no op
                     }
 
                     @Override
                     public void onActionClicked(User passenger) {
+                        //no op
                     }
 
                     @Override
                     public void onUserClicked(User passenger) {
-                        //show the userpage
+                        //show the user page
                         Intent intent = new Intent(getActivity(), UserDetailsActivity.class);
                         intent.putExtra(UserDetailsActivity.USER_INTENT_EXTRA, passenger);
                         startActivity(intent);
@@ -570,11 +643,12 @@ public class RideDetailsFragment extends Fragment {
     }
 
     public void setActionButtonState(ActionButtonState state) {
-        rideActionButton.setVisibility(View.VISIBLE);
         switch (state) {
-
             case REQUEST_RIDE:
                 rideActionButton.setText("Request Ride");
+                rideActionButton.setIdleText("Request Ride");
+                rideActionButton.setErrorText("Ride Request Failed");
+                rideActionButton.setCompleteText("Ride Requested");
                 rideActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -586,6 +660,9 @@ public class RideDetailsFragment extends Fragment {
                 break;
             case LEAVE_RIDE:
                 rideActionButton.setText("Leave Ride");
+                rideActionButton.setIdleText("Leave Ride");
+                rideActionButton.setErrorText("Leaving Ride Failed");
+                rideActionButton.setCompleteText("Left Ride");
                 rideActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -597,6 +674,9 @@ public class RideDetailsFragment extends Fragment {
                 break;
             case PENDING_RIDE:
                 rideActionButton.setText("Cancel Request");
+                rideActionButton.setIdleText("Cancel Ride");
+                rideActionButton.setErrorText("Cancel Request Failed");
+                rideActionButton.setCompleteText("Ride Request Cancelled");
                 rideActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -621,6 +701,9 @@ public class RideDetailsFragment extends Fragment {
                 break;
             case DELETE_RIDE:
                 rideActionButton.setText("Delete Ride");
+                rideActionButton.setIdleText("Delete Ride");
+                rideActionButton.setErrorText("Ride Delete Failed");
+                rideActionButton.setCompleteText("Ride Deleted");
                 rideActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -632,14 +715,22 @@ public class RideDetailsFragment extends Fragment {
                 break;
             case OFFER_RIDE:
                 rideActionButton.setText("Offer Ride");
+                rideActionButton.setIdleText("Offer Ride");
+                rideActionButton.setErrorText("Offer Ride Failed");
+                rideActionButton.setCompleteText("Offering Ride");
                 rideActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        BusProvider.getInstance().post(new UIActionOfferRideEvent(mRide));
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        intent.putExtra(MainActivity.EXTRA_OFFER_RIDE, mRide);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        startActivity(intent);
                     }
                 });
                 break;
         }
+        rideActionButton.setVisibility(View.VISIBLE);
+        rideActionButton.setProgress(0);
     }
 
     @Override
@@ -662,6 +753,14 @@ public class RideDetailsFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    private enum ActionButtonState {
+        REQUEST_RIDE,
+        LEAVE_RIDE,
+        PENDING_RIDE,
+        DELETE_RIDE,
+        OFFER_RIDE,
     }
 
     private class GetUserFromRequestsTask extends AsyncTask<List<RideRequest>, Void, Boolean> {
@@ -714,15 +813,15 @@ public class RideDetailsFragment extends Fragment {
                         @Override
                         public void onRemoveClicked(User passenger) {
                             //remove the user
-                            app.getRidesService().respondToRequest(mRide.getId(), requestId, false);
+                            app.getRidesService().rejectRequest(mRide.getId(), requestId);
                             mProgressDialog.show();
                         }
 
                         @Override
                         public void onActionClicked(User passenger) {
                             //do the action... conversation or accept
+                            app.getRidesService().acceptRequest(mRide.getId(), requestId);
                             mProgressDialog.show();
-                            app.getRidesService().respondToRequest(mRide.getId(), requestId, true);
                         }
 
                         @Override
@@ -740,37 +839,13 @@ public class RideDetailsFragment extends Fragment {
         }
     }
 
-    private Drawable.Callback mDrawableCallback = new Drawable.Callback() {
-        @Override
-        public void invalidateDrawable(Drawable who) {
-            ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(who);
-        }
-
-        @Override
-        public void scheduleDrawable(Drawable who, Runnable what, long when) {
-        }
-
-        @Override
-        public void unscheduleDrawable(Drawable who, Runnable what) {
-        }
-    };
-
-    private NotifyingScrollView.OnScrollChangedListener mOnScrollChangedListener = new NotifyingScrollView.OnScrollChangedListener() {
-        public void onScrollChanged(ScrollView who, int l, int t, int oldl, int oldt) {
-            final int headerHeight = rideLocationImage.getHeight() - ((ActionBarActivity) getActivity()).getSupportActionBar().getHeight();
-            final float ratio = (float) Math.min(Math.max(t, 0), headerHeight) / headerHeight;
-            final int newAlpha = (int) (ratio * 255);
-            mActionBarBackgroundDrawable.setAlpha(newAlpha);
-        }
-    };
-
     private class PanoramioTask extends AsyncTask<Ride, Void, Ride> {
+
+        private int PHOTO_AREA = 5;
 
         public PanoramioTask() {
             super();
         }
-
-        private int PHOTO_AREA = 5;
 
         @Override
         protected Ride doInBackground(Ride... params) {

@@ -24,6 +24,9 @@ import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -300,6 +303,18 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
 
     @Override
     public void onDateSet(CalendarDatePickerDialog calendarDatePickerDialog, int year, int monthOfYear, int dayOfMonth) {
+
+        String dateString = Integer.toString(dayOfMonth) + "-" + Integer.toString(monthOfYear + 1) + "-" + Integer.toString(year);
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("dd-MM-yyyy");
+
+        LocalDate setDate = formatter.parseLocalDate(dateString);
+        LocalDate localDate = LocalDate.fromCalendarFields(Calendar.getInstance());
+
+        if(setDate.isBefore(localDate)){
+            Toast.makeText(getActivity(),"Cannot create ride in the past.Select another date.",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         mYearOfDeparture = year;
         mMonthOfDeparture = monthOfYear + 1;
         mDayOfDeparture = dayOfMonth;

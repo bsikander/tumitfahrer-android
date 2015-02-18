@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,17 +22,21 @@ import android.widget.Toast;
 
 import com.dd.CircularProgressButton;
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
-import com.doomonafireball.betterpickers.radialtimepicker.RadialPickerLayout;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import butterknife.ButterKnife;
@@ -43,6 +48,7 @@ import de.tum.mitfahr.adapters.LocationAutoCompleteAdapter;
 import de.tum.mitfahr.events.OfferRideEvent;
 import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.User;
+import de.tum.mitfahr.ui.MultiDatePickerDialog;
 import de.tum.mitfahr.ui.RideDetailsActivity;
 import de.tum.mitfahr.util.StringHelper;
 import info.hoang8f.android.segmented.SegmentedGroup;
@@ -50,71 +56,54 @@ import info.hoang8f.android.segmented.SegmentedGroup;
 /**
  * Created by Abhijith on 22/05/14.
  */
-public class CreateRidesFragment extends AbstractNavigationFragment implements CalendarDatePickerDialog.OnDateSetListener, RadialTimePickerDialog.OnTimeSetListener {
+public class CreateRidesFragment extends AbstractNavigationFragment implements
+        CalendarDatePickerDialog.OnDateSetListener,
+        RadialTimePickerDialog.OnTimeSetListener,
+        MultiDatePickerDialog.MultiDatePickerDialogListener {
 
-    private static final String FRAG_TAG_TIME_PICKER = "timePickerDialogFragment";
-    private static final String FRAG_TAG_DATE_PICKER = "datePickerDialogFragment";
     public static final String ARG_OFFER_RIDE = "offerRide";
 
     public static final int RIDE_TYPE_CAMPUS = 0;
+    private int mRideType = RIDE_TYPE_CAMPUS;
     public static final int RIDE_TYPE_ACTIVITY = 1;
+    private static final String FRAG_TAG_TIME_PICKER = "timePickerDialogFragment";
+    private static final String FRAG_TAG_DATE_PICKER = "datePickerDialogFragment";
+    private static final String FRAG_REPEAT_DATE_PICKER = "repeatPickerDialogFragment";
+
+    @InjectView(R.id.segmentedRequestType)
+    SegmentedGroup requestTypeSegmentedGroup;
+    @InjectView(R.id.departureText)
+    AutoCompleteTextView departureText;
+    @InjectView(R.id.destinationText)
+    AutoCompleteTextView destinationText;
+    @InjectView(R.id.meetingText)
+    EditText meetingText;
+    @InjectView(R.id.seatsText)
+    EditText seatsText;
+    @InjectView(R.id.seatsTextContainer)
+    View seatsTextContainer;
+    @InjectView(R.id.rideTypeSpinner)
+    Spinner rideTypeSpinner;
+    @InjectView(R.id.offerRideButton)
+    CircularProgressButton offerRideButton;
+    @InjectView(R.id.pickTimeButton)
+    Button pickTimeButton;
+    @InjectView(R.id.pickDateButton)
+    Button pickDateButton;
+    @InjectView(R.id.repeatButton)
+    Button repeatButton;
+
 
     private User mCurrentUser;
     private boolean offerRideFlag;
     private Ride mOfferRideExtra;
-
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static CreateRidesFragment newInstance(int sectionNumber) {
-        CreateRidesFragment fragment = new CreateRidesFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public CreateRidesFragment() {
-    }
-
-    @InjectView(R.id.segmentedRequestType)
-    SegmentedGroup requestTypeSegmentedGroup;
-
-    @InjectView(R.id.departureText)
-    AutoCompleteTextView departureText;
-
-    @InjectView(R.id.destinationText)
-    AutoCompleteTextView destinationText;
-
-    @InjectView(R.id.meetingText)
-    EditText meetingText;
-
-    @InjectView(R.id.seatsText)
-    EditText seatsText;
-
-    @InjectView(R.id.seatsTextContainer)
-    View seatsTextContainer;
-
-    @InjectView(R.id.rideTypeSpinner)
-    Spinner rideTypeSpinner;
-
-    @InjectView(R.id.offerRideButton)
-    CircularProgressButton offerRideButton;
-
-    @InjectView(R.id.pickTimeButton)
-    Button pickTimeButton;
-
-    @InjectView(R.id.pickDateButton)
-    Button pickDateButton;
-
     private int mHourOfDeparture;
     private int mMinuteOfDeparture;
     private int mYearOfDeparture;
     private int mMonthOfDeparture;
     private int mDayOfDeparture;
-    private int mRideType = RIDE_TYPE_CAMPUS;
     private boolean driver = false;
+    private List<Date> mRepeatDates = null;
     private ArrayAdapter<CharSequence> mRideTypeAdapter;
     private Handler mCreateButtonHandler = new Handler() {
         @Override
@@ -124,13 +113,34 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
         }
     };
 
+    public CreateRidesFragment() {
+    }
+
+    /**
+     * Returns a new instance of this fragment for the given section
+     * number.
+     */
+    public static CreateRidesFragment newInstance(int sectionNumber, Ride offerRideExtra) {
+        CreateRidesFragment fragment = new CreateRidesFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+        if (offerRideExtra != null) {
+            Log.d("Create:newInstance: ", offerRideExtra.toString());
+            args.putSerializable(ARG_OFFER_RIDE, offerRideExtra);
+        }
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Calendar calendar = Calendar.getInstance();
-        if (getArguments().getSerializable(ARG_OFFER_RIDE) != null) {
-            mOfferRideExtra = (Ride) getArguments().getSerializable(ARG_OFFER_RIDE);
-            populateUI();
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            mOfferRideExtra = (Ride) bundle.getSerializable(ARG_OFFER_RIDE);
+            if (mOfferRideExtra != null)
+                Log.d("Create:onCreate: ", mOfferRideExtra.toString());
         }
         mHourOfDeparture = calendar.get(Calendar.HOUR_OF_DAY);
         mMinuteOfDeparture = calendar.get(Calendar.MINUTE);
@@ -156,6 +166,7 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
                         break;
                     case R.id.radioButtonPassenger:
                         driver = false;
+                        mRepeatDates = null;
                         updateLayoutForDriverAndPassenger();
                         break;
                     default:
@@ -205,6 +216,10 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
         final LocationAutoCompleteAdapter adapter = new LocationAutoCompleteAdapter(getActivity());
         departureText.setAdapter(adapter);
         destinationText.setAdapter(adapter);
+
+        if (mOfferRideExtra != null) {
+            populateUI();
+        }
     }
 
     private void populateUI() {
@@ -242,13 +257,20 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
 
         pickTimeButton.setText(dateTime[1]);
         pickDateButton.setText(dateTime[0]);
+
+        requestTypeSegmentedGroup.check(R.id.radioButtonDriver);
+        seatsText.setFocusableInTouchMode(true);
+        seatsText.requestFocus();
+
     }
 
     private void updateLayoutForDriverAndPassenger() {
         if (driver) {
             seatsTextContainer.setVisibility(View.VISIBLE);
+            repeatButton.setVisibility(View.VISIBLE);
         } else {
             seatsTextContainer.setVisibility(View.GONE);
+            repeatButton.setVisibility(View.GONE);
         }
     }
 
@@ -276,7 +298,7 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
             freeSeats = Integer.parseInt(seatsText.getText().toString());
         String dateTime = getFormattedDate();
         int rideType = rideTypeSpinner.getSelectedItemPosition();
-        int isDriver = (driver) ? 1 : 0;
+        String isDriver = (driver) ? "1" : "0";
 
         if (!StringHelper.isBlank(departure) && !StringHelper.isBlank(destination) && !StringHelper.isBlank(meetingPoint) && !StringHelper.isBlank(dateTime)) {
             offerRideButton.setProgress(50);
@@ -284,8 +306,14 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
             TUMitfahrApplication.getApplication(getActivity()).getRidesService()
                     .offerRide(departure, destination, meetingPoint,
                             freeSeats, dateTime, rideType,
-                            isDriver, mCurrentUser.getCar());
+                            isDriver, mCurrentUser.getCar(), getRepeatDates());
         }
+    }
+
+    @OnClick(R.id.repeatButton)
+    public void showRepeatDatePicker() {
+        MultiDatePickerDialog multiDatePickerDialog = MultiDatePickerDialog.newInstance(this);
+        multiDatePickerDialog.show(getChildFragmentManager(), FRAG_REPEAT_DATE_PICKER);
     }
 
     public String getFormattedDate() {
@@ -302,6 +330,28 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
         return outputFormat.format(calendar.getTime());
     }
 
+    public List<String> getRepeatDates() {
+        if (mRepeatDates == null) {
+            return null;
+        }
+        List<String> repeatDateString = new ArrayList<String>();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd:mm:yyyy");
+        for (Date date : mRepeatDates) {
+            String[] dateTime = simpleDateFormat.format(date).split(":");
+            Calendar calendar = Calendar.getInstance();
+            calendar.clear();
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+            calendar.set(Calendar.HOUR_OF_DAY, mHourOfDeparture);
+            calendar.set(Calendar.MINUTE, mMinuteOfDeparture);
+            calendar.set(Calendar.SECOND, 0); // I just set them to 0
+            calendar.set(Calendar.YEAR, Integer.parseInt(dateTime[2]));
+            calendar.set(Calendar.MONTH, Integer.parseInt(dateTime[1]));
+            calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateTime[0]));
+            outputFormat.setTimeZone(TimeZone.getDefault());
+            repeatDateString.add(outputFormat.format(calendar.getTime()));
+        }
+        return repeatDateString.size() > 0 ? repeatDateString : null;
+    }
 
     @OnClick(R.id.pickTimeButton)
     public void showTimePickerDialog() {
@@ -323,9 +373,7 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
     }
-
 
     @Subscribe
     public void onOfferRideEvent(OfferRideEvent event) {
@@ -360,10 +408,22 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
 
     @Override
     public void onDateSet(CalendarDatePickerDialog calendarDatePickerDialog, int year, int monthOfYear, int dayOfMonth) {
+        String dateString = Integer.toString(dayOfMonth) + "-" + Integer.toString(monthOfYear + 1) + "-" + Integer.toString(year);
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("dd-MM-yyyy");
+
+        LocalDate setDate = formatter.parseLocalDate(dateString);
+        LocalDate localDate = LocalDate.fromCalendarFields(Calendar.getInstance());
+
+        if (setDate.isBefore(localDate)) {
+            Toast.makeText(getActivity(), "Cannot create ride in the past.Select another date.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         mYearOfDeparture = year;
-        mMonthOfDeparture = monthOfYear + 1;
+        mMonthOfDeparture = monthOfYear + 1; //For some strange reason it gives one month less
         mDayOfDeparture = dayOfMonth;
         Log.e("MONTH:", String.valueOf(mMonthOfDeparture));
+
         String date = String.format("%02d/%02d/" + year, dayOfMonth, monthOfYear + 1);
         pickDateButton.setText(date);
 
@@ -383,5 +443,17 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements C
         }
     }
 
-
+    @Override
+    public void onMultiDatePicked(DialogFragment dialog, List<Date> selectedDates) {
+        if (selectedDates != null && selectedDates.size() > 1) {
+            mRepeatDates = selectedDates;
+            SimpleDateFormat dt = new SimpleDateFormat("dd/mm/yyyy");
+            String repeatString = "";
+            for (Date date : selectedDates) {
+                String dateStr = dt.format(date);
+                repeatString = repeatString + dateStr + " ; ";
+            }
+            repeatButton.setText("Repeat on : " + repeatString);
+        }
+    }
 }

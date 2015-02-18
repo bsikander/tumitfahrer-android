@@ -4,9 +4,11 @@ import de.tum.mitfahr.networking.models.Ride;
 import de.tum.mitfahr.networking.models.requests.JoinRideReqest;
 import de.tum.mitfahr.networking.models.requests.OfferRideRequest;
 import de.tum.mitfahr.networking.models.requests.RespondRideReqest;
+import de.tum.mitfahr.networking.models.response.AcceptRideResponse;
 import de.tum.mitfahr.networking.models.response.DeleteRideResponse;
 import de.tum.mitfahr.networking.models.response.JoinRequestResponse;
 import de.tum.mitfahr.networking.models.response.OfferRideResponse;
+import de.tum.mitfahr.networking.models.response.RejectRideResponse;
 import de.tum.mitfahr.networking.models.response.RequestsResponse;
 import de.tum.mitfahr.networking.models.response.RideResponse;
 import de.tum.mitfahr.networking.models.response.RidesResponse;
@@ -107,7 +109,7 @@ public interface RidesAPIService {
             @Path("rideId") int rideId,
             @Path("requestId") int requestId,
             @Query("passenger_id") int passengerId,
-            Callback<JoinRequestResponse> callback
+            Callback<AcceptRideResponse> callback
     );
 
     @DELETE("/rides/{rideId}/requests/{requestId}")
@@ -115,7 +117,7 @@ public interface RidesAPIService {
             @Header("apiKey") String apiKey,
             @Path("rideId") int rideId,
             @Path("requestId") int requestId,
-            Callback<JoinRequestResponse> callback
+            Callback<RejectRideResponse> callback
     );
 
 

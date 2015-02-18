@@ -10,7 +10,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingBottom="16dp"
-        android:paddingTop="16dp"
+        android:paddingTop="8dp"
         android:animateLayoutChanges="true"
         android:layout_height="wrap_content">
 
@@ -175,6 +175,18 @@
                 android:text="@string/pick_date" />
         </LinearLayout>
 
+        <Button
+            android:id="@+id/repeatButton"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            android:gravity="left|center_vertical"
+            android:drawablePadding="32dp"
+            style="?android:buttonBarButtonStyle"
+            android:layout_width="fill_parent"
+            android:textColor="@android:color/black"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_repeat_black_18dp"
+            android:text="@string/repeat" />
 
         <com.dd.CircularProgressButton
             android:id="@+id/offerRideButton"
