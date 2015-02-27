@@ -117,7 +117,9 @@ public class RidesAllListFragment extends Fragment implements SwipeRefreshLayout
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_ride_list, container, false);
+        View panoramioAttributionFooter = View.inflate(getActivity(),R.layout.panoramio_attribution,null);
         ButterKnife.inject(this, rootView);
+        ridesListView.addFooterView(panoramioAttributionFooter);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.blue1,
                 R.color.blue2,

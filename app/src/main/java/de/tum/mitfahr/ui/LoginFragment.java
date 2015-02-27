@@ -160,6 +160,9 @@ public class LoginFragment extends Fragment implements KenBurnsView.TransitionLi
             }).start();
         } else if (event.getType() == LoginEvent.Type.LOGIN_FAILED) {
             loginButton.setProgress(-1);
+            if (event.getStatusCode() == 400) {
+                Toast.makeText(getActivity(), "Login Failed. Please check credentials", Toast.LENGTH_SHORT).show();
+            }
             new Thread(new Runnable() {
                 @Override
                 public void run() {

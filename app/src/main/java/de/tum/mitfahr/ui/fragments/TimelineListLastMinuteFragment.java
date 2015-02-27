@@ -191,15 +191,18 @@ public class TimelineListLastMinuteFragment extends Fragment implements SwipeRef
             String timeSpanString = DateUtils.getRelativeTimeSpanString(time, now, DateUtils.FORMAT_ABBREV_TIME).toString();
             if (item.getType().equals(TimelineItem.TimelineItemType.RIDE_CREATED)) {
                 ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.ic_driver);
-                ((TextView) view.findViewById(R.id.timeline_activity_text)).setText("New Ride offer to");
+                if(item.getRide().isRideRequest())
+                    ((TextView) view.findViewById(R.id.timeline_activity_text)).setText(R.string.new_ride_request);
+                else
+                    ((TextView) view.findViewById(R.id.timeline_activity_text)).setText(R.string.new_ride_offer);
 
             } else if (item.getType().equals(TimelineItem.TimelineItemType.RIDE_SEARCHED)) {
                 ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.ic_search_white_24dp);
-                ((TextView) view.findViewById(R.id.timeline_activity_text)).setText("User searched for a Ride to");
+                ((TextView) view.findViewById(R.id.timeline_activity_text)).setText(R.string.user_search_ride);
 
             } else if (item.getType().equals(TimelineItem.TimelineItemType.RIDE_REQUEST)) {
                 ((ImageView) view.findViewById(R.id.timeline_type_image)).setImageResource(R.drawable.ic_passenger);
-                ((TextView) view.findViewById(R.id.timeline_activity_text)).setText("Request received for a ride to");
+                ((TextView) view.findViewById(R.id.timeline_activity_text)).setText(R.string.request_received);
 
             }
             ((TextView) view.findViewById(R.id.timeline_location_text)).setText(item.getDestination());

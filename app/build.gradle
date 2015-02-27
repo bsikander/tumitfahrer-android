@@ -7,14 +7,22 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 1
-        versionName "1.0"
+        versionCode 8
+        versionName "3.0"
         multiDexEnabled true
+        applicationId "de.tum.mitfahr"
+
     }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+
+    productFlavors {
+        compatibility {
+            applicationId "de.tum.mitfahrerapp"
         }
     }
 
@@ -50,7 +58,7 @@ dependencies {
     compile 'com.squareup:otto:1.3.4'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'net.danlew:android.joda:2.3.3'
-    compile 'se.emilsjolander:stickylistheaders:2.4.+'
+    compile 'se.emilsjolander:stickylistheaders:2.4.1'
     compile 'com.github.dmytrodanylyk.circular-progress-button:library:1.1.3'
     compile 'info.hoang8f:android-segmented:1.0.2'
     compile 'com.github.castorflex.smoothprogressbar:library:1.0.0'

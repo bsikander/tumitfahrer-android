@@ -26,7 +26,7 @@
                     android:layout_width="fill_parent"
                     android:scaleType="centerCrop"
                     android:layout_height="fill_parent"
-                    android:id="@+id/ride_location_image" />
+                    android:id="@+id/ride_location_image"/>
 
                 <RelativeLayout
                     android:layout_width="fill_parent"
@@ -64,7 +64,7 @@
                             android:gravity="center"
                             android:textColor="@color/white"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"/>
 
                     </RelativeLayout>
 
@@ -90,7 +90,7 @@
                             android:layout_marginRight="10dp"
                             android:drawableLeft="@drawable/ic_place"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"/>
 
                         <TextView
                             android:singleLine="true"
@@ -104,7 +104,7 @@
                             android:textColor="@color/white"
                             android:gravity="center"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"/>
 
                     </LinearLayout>
                 </RelativeLayout>
@@ -116,7 +116,7 @@
                     android:layout_height="3dp"
                     app:spb_progressiveStart_activated="false"
                     style="@style/GNowProgressBar"
-                    android:indeterminate="true" />
+                    android:indeterminate="true"/>
             </FrameLayout>
 
             <TextView
@@ -133,7 +133,7 @@
                 android:textAllCaps="true"
                 android:textSize="14dp"
                 android:layout_gravity="center"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -145,7 +145,7 @@
                 <ImageView
                     android:layout_width="30dp"
                     android:src="@drawable/ic_car_dark"
-                    android:layout_height="30dp" />
+                    android:layout_height="30dp"/>
 
                 <TextView
                     android:id="@+id/details_car"
@@ -157,7 +157,7 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="6dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"/>
             </LinearLayout>
 
             <View
@@ -165,7 +165,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:background="@color/gray_faded"
-                android:layout_height="2px" />
+                android:layout_height="2px"/>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -177,7 +177,7 @@
                 <ImageView
                     android:layout_width="30dp"
                     android:src="@drawable/ic_meeting_dark"
-                    android:layout_height="30dp" />
+                    android:layout_height="30dp"/>
 
                 <TextView
                     android:id="@+id/details_info"
@@ -189,7 +189,7 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="6dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"/>
             </LinearLayout>
 
             <View
@@ -197,7 +197,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:background="@color/gray_faded"
-                android:layout_height="2px" />
+                android:layout_height="2px"/>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -209,7 +209,7 @@
                 <ImageView
                     android:layout_width="30dp"
                     android:src="@drawable/ic_seats"
-                    android:layout_height="30dp" />
+                    android:layout_height="30dp"/>
 
                 <TextView
                     android:id="@+id/details_seats"
@@ -221,7 +221,7 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="6dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"/>
             </LinearLayout>
 
             <View
@@ -229,7 +229,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:background="@color/gray_faded"
-                android:layout_height="2px" />
+                android:layout_height="2px"/>
 
         </LinearLayout>
 
@@ -254,7 +254,7 @@
                 android:textAllCaps="true"
                 android:textSize="14dp"
                 android:layout_gravity="center"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -275,7 +275,7 @@
                     app:border_width="3dp"
                     app:shadow="true"
                     app:border="true"
-                    android:id="@+id/details_driver_image_view" />
+                    android:id="@+id/details_driver_image_view"/>
 
                 <TextView
                     android:id="@+id/details_ride_owner_name"
@@ -287,7 +287,7 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="6dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"/>
 
             </LinearLayout>
         </LinearLayout>
@@ -313,7 +313,7 @@
                 android:textAllCaps="true"
                 android:textSize="14dp"
                 android:layout_gravity="center"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
             <LinearLayout
                 android:id="@+id/passengers_item_container"
@@ -349,7 +349,7 @@
                 android:textAllCaps="true"
                 android:textSize="14dp"
                 android:layout_gravity="center"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
             <LinearLayout
                 android:id="@+id/requests_item_container"
@@ -378,6 +378,9 @@
             app:cpb_cornerRadius="2dp"
             app:cpb_textIdle="Idle"
             app:cpb_selectorIdle="@drawable/button_blue3_idle_state_selector" />
+
+        <include layout="@layout/panoramio_attribution"/>
+
     </LinearLayout>
 
 </de.tum.mitfahr.widget.NotifyingScrollView>

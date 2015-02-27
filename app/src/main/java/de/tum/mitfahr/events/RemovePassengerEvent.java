@@ -1,6 +1,5 @@
 package de.tum.mitfahr.events;
 
-import de.tum.mitfahr.networking.models.response.RidesResponse;
 import retrofit.client.Response;
 
 /**

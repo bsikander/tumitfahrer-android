@@ -1,7 +1,5 @@
 package de.tum.mitfahr.networking.clients;
 
-import com.squareup.otto.Bus;
-
 import org.json.JSONObject;
 
 import de.tum.mitfahr.networking.BackendUtil;

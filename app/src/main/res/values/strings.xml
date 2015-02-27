@@ -152,5 +152,15 @@
     <string name="errorSendingFeedback">Error Sending Feedback</string>
     <string name="repeat">Repeat?</string>
 
+    <string name="panoramio_attribution">Photos provided by Panoramio are under the copyright of their owners</string>
+    <string name="panoramio_credit">Photos provided by Panoramio</string>
+
+    <string name="new_ride_request">New ride request to </string>
+    <string name="new_ride_offer">New ride offer to </string>
+    <string name="user_search_ride">User searched for a Ride to</string>
+    <string name="request_received">Request received for a ride to</string>
+
+    <string name="error_required">Required</string>
+
 
 </resources>

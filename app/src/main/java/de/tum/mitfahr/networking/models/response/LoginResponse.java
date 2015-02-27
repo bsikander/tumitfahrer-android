@@ -1,7 +1,5 @@
 package de.tum.mitfahr.networking.models.response;
 
-import com.google.gson.annotations.SerializedName;
-
 import de.tum.mitfahr.networking.models.User;
 
 /**

@@ -4,7 +4,6 @@ import de.tum.mitfahr.networking.models.requests.SearchRequest;
 import de.tum.mitfahr.networking.models.response.SearchResponse;
 import retrofit.Callback;
 import retrofit.http.Body;
-import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.POST;
 

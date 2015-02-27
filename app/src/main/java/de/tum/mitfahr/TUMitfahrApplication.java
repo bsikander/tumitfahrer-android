@@ -26,7 +26,8 @@ public class TUMitfahrApplication extends Application {
 
     private Bus mBus = BusProvider.getInstance();
 
-    private ProfileService mProfileService;
+    private
+    ProfileService mProfileService;
     private RidesService mRidesService;
     private SearchService mSearchService;
 

@@ -283,7 +283,7 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements
             destinationText.setError("Required");
             return;
         } else if (StringHelper.isBlank(meetingText.getText().toString())) {
-            destinationText.setError("Required");
+            meetingText.setError("Required");
             return;
         } else if (driver && StringHelper.isBlank(seatsText.getText().toString())) {
             seatsText.setError("Required");
@@ -420,11 +420,11 @@ public class CreateRidesFragment extends AbstractNavigationFragment implements
         }
 
         mYearOfDeparture = year;
-        mMonthOfDeparture = monthOfYear + 1; //For some strange reason it gives one month less
+        mMonthOfDeparture = monthOfYear;
         mDayOfDeparture = dayOfMonth;
         Log.e("MONTH:", String.valueOf(mMonthOfDeparture));
 
-        String date = String.format("%02d/%02d/" + year, dayOfMonth, monthOfYear + 1);
+        String date = String.format("%02d/%02d/" + year, dayOfMonth, mMonthOfDeparture + 1);
         pickDateButton.setText(date);
 
     }

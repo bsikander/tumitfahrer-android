@@ -1,7 +1,6 @@
 package de.tum.mitfahr.networking.clients;
 
 import de.tum.mitfahr.networking.api.MessagesAPIService;
-import de.tum.mitfahr.networking.models.requests.MessageRequest;
 
 /**
  * Created by amr on 07.07.14.

@@ -125,8 +125,13 @@ public class ProfileService {
     public void onLoginResult(LoginEvent result) {
         if (result.getType() == LoginEvent.Type.LOGIN_RESULT) {
             LoginResponse response = result.getResponse();
-            if (null == response.getUser()) {
+
+            if (result.getStatusCode() == 400) {
                 mBus.post(new LoginEvent(LoginEvent.Type.LOGIN_FAILED));
+                Log.d("LoginResult","FAILED - 400");
+            } else if (null == response.getUser()) {
+                mBus.post(new LoginEvent(LoginEvent.Type.LOGIN_FAILED));
+                Log.d("LoginResult","FAILED");
             } else {
                 addUserToSharedPreferences(response.getUser());
                 mBus.post(new LoginEvent(LoginEvent.Type.LOGIN_SUCCESSFUL));

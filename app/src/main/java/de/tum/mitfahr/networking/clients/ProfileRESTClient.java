@@ -18,7 +18,6 @@ import de.tum.mitfahr.networking.models.response.GetUserResponse;
 import de.tum.mitfahr.networking.models.response.LoginResponse;
 import de.tum.mitfahr.networking.models.response.RegisterResponse;
 import de.tum.mitfahr.networking.models.response.UpdateUserResponse;
-import de.tum.mitfahr.util.Crypto;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -67,11 +66,12 @@ public class ProfileRESTClient extends AbstractRESTClient {
 
         @Override
         public void success(LoginResponse loginResponse, Response response) {
-            mBus.post(new LoginEvent(LoginEvent.Type.LOGIN_RESULT, loginResponse));
+            mBus.post(new LoginEvent(LoginEvent.Type.LOGIN_RESULT, loginResponse, response.getStatus()));
         }
 
         @Override
         public void failure(RetrofitError retrofitError) {
+            mBus.post(new LoginEvent(LoginEvent.Type.LOGIN_FAILED, null, 400));
             mBus.post(new RequestFailedEvent());
         }
     };

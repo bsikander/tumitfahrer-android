@@ -1,16 +1,5 @@
 package de.tum.mitfahr.util;
 
-import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
-import android.os.AsyncTask;
-
-import com.google.android.gms.maps.model.LatLng;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-
 /**
  * Created by abhijith on 19/08/14.
  */

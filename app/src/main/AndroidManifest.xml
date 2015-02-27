@@ -81,7 +81,7 @@
             android:label="@string/title_activity_edit_profile"></activity>
 
         <receiver
-            android:name="de.tum.mitfahr.gcm.GcmBroadcastReceiver"
+            android:name=".gcm.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -89,7 +89,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="de.tum.mitfahr.gcm.GcmIntentService" />
+        <service android:name=".gcm.GcmIntentService" />
 
     </application>
 

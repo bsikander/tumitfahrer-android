@@ -2,8 +2,6 @@ package de.tum.mitfahr.networking;
 
 import android.util.Base64;
 
-import java.security.Security;
-
 import de.tum.mitfahr.util.Crypto;
 
 /**

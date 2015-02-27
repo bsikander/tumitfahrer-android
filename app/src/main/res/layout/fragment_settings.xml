@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:paddingTop="?android:attr/actionBarSize"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+            android:orientation="vertical"
+            android:paddingTop="?android:attr/actionBarSize"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="vertical"
@@ -25,7 +25,7 @@
             android:textAllCaps="true"
             android:textSize="14dp"
             android:layout_gravity="center"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -39,7 +39,7 @@
             <ImageView
                 android:layout_width="30dp"
                 android:src="@drawable/ic_send_dark"
-                android:layout_height="30dp" />
+                android:layout_height="30dp"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -51,7 +51,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="6dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <LinearLayout
@@ -66,7 +66,7 @@
             <ImageView
                 android:layout_width="30dp"
                 android:src="@drawable/ic_report_dark"
-                android:layout_height="30dp" />
+                android:layout_height="30dp"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -78,7 +78,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="6dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <TextView
@@ -97,7 +97,7 @@
             android:textAllCaps="true"
             android:textSize="14dp"
             android:layout_gravity="center"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -111,7 +111,7 @@
             <ImageView
                 android:layout_width="30dp"
                 android:src="@drawable/ic_lock_dark"
-                android:layout_height="30dp" />
+                android:layout_height="30dp"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -123,7 +123,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="6dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <LinearLayout
@@ -138,7 +138,7 @@
             <ImageView
                 android:layout_width="30dp"
                 android:src="@drawable/ic_license_dark"
-                android:layout_height="30dp" />
+                android:layout_height="30dp"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -150,7 +150,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="6dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <LinearLayout
@@ -165,7 +165,7 @@
             <ImageView
                 android:layout_width="30dp"
                 android:src="@drawable/ic_car_dark"
-                android:layout_height="30dp" />
+                android:layout_height="30dp"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -177,7 +177,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="6dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <TextView
@@ -195,7 +195,7 @@
             android:textAllCaps="true"
             android:textSize="14dp"
             android:layout_gravity="center"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -209,7 +209,7 @@
             <ImageView
                 android:layout_width="30dp"
                 android:src="@drawable/ic_info_dark"
-                android:layout_height="30dp" />
+                android:layout_height="30dp"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -221,7 +221,7 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="6dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <LinearLayout
@@ -236,7 +236,7 @@
             <ImageView
                 android:layout_width="30dp"
                 android:src="@drawable/ic_people_dark"
-                android:layout_height="30dp" />
+                android:layout_height="30dp"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -248,7 +248,29 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="6dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                      android:orientation="vertical"
+                      android:layout_width="match_parent"
+                      android:layout_height="match_parent">
+
+            <ImageView
+                android:paddingTop="@dimen/default_padding"
+                android:layout_width="fill_parent"
+                android:layout_gravity="center"
+                android:src="@drawable/panoramio_logo"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:paddingLeft="@dimen/default_padding"
+                android:paddingRight="@dimen/default_padding"
+                android:paddingBottom="@dimen/default_padding"
+                android:gravity="center"
+                android:text="@string/panoramio_credit"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

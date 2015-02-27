@@ -28,9 +28,6 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
@@ -150,7 +147,9 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_ride_list, container, false);
+        View panoramioAttributionFooter = View.inflate(getActivity(),R.layout.panoramio_attribution,null);
         ButterKnife.inject(this, rootView);
+        ridesListView.addFooterView(panoramioAttributionFooter);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.blue1,
                 R.color.blue2,
@@ -406,7 +405,7 @@ public class RidesAroundListFragment extends Fragment implements SwipeRefreshLay
                 ((ImageView) view.findViewById(R.id.ride_type_image)).setImageResource(R.drawable.ic_driver);
             } else {
                 ((ImageView) view.findViewById(R.id.ride_type_image)).setImageResource(R.drawable.ic_passenger);
-                ((TextView) view.findViewById(R.id.ride_seats_text)).setVisibility(View.VISIBLE);
+                ((TextView) view.findViewById(R.id.ride_seats_text)).setVisibility(View.GONE);
             }
 
             ImageView locationImage = ((ImageView) view.findViewById(R.id.ride_location_image));

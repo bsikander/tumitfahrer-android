@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import com.dd.CircularProgressButton;
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
-import com.doomonafireball.betterpickers.radialtimepicker.RadialPickerLayout;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog;
 import com.squareup.otto.Subscribe;
 
@@ -316,10 +315,10 @@ public class SearchFragment extends AbstractNavigationFragment implements Calend
         }
 
         mYearOfDeparture = year;
-        mMonthOfDeparture = monthOfYear + 1;
+        mMonthOfDeparture = monthOfYear;
         mDayOfDeparture = dayOfMonth;
         Log.e("MONTH:", String.valueOf(mMonthOfDeparture));
-        String date = String.format("%02d/%02d/" + year, dayOfMonth, monthOfYear + 1);
+        String date = String.format("%02d/%02d/" + year, dayOfMonth, mMinuteOfDeparture + 1);
         pickDateButton.setText(date);
     }
 

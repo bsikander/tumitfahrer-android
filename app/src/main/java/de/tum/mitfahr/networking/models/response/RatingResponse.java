@@ -1,7 +1,5 @@
 package de.tum.mitfahr.networking.models.response;
 
-import java.util.ArrayList;
-
 import de.tum.mitfahr.networking.models.Rating;
 
 /**

@@ -1,7 +1,6 @@
 package de.tum.mitfahr.events;
 
 import de.tum.mitfahr.networking.models.response.RequestsResponse;
-import de.tum.mitfahr.networking.models.response.RidesResponse;
 
 /**
  * Created by amr on 28/06/14.

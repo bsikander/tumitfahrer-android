@@ -1,7 +1,6 @@
 package de.tum.mitfahr.services;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.squareup.otto.Bus;
